@@ -71,6 +71,14 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      'softGreen': '#bee0c9',
+      'darkGreen': '#7a9988',
+      'pastelYellow': '#f6f6cb',
+      'midnight': '#283c49',
+    },
   },
   plugins: [require("tailwindcss-animate")],
 }
