@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Unbounded } from 'next/font/google'
+import { Toaster } from "@/components/ui/toaster"
 
 const unbounded = Unbounded({ subsets: ['latin'] })
 
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body className={unbounded.className}>
         <main>
           {children}
+          <Toaster/>
         </main>
       </body>
       <link rel="manifest" href="/manifest.json"></link>
