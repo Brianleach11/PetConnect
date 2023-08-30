@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "./ui/button";
@@ -11,7 +12,10 @@ const NavBar = () => {
               <Image src="/assets/logo.png" width={75} height={75} alt="Logo"/>
               <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
             </Link>
-            <Link href="/hello" className={buttonVariants()}>Hello!</Link>
+            <Link href="/pets" className={buttonVariants({variant: "ghost"})}>Pets</Link>
+            <Link href="/maps" className={buttonVariants({variant: "ghost"})}>Maps</Link>
+            <Link href="/mesages" className={buttonVariants({variant: "ghost"})}>Messages</Link>
+            <Link href="/api/auth/signin" className={buttonVariants()}>Sign In</Link>
           </div>
         </div>
       </>
