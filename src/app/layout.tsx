@@ -17,12 +17,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={unbounded.className}>
-        <main>
+    <html lang='en' className={unbounded.className}>
+      <body className='container min-h-screen pt-12 bg-slate-50 antialiased'>
+        <div className='container max-w-7xl mx-auto h-full pt-12'>
           {children}
-          <Toaster/>
-        </main>
+        </div>
+        <Toaster/>
       </body>
       <link rel="manifest" href="/manifest.json"></link>
     </html>

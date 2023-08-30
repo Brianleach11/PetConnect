@@ -1,13 +1,15 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
+import NavBar from '@/components/NavBar'
 
 export default function Home() {
   return (
-    <div>
-      <div>Hello world</div>
-          <Link href="/hello" className={buttonVariants({ variant: "destructive" })}>Click here</Link>
-    </div>
-    
+    <>
+      <NavBar />
+      <div>
+        <div>Hello world</div>
+      </div>
+    </>
   )
 }
