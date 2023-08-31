@@ -1,8 +1,10 @@
 import Image from "next/image";
 import UserAuthForm from '@/components/UserAuthForm'
+import CredentialsForm from "./CredentialsForm";
 import Link from 'next/link'
+import {Button} from '@/components/ui/button'
 
-const SignIn = () => {
+const Login = () => {
   return (
     <div className='container mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px] border-2 border-midnight border-opacity-100 rounded-lg'>
       <div className='flex flex-col space-y-2 text-center'>
@@ -12,10 +14,7 @@ const SignIn = () => {
           Sign in to re-connect with your community!
         </p>
       </div>
-      <h1 className="text-center font-bold">Email</h1>
-      <input type="email" className="mx-auto border-2 border-midnight border-opacity-100 w-full rounded-sm"/>
-      <h1 className="text-center font-bold">Password</h1>
-      <input type="email" className="mx-auto border-2 border-midnight border-opacity-100 w-full rounded-sm"/>
+      <CredentialsForm/>
       <div className="text-center font-bold">
         Or
       </div>
@@ -35,4 +34,4 @@ const SignIn = () => {
   )
 }
 
-export default SignIn
+export default Login
