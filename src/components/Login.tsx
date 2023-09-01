@@ -1,6 +1,6 @@
-import Image from "next/image";
+import Image from "next/image"
 import UserAuthForm from '@/components/UserAuthForm'
-import CredentialsForm from "@/components/CredentialsForm";
+import CredentialForm from '@/components/CredentialForm'
 import Link from 'next/link'
 
 const Login = () => {
@@ -13,7 +13,7 @@ const Login = () => {
           Sign in to re-connect with your community!
         </p>
       </div>
-      
+      <CredentialForm/>
       <div className="text-center font-bold">
         Or
       </div>
