@@ -13,7 +13,7 @@ const Login = () => {
           Sign in to re-connect with your community!
         </p>
       </div>
-      
+      <CredentialsForm/>
       <div className="text-center font-bold">
         Or
       </div>
