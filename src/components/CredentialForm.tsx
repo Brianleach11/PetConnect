@@ -5,7 +5,7 @@ import React, { FC, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { Icons } from './Icons'
-import { supabase } from '../lib/supabaseClient'
+import { supabase } from '@/lib/supabaseDbClient'
 
 interface CredentialsFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -36,8 +36,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         })
         return
       }
-
-      const { data: user } = await supabase.from('users').select('*').eq('email', email).single()
+const { data: user } = await supabase.from('users').select('*').eq('email', email).single()
 
       if (!user) {
         toast({
@@ -51,7 +50,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
       const result = await signIn('credentials', {
         email,
         password
-      })  
+      })
       if (result!.error) {
         toast({
           title: "Error",
