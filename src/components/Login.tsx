@@ -1,8 +1,7 @@
 import Image from "next/image";
 import UserAuthForm from '@/components/UserAuthForm'
-import CredentialsForm from "./CredentialsForm";
+import CredentialsForm from "@/components/CredentialsForm";
 import Link from 'next/link'
-import {Button} from '@/components/ui/button'
 
 const Login = () => {
   return (
