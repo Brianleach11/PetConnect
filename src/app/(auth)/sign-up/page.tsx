@@ -1,8 +1,4 @@
-import SignUp from '@/components/SingUp'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
+import SignUp from '@/components/SignUp'
 import { FC } from 'react'
 
 const page: FC = () => {

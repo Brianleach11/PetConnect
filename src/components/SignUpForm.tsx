@@ -1,66 +1,88 @@
 'use client'
-import { cn } from '@/lib/utils'
-import { signIn } from 'next-auth/react'
-import React, { FC, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/use-toast'
-import { supabase } from '@/lib/supabaseDbClient'
+import { cn } from '@/lib/utils';
+import React, { FC, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 interface SignUpFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const supabase = createClientComponentClient();
 
   const signUpWithCredentials = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-        if (!email || !password || !confirmPassword) {
-            toast({
-                title: "Error",
-                description: "Please fill out all fields",
-                variant: 'destructive',
-            })
-            return
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            toast({
-            title: "Error",
-            description: "Please enter a valid email",
-            variant: 'destructive',
-            })
-            return
-        }
-
-        if (password !== confirmPassword){
-            toast({
-                title: "Error",
-                description: "Passwords do not match",
-                variant: 'destructive',
-            })
-            return
-        }
-
+      if (!email || !password || !confirmPassword) {
         toast({
-            title: "Success",
-            description: "Account Created!",
-            variant: "default",
-        })
-    } catch (error) {
+          title: "Error",
+          description: "Please fill out all fields",
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        toast({
+          title: "Error",
+          description: "Please enter a valid email",
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        toast({
+          title: "Error",
+          description: "Passwords do not match",
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "Error",
-        description: "There was an error logging in with this email",
-        variant: 'destructive',
-      })
+        title: "Success",
+        description: "Account Created!",
+        variant: "default",
+      });
+
+      // delay to give a user chance to read the succefull message
+      setTimeout(() => {
+        // Redirect user to login page
+        window.location.href = '/login';
+      }, 1000);
+
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unknown error occurred",
+          variant: 'destructive',
+        });
+      }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className={cn('flex justify-center', className)} {...props}>
@@ -74,14 +96,14 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
         />
         <h1 className="text-center font-bold">Password</h1>
         <input 
-          type="text"
+          type="password"
           className="mx-auto border-2 border-midnight border-opacity-100 w-full rounded-sm"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <h1 className="text-center font-bold">Confirm Password</h1>
         <input 
-          type="text"
+          type="password"
           className="mx-auto border-2 border-midnight border-opacity-100 w-full rounded-sm"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -100,7 +122,7 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignUpForm
+export default SignUpForm;
