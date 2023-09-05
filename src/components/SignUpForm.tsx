@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import React, { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { supabase } from '@/lib/supabaseDbClient';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 interface SignUpFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -13,6 +13,7 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const supabase = createClientComponentClient();
 
   const signUpWithCredentials = async () => {
     setIsLoading(true);

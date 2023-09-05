@@ -3,9 +3,7 @@ import { cn } from '@/lib/utils';
 import React, { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Icons } from './Icons';
-import { supabase } from '@/lib/supabaseDbClient';
-import { useRouter } from 'next/router';  // Import useRouter
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 
 interface CredentialsFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -15,13 +13,12 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const supabase = createClientComponentClient();
 
   
 
   const loginWithCredentials = async () => {
     setIsLoading(true);
-    
-    
     try {
       if (!email || !password) {
         toast({
@@ -65,7 +62,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
       });
 
         setTimeout(() => {
-          window.location.href = '/loginSuccess';
+          window.location.href = '/';
         }, 1000); // Redirect after 2 seconds so user can read toast
      
       }

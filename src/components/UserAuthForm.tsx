@@ -1,24 +1,25 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { signIn } from 'next-auth/react'
 import * as React from 'react'
 import { FC } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { Icons } from './Icons'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const supabase = createClientComponentClient();
 
   const loginWithGoogle = async () => {
     setIsLoading(true)
 
     try {
-      await signIn('google')
+      const {data, error} = await supabase.auth.signInWithOAuth({provider: 'google'})
     } catch (error) {
       toast({
         title: 'Error',
