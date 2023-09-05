@@ -1,12 +1,11 @@
 'use client'
-import { cn } from '@/lib/utils';
-import React, { FC, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { Icons } from './Icons';
-import { supabase } from '@/lib/supabaseDbClient';
-import { useRouter } from 'next/router';  // Import useRouter
-
+import { cn } from '@/lib/utils'
+import { signIn } from 'next-auth/react'
+import React, { FC, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
+import { Icons } from './Icons'
+import { supabase } from '@/lib/supabaseDbClient'
 
 interface CredentialsFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
