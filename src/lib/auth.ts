@@ -26,11 +26,11 @@ function getSupabaseCredentials(){
 
   if (!url || url.length === 0)
   {
-    throw new Error("Missing GOOGLE_CLIENT_ID")
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL")
   }
   if (!secret || secret.length === 0)
   {
-    throw new Error("Missing GOOGLE_CLIENT_SECRET")
+    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY")
   }
   return {url, secret} as SupabaseAdapterOptions
 }
