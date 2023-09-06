@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button, buttonVariants } from "./ui/button";
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {useRouter} from 'next/navigation'
+import { useEffect } from "react";
 
 
 export default function NavBar({session}: {session: Session | null}) {
@@ -11,10 +12,15 @@ export default function NavBar({session}: {session: Session | null}) {
   const supabase = createClientComponentClient()
   const router = useRouter()
 
+  useEffect(()=>{
+    if (document.cookie.includes("loggedIn")) router.refresh;
+  }, [])
+ 
+
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
-      router.replace('/')
+      await router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error logging out. Check console for details.");

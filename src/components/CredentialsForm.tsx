@@ -43,7 +43,6 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         email,
         password,
       });
-      router.refresh()
 
       if (error) {
         toast({
