@@ -4,6 +4,7 @@ import React, { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
 
 
 interface CredentialsFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -14,8 +15,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const supabase = createClientComponentClient();
-
-  
+  const router = useRouter()
 
   const loginWithCredentials = async () => {
     setIsLoading(true);
@@ -38,12 +38,12 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         });
         return;
       }
-  
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      router.refresh()
 
       if (error) {
         toast({
@@ -61,11 +61,10 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         variant: 'default',
       });
 
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 1000); // Redirect after 2 seconds so user can read toast
-     
-      }
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
+    }
     catch (error) {
       toast({
         title: "Error",
@@ -104,7 +103,6 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
             disabled={isLoading}
           >
             Login
-            
           </Button>
         </div>
       </div>

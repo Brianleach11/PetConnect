@@ -4,6 +4,7 @@ import React, { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRouter } from 'next/navigation';
 
 interface SignUpFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -14,6 +15,7 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const supabase = createClientComponentClient();
+  const router = useRouter()
 
   const signUpWithCredentials = async () => {
     setIsLoading(true);
@@ -49,9 +51,13 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback`
+        }
       });
 
       if (error) throw error;
+      router.refresh()
 
       toast({
         title: "Success",
