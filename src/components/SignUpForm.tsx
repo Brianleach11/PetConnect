@@ -52,7 +52,7 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
         email,
         password,
         options: {
-          emailRedirectTo: `${location.origin}/auth/callback`
+          emailRedirectTo: `${location.origin}`
         }
       });
 
