@@ -34,7 +34,7 @@ export default function NavBar({session, authToken}: {session: Session | null, a
       <div className='fixed top-0 inset-x-0 h-fit bg-softGreen border-b border-zinc-300 z-[10] py-2'>
         <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
           <Link href='/' className='flex gap-2 items-center'>
-            <Image src="/assets/logo.png" width={75} height={75} alt="Logo"/>
+            <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo"/>
             <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
           </Link>
           <Link href="/pets" className={buttonVariants({variant: "ghost"})}>Pets</Link>
