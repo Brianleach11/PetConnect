@@ -5,17 +5,17 @@ import { Button, buttonVariants } from "./ui/button";
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {useRouter} from 'next/navigation'
 import { useEffect } from "react";
+//initial session, null. Until manual refresh when session isnt null
 
 
-export default function NavBar({session}: {session: Session | null}) {
+export default function NavBar({session, authToken}: {session: Session | null, authToken: boolean}) {
 
   const supabase = createClientComponentClient()
   const router = useRouter()
 
-  useEffect(()=>{
-    if (document.cookie.includes("loggedIn")) router.refresh;
-  }, [])
- 
+  if(authToken){
+    router.refresh()
+  }
 
   const handleSignOut = async () => {
     try {

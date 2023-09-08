@@ -22,8 +22,7 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
 
     try {
       const {error} = await supabase.auth.signInWithOAuth({provider: 'google'});
-      document.cookie = "loggedIn=true"
-      if(error) throw new Error;
+      if(error) throw error;
     } catch (error) {
       toast({
         title: 'Error',

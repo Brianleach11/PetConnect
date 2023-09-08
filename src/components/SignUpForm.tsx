@@ -57,19 +57,14 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
       });
 
       if (error) throw error;
-      router.refresh()
 
       toast({
         title: "Success",
-        description: "Account Created!",
+        description: "Account Created! Check your email and confirm your identity.",
         variant: "default",
       });
 
       // delay to give a user chance to read the succefull message
-      setTimeout(() => {
-        // Redirect user to login page
-        window.location.href = '/login';
-      }, 1000);
 
     } catch (error: unknown) {
       if (error instanceof Error) {

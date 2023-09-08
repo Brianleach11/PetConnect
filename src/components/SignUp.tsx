@@ -11,9 +11,10 @@ const SignUp = () => {
       </div>
       <div className='flex flex-col space-y-2 text-center'>
         <Image src="/assets/logo.png" width={75} height={75} alt="Logo" className='mx-auto'/>
-        <h1 className='text-2xl font-semibold tracking-tight'>Welcome back</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>Welcome to</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>Pet Connect!</h1>
         <p className='text-sm max-w-xs mx-auto'>
-          Sign in to re-connect with your community!
+          Create an account to start building relationships!
         </p>
       </div>
       <SignUpForm />
