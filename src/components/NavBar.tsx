@@ -13,9 +13,11 @@ export default function NavBar({session, authToken}: {session: Session | null, a
   const supabase = createClientComponentClient()
   const router = useRouter()
 
-  if(authToken){
-    router.refresh()
-  }
+  useEffect(()=>{
+    if(authToken){
+      router.refresh()
+    }
+  })
 
   const handleSignOut = async () => {
     try {
