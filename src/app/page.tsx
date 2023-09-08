@@ -8,7 +8,6 @@ export default async function Home() {
   const cookieStore = cookies().getAll()
   const regex = /.*?(?=auth-token-code-verifier)/;
   const authToken = cookieStore.some(cookie => regex.test(cookie.name));
-  console.log(cookieStore, authToken)
 
   const{
     data: { session },
