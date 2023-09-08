@@ -37,9 +37,9 @@ export default function NavBar({session, authToken}: {session: Session | null, a
             <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo"/>
             <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
           </Link>
-          <Link href="/pets" className={buttonVariants({variant: "ghost"})}>Pets</Link>
-          <Link href="/maps" className={buttonVariants({variant: "ghost"})}>Maps</Link>
-          <Link href="/mesages" className={buttonVariants({variant: "ghost"})}>Messages</Link>
+          <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Pets</Link>
+          <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
+          <Link href={session ? "/mesages": {}} className={buttonVariants({variant: "ghost"})}>Messages</Link>
           {session ? <Button onClick={handleSignOut}>Sign Out</Button> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
         </div>
       </div>

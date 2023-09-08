@@ -55,6 +55,8 @@ const SignUpForm: FC<SignUpFormProps> = ({ className, ...props }) => {
           emailRedirectTo: `${location.origin}`
         }
       });
+      //send the user to their /profile page. Where they can add in a username, profile picture?, 
+      //and other data
 
       if (error) throw error;
 
