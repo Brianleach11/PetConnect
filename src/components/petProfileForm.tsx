@@ -21,11 +21,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';  
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation'; 
+import { useToast } from '@/components/ui/use-toast'; 
+import { Database } from '@/types/supabase';
 
+
+const supabase = createClientComponentClient<Database>();
 
 const PetProfileForm = () => {
   const supabase = createClientComponentClient();
   const router = useRouter();
+  const { toast } = useToast();
+
   const [name, setName] = useState<string>('');
   const [petType, setPetType] = useState<string>('');
   const [breed, setBreed] = useState<string>('');
@@ -34,6 +40,40 @@ const PetProfileForm = () => {
   const [age, setAge] = useState<number | null>(null);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [bio, setBio] = useState<string>('');
+
+  const {data: {pet}, error} = await supabase.auth.getUser()
+
+  if(pet?.id && !error){
+    const {data, error} = await supabase
+      .from("pet")
+      .insert(
+        {
+          id: pet?.id, 
+          name: name, 
+          pet_Type: petType, 
+          sex: sex, 
+          weight: weight, 
+          breed: breed,
+          birthday: age,
+          bio: bio,
+          picture: profilePicture
+        }
+      )
+      .select()
+      console.log('inside The insert')
+    if(error) throw error
+    
+    if(data.length !== 0){
+      console.log('pushPetProfile')
+      router.push('/petProfile')
+    }
+  }else{
+    toast({
+      title: "Error",
+      description: "An error happend upon user login",
+      variant: 'destructive',
+    })
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto mt-10">
