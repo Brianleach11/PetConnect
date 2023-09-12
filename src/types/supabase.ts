@@ -9,6 +9,74 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      friend_requests: {
+        Row: {
+          created_at: string
+          id: number
+          receiving_user: string | null
+          sending_user: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          receiving_user?: string | null
+          sending_user?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          receiving_user?: string | null
+          sending_user?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friend_requests_receiving_user_fkey"
+            columns: ["receiving_user"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friend_requests_sending_user_fkey"
+            columns: ["sending_user"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      friends: {
+        Row: {
+          created_at: string
+          id: number
+          receiving_user: string | null
+          sending_user: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          receiving_user?: string | null
+          sending_user?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          receiving_user?: string | null
+          sending_user?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friends_receiving_user_fkey"
+            columns: ["receiving_user"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friends_sending_user_fkey"
+            columns: ["sending_user"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       messages: {
         Row: {
           created_at: string
@@ -48,6 +116,7 @@ export interface Database {
       }
       pet: {
         Row: {
+          bio: string | null
           birthday: string | null
           breed: string | null
           fixed: boolean | null
@@ -55,9 +124,12 @@ export interface Database {
           name: string | null
           owner_id: string | null
           pet_type: string
+          picture: string | null
           sex: string | null
+          weight: number | null
         }
         Insert: {
+          bio?: string | null
           birthday?: string | null
           breed?: string | null
           fixed?: boolean | null
@@ -65,9 +137,12 @@ export interface Database {
           name?: string | null
           owner_id?: string | null
           pet_type: string
+          picture?: string | null
           sex?: string | null
+          weight?: number | null
         }
         Update: {
+          bio?: string | null
           birthday?: string | null
           breed?: string | null
           fixed?: boolean | null
@@ -75,7 +150,9 @@ export interface Database {
           name?: string | null
           owner_id?: string | null
           pet_type?: string
+          picture?: string | null
           sex?: string | null
+          weight?: number | null
         }
         Relationships: [
           {
@@ -86,22 +163,40 @@ export interface Database {
           }
         ]
       }
-      username: {
+      user: {
         Row: {
+          bio: string | null
+          birthday: string | null
+          city: string | null
+          gender: string | null
           id: string
+          looking_for: string | null
+          state: string | null
           username: string | null
         }
         Insert: {
+          bio?: string | null
+          birthday?: string | null
+          city?: string | null
+          gender?: string | null
           id: string
+          looking_for?: string | null
+          state?: string | null
           username?: string | null
         }
         Update: {
+          bio?: string | null
+          birthday?: string | null
+          city?: string | null
+          gender?: string | null
           id?: string
+          looking_for?: string | null
+          state?: string | null
           username?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "username_id_fkey"
+            foreignKeyName: "user_id_fkey"
             columns: ["id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
