@@ -21,9 +21,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation'; 
 import { useToast } from '@/components/ui/use-toast'; 
+import { Database } from '@/types/supabase';
 
 const UserProfileForm = () => {
-  const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient<Database>();
   const { toast } = useToast();
   const router = useRouter();
   const [username, setUsername] = useState<string>('');
@@ -33,7 +34,7 @@ const UserProfileForm = () => {
   const [birthday, setBirthday] = useState<string>('');
   const [lookingFor, setLookingFor] = useState<string>('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     if (!username) {
       toast({
         title: "Error",
@@ -69,9 +70,36 @@ const UserProfileForm = () => {
       });
       return;
     }
+    const {data: {user}, error} = await supabase.auth.getUser()
 
-
-
+    if(user?.id && !error){
+      const {data, error} = await supabase
+        .from("user")
+        .insert(
+          {
+            id: user?.id, 
+            username: username, 
+            birthday: birthday, 
+            city: city, 
+            state: state, 
+            looking_for: lookingFor
+          }
+        )
+        .select()
+      
+      if(error) throw error
+      
+      if(data.length !== 0){
+        router.push('/petProfile')
+      }
+    }else{
+      toast({
+        title: "Error",
+        description: "An error happend upon user login",
+        variant: 'destructive',
+      })
+    }
+    
     if(username && birthday && city && state) {
       router.push('/petProfile');
     }
@@ -150,7 +178,7 @@ const UserProfileForm = () => {
           Cancel
         </Button>
         <Button 
-        onClick={handleSubmit}>
+          onClick={handleSubmit}>
           Next
         </Button>
       </CardFooter>
