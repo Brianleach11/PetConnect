@@ -30,7 +30,7 @@ export default function NavBar({session, authToken}: {session: Session | null, a
           </Link>
           <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Posts</Link>
           <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
-          <Link href={session ? "/mesages": {}} className={buttonVariants({variant: "ghost"})}>Messages</Link>
+          <Link href={session ? "/chat": {}} className={buttonVariants({variant: "ghost"})}>Messages</Link>
           {session ? <ProfileDropdown/> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
         </div>
       </div>
