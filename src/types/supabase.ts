@@ -236,7 +236,29 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      recent_messages: {
+        Row: {
+          created_at: string | null
+          message_content: string | null
+          recipient_id: string | null
+          recipient_username: string | null
+          sender_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Functions: {
       [_ in never]: never

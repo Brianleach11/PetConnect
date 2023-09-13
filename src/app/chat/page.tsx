@@ -1,3 +1,4 @@
+import MessageHistory from '@/components/chat/MessageHistory'
 import NavBar from '@/components/NavBar'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
@@ -13,9 +14,11 @@ export default async function page(){
     } 
 
     return (
-        <div>
-            Welcome to the Chat!
+        <div className='bg-softGreen'>
+            <NavBar session={session} authToken={false}/>
+            <div className='px-4 py-2 rounded-3xl fixed left-0 w-1/3 min-h-screen bg-softGreen'>
+                <MessageHistory/>
+            </div>
         </div>
-            
     )
 }

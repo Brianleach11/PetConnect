@@ -12,7 +12,7 @@ export default async function Home() {
   return (
     <>
       <NavBar session={session} authToken={authToken}/>
-      <div>
+      <div className='pt-12'>
         <div>Hello world</div>
       </div>
     </>
