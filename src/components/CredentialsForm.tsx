@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-
+import { Database } from '@/types/supabase';
 
 interface CredentialsFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -18,6 +18,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
   const router = useRouter()
 
   const loginWithCredentials = async () => {
+    const supabase = createClientComponentClient<Database>();
     setIsLoading(true);
     try {
       if (!email || !password) {
@@ -53,53 +54,32 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         return;
       }
      
-/*      // Fetch user record to check for first login
-    const {data,error} = await supabase
-    .from('user')
-    .select('')
-    .eq('id', data?.user?.id);
+      
+      const { data: userData, error: userError } = await supabase
+        .from('user')
+        .select('username')
+        .eq('id', data.user.id)
+        .single();
 
-  if (fetchError) {
-    toast({
-      title: "Error",
-      description: fetchError.message,
-      variant: 'destructive',
-    });
-    return;
-  }
+        if (!userData?.username) {
+          console.log("No userData, redirecting to profile setup.");
+          toast({
+            title: 'Notice',
+            description: 'No data for user. Redirecting to profile setup...',
+            variant: 'default',
+          });
+          router.push('/userProfile');
+        } else {
 
-  const isFirstLogin = userRecord && !userRecord[0]?.first_login;
+          toast({
+            title: 'Success',
+            description: 'Logged in successfully!',
+            variant: 'default',
+          });
+          router.push('/');
+        }
 
-  // Update first_login field if necessary
-  if (isFirstLogin) {
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({ first_login: new Date() })
-      .eq('id', data?.user?.id);
-
-    if (updateError) {
-      toast({
-        title: "Error",
-        description: updateError.message,
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    // Redirect to special first-time user page
-    router.push('/userProfile');
-    return;
-  }
-*/
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-        variant: 'default',
-      });
-
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+    
     }
     catch (error) {
       toast({
