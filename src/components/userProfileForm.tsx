@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   Card,
@@ -34,7 +34,18 @@ const UserProfileForm = () => {
   const [birthday, setBirthday] = useState<string>('');
   const [lookingFor, setLookingFor] = useState<string>('');
 
+  useEffect(() => {
+    const savedFormData = JSON.parse(localStorage.getItem('userProfileForm') || '{}');
+    setUsername(savedFormData.username || '');
+    setBirthday(savedFormData.birthday || '');
+    setCity(savedFormData.city || '');
+    setState(savedFormData.state || '');
+    setGender(savedFormData.gender || '');
+    setLookingFor(savedFormData.lookingFor || '');
+  }, []);
+
   const handleSubmit = async() => {
+    
     if (!username) {
       toast({
         title: "Error",
@@ -70,16 +81,27 @@ const UserProfileForm = () => {
       });
       return;
     }
+    localStorage.setItem('userProfileForm', JSON.stringify({
+      username,
+      birthday,
+      city,
+      state,
+      gender,
+      lookingFor,
+    }));
+
     const {data: {user}, error} = await supabase.auth.getUser()
+    console.log(user)
 
     if(user?.id && !error){
       const {data, error} = await supabase
         .from("user")
-        .insert(
+        .upsert(
           {
             id: user?.id, 
             username: username, 
             birthday: birthday, 
+            gender: gender,
             city: city, 
             state: state, 
             looking_for: lookingFor
@@ -87,11 +109,13 @@ const UserProfileForm = () => {
         )
         .select()
       
-      if(error) throw error
-      
-      if(data.length !== 0){
-        router.push('/petProfile')
-      }
+    if(error) throw error
+        
+    if(username && birthday && city && state) {
+          console.log('/petProfile');  // This will log the message to the console
+          router.push('/petProfile');
+        }
+
     }else{
       toast({
         title: "Error",
@@ -99,15 +123,11 @@ const UserProfileForm = () => {
         variant: 'destructive',
       })
     }
-    
-    if(username && birthday && city && state) {
-      router.push('/petProfile');
-    }
 
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-10">
+    <Card className="w-full max-w-3xl mt-10 min-h-[300px] ">
       <CardHeader>
         <CardTitle>User Profile Form</CardTitle>
         <CardDescription>Complete your profile</CardDescription>
@@ -130,7 +150,12 @@ const UserProfileForm = () => {
           />
 
           <Label htmlFor="gender">Gender</Label>
-          <Select>
+          <Select
+          
+          onValueChange={(value) => setGender(value)}  
+        >
+          
+        
             <SelectTrigger id="gender">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
@@ -156,7 +181,9 @@ const UserProfileForm = () => {
           />
 
           <Label htmlFor="lookingFor">Looking For</Label>
-          <Select>
+          <Select
+            onValueChange={(value) => setLookingFor(value)} 
+            >
             <SelectTrigger id="lookingFor">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
@@ -172,7 +199,7 @@ const UserProfileForm = () => {
         <Button
           variant="outline"
           onClick={() => {
-            router.push('/');
+            router.push('/login');
           }}
         >
           Cancel

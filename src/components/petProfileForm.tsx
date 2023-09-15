@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   Card,
@@ -37,24 +37,67 @@ const PetProfileForm = () => {
   const [breed, setBreed] = useState<string>('');
   const [sex, setSex] = useState<string>('');
   const [weight, setWeight] = useState<number | null>(null);
-  const [age, setAge] = useState<number | null>(null);
+  const [birthday, setBirthday] = useState<string | null>(null);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [bio, setBio] = useState<string>('');
 
-  const {data: {pet}, error} = await supabase.auth.getUser()
+  useEffect(() => {
+    const savedFormData = JSON.parse(localStorage.getItem('petProfileForm') || '{}');
+    setName(savedFormData.name || '');
+    setPetType(savedFormData.petType || '');
+    setSex(savedFormData.sex || '');
+    setWeight(savedFormData.weight || null);
+    setBreed(savedFormData.breed || '');
+    setBirthday(savedFormData.birthday || null);
+    setBio(savedFormData.bio || '');
+  }, []);
 
-  if(pet?.id && !error){
+  const handleSubmit = async() => {
+
+        // Validation
+        let newErrors = {};
+        if (!name) newErrors = 'Name is required';
+        if (!petType) newErrors = 'Pet Type is required';
+        if (!sex) newErrors = 'Sex is required';
+        if (!weight) newErrors = 'Weight is required';
+        if (!birthday) newErrors = { ...newErrors, birthday: 'Birthday is required' };
+        if (!breed) newErrors = 'Breed is required';
+        if (!bio) newErrors = 'Bio is required';
+    
+        if (Object.keys(newErrors).length > 0) {
+          // Show errors in toast
+          toast({
+            title: "Validation Error",
+            description: "Please fill in all the required fields",
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        localStorage.setItem('petProfileForm', JSON.stringify({
+          name,
+          petType,
+          sex,
+          weight,
+          breed,
+          birthday,
+          bio,
+        }));
+
+  const {data: {user}, error} = await supabase.auth.getUser()
+
+  if(user?.id && !error){
     const {data, error} = await supabase
       .from("pet")
-      .insert(
+      .upsert(
         {
-          id: pet?.id, 
+          owner_id: user?.id, 
           name: name, 
-          pet_Type: petType, 
+          pet_type: petType, 
           sex: sex, 
           weight: weight, 
           breed: breed,
-          birthday: age,
+          birthday: birthday,
           bio: bio,
           picture: profilePicture
         }
@@ -65,7 +108,7 @@ const PetProfileForm = () => {
     
     if(data.length !== 0){
       console.log('pushPetProfile')
-      router.push('/petProfile')
+      router.push('/MedPage')
     }
   }else{
     toast({
@@ -74,16 +117,15 @@ const PetProfileForm = () => {
       variant: 'destructive',
     })
   }
-
+  }
   return (
-    <Card className="w-full max-w-md mx-auto mt-10">
+    <Card className="w-full max-w-2xl mx-auto mt-10">
       <CardHeader>
         <CardTitle>Pet Profile Form</CardTitle>
         <CardDescription>Create your pet profile</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4">
-          {/* Existing Form Fields */}
           <Label htmlFor="name">Name</Label>
           <Input
             id="name"
@@ -92,36 +134,35 @@ const PetProfileForm = () => {
               setName(e.target.value)
             }
           />
-
-               {/* Pet Type */}
-               <Label htmlFor="petType">Pet Type</Label>
-          <Select>
-            <SelectTrigger id="petType">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectItem value="dog">Dog</SelectItem>
-              <SelectItem value="cat">Cat</SelectItem>
-              <SelectItem value="bird">Bird</SelectItem>
-              <SelectItem value="reptile">Reptile</SelectItem>
-              <SelectItem value="fish">Fish</SelectItem>
-              {/* we can add more options here */}
-            </SelectContent>
-          </Select>
-
-         {/* Sex */}
-         <Label htmlFor="sex">Sex</Label>
-          <Select>
-            <SelectTrigger id="sex">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-              {/* Add more options as needed */}
-            </SelectContent>
-          </Select>
-
+  
+          <div className="relative">
+            <Label htmlFor="petType">Pet Type</Label>
+            <Select onValueChange={(value) => setPetType(value)}>
+              <SelectTrigger id="petType">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="dog">Dog</SelectItem>
+                <SelectItem value="cat">Cat</SelectItem>
+                {/* ... other options */}
+              </SelectContent>
+            </Select>
+          </div>
+  
+          <div className="relative">
+            <Label htmlFor="sex">Sex</Label>
+            <Select onValueChange={(value) => setSex(value)}>
+              <SelectTrigger id="sex">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                {/* ... */}
+              </SelectContent>
+            </Select>
+          </div>
+  
           <Label htmlFor="weight">Weight</Label>
           <Input
             id="weight"
@@ -131,8 +172,7 @@ const PetProfileForm = () => {
               setWeight(Number(e.target.value))
             }
           />
-
-          {/* Existing Form Fields */}
+  
           <Label htmlFor="breed">Breed</Label>
           <Input
             id="breed"
@@ -141,18 +181,15 @@ const PetProfileForm = () => {
               setBreed(e.target.value)
             }
           />
-
-          <Label htmlFor="age">Age</Label>
+  
+          <Label htmlFor="birthday">Birthday</Label>
           <Input
-            id="age"
-            type="number"
-            value={age ?? ''}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAge(Number(e.target.value))
-            }
+            id="birthday"
+            type="date"
+            value={birthday || ''}
+            onChange={(e) => setBirthday(e.target.value)}
           />
-
-
+  
           <Label htmlFor="bio">Bio - Know About Me</Label>
           <Textarea
             id="bio"
@@ -161,8 +198,7 @@ const PetProfileForm = () => {
               setBio(e.target.value)
             }
           />
-
-          {/* Profile Picture Upload */}
+  
           <Label htmlFor="profilePicture">Profile Picture</Label>
           <input
             type="file"
@@ -182,16 +218,13 @@ const PetProfileForm = () => {
         >
           Back
         </Button>
-        <Button
-          onClick={() => {
-            /* Implement next steps or final submission */
-          }}
-        >
-          Submit
+        <Button onClick={handleSubmit}>
+          Next
         </Button>
       </CardFooter>
     </Card>
   );
+  
 };
 
 export default PetProfileForm;

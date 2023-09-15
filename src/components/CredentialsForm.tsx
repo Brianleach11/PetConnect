@@ -70,6 +70,23 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
           });
           router.push('/userProfile');
         } else {
+          // Check for existing pet data
+          const { data: petData, error: petError } = await supabase
+            .from('pet')
+            .select('*')
+            .eq('owner_id', data.user.id)
+            .single();
+      
+          if (!petData) {
+            console.log("No petData, redirecting to pet profile setup.");
+            toast({
+              title: 'Notice',
+              description: 'No pet profile found. Redirecting to pet profile setup...',
+              variant: 'default',
+            });
+            router.push('/petProfile');
+
+          } else {
 
           toast({
             title: 'Success',
@@ -78,7 +95,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
           });
           router.push('/');
         }
-
+      }
     
     }
     catch (error) {
