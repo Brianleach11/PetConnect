@@ -2,16 +2,17 @@
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
+import {Session} from '@supabase/auth-helpers-nextjs'
 
 interface MessagePreviewItem {
-    recipient_username: string | null;
-    message_content: string | null;
+    chat_id: number | null;
     created_at: string | null;
+    message_content: string | null;
+    recipient_id: string | null;
+    recipient_username: string | null;
+    sender_id: string | null;
+    sender_username: string | null;
 }
 
 function formatDate(dateString : string) {
@@ -29,14 +30,14 @@ function formatDate(dateString : string) {
     }
 }
 
-export default function MessagePreview({item}: {item: MessagePreviewItem}){
+export default function MessagePreview({item, session}: {item: MessagePreviewItem, session:Session}){
     return(
         <Card>
             <CardContent>
                 <p className="text-center">
-                    {item.recipient_username}
+                    {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
                 </p>
-                <p className="text-sm">
+                <p className="text-sm mx-auto">
                     {item.message_content?.substring(0,37)}...
                 </p>
                 <p className="text-xs text-opacity-50 text-right">

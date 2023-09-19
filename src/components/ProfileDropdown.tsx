@@ -12,12 +12,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -29,6 +24,7 @@ export default function ProfileDropdown(){
 
     const handleSignOut = async () => {
         try {
+          console.log("logging out")
           await supabase.auth.signOut();
           await router.refresh();
         } catch (error) {

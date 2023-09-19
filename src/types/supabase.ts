@@ -79,6 +79,7 @@ export interface Database {
       }
       messages: {
         Row: {
+          chat_id: number | null
           created_at: string
           id: number
           message_content: string | null
@@ -86,6 +87,7 @@ export interface Database {
           sender_id: string | null
         }
         Insert: {
+          chat_id?: number | null
           created_at?: string
           id?: number
           message_content?: string | null
@@ -93,6 +95,7 @@ export interface Database {
           sender_id?: string | null
         }
         Update: {
+          chat_id?: number | null
           created_at?: string
           id?: number
           message_content?: string | null
@@ -236,13 +239,38 @@ export interface Database {
       }
     }
     Views: {
+      chats: {
+        Row: {
+          chat_id: number | null
+          created_at: string | null
+          message_content: string | null
+          recipient_id: string | null
+          sender_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       recent_messages: {
         Row: {
+          chat_id: number | null
           created_at: string | null
           message_content: string | null
           recipient_id: string | null
           recipient_username: string | null
           sender_id: string | null
+          sender_username: string | null
         }
         Relationships: [
           {

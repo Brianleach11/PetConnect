@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 import Image from "next/image";
-import { Button, buttonVariants } from "./ui/button";
+import { buttonVariants } from "./ui/button";
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {useRouter} from 'next/navigation'
 import { useEffect } from "react";
@@ -19,7 +19,7 @@ export default function NavBar({session, authToken}: {session: Session | null, a
       router.refresh()
     }
   })
-//{session ? <Button onClick={handleSignOut}>Sign Out</Button> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
+
   return (
     <>
       <div className='fixed top-0 inset-x-0 h-fit bg-softGreen z-[10] py-2'>
@@ -30,7 +30,7 @@ export default function NavBar({session, authToken}: {session: Session | null, a
           </Link>
           <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Posts</Link>
           <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
-          <Link href={session ? "/chat": {}} className={buttonVariants({variant: "ghost"})}>Messages</Link>
+          <Link href={session ? "/messages": {}} className={buttonVariants({variant: "ghost"})}>Messages</Link>
           {session ? <ProfileDropdown/> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
         </div>
       </div>

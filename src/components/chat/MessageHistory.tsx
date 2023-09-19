@@ -1,95 +1,59 @@
 'use client'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { Database } from "@/types/supabase"
+import { Session } from "@supabase/auth-helpers-nextjs"
 import { FC } from "react"
 import MessagePreview from "./MessagePreview"
 import { useState, useEffect } from "react"
+import { chatHrefConstructor } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
-interface Message{
+interface RecentMessages{
+    chat_id: number | null;
     created_at: string | null;
     message_content: string | null;
     recipient_id: string | null;
     recipient_username: string | null;
     sender_id: string | null;
+    sender_username: string | null;
 }
-type nullableMessageArray = Message[] | null
+type nullableRecentMessages = RecentMessages[] | null
 
-const MessageHistory: FC =()=>{
-    const [recentMessages, setRecentMessages] = useState<nullableMessageArray>(null);
-    const [messagesCount, setMessagesCount] = useState<number|null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    
-    useEffect(() => {
-        const fetchData = async () => {
-            const supabase = await createClientComponentClient<Database>();
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+interface MessageHistoryProps{
+    session: Session,
+    recentMessages: nullableRecentMessages,
+    recentMessagesCount: number,
+}
 
-            if (sessionError || !session || session.user === null) {
-                throw sessionError;
-            }
+const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recentMessagesCount}) => {
+    const [toRedirect, setToRedirect ] = useState<number>()
+    const router = useRouter()
 
-            if (!recentMessages && !isLoading) {
-                setIsLoading(true);
-                console.log("Getting messages");
+    useEffect(()=>{
+        if(recentMessages && toRedirect !== null && toRedirect !== undefined)
+        {
+            if(recentMessages[toRedirect].sender_id && recentMessages[toRedirect].recipient_id && recentMessages[toRedirect].chat_id){
+                const href = `/messages/chat/${chatHrefConstructor(
+                    recentMessages[toRedirect].sender_id, 
+                    recentMessages[toRedirect].recipient_id, 
+                    recentMessages[toRedirect].chat_id
+                )}`
+                router.push(href)
+            } 
+        }
+        
 
-                const { data, count, error } = await supabase
-                    .from("recent_messages")
-                    .select("*", { count: "exact" })
-                    .eq('sender_id', session.user.id);
+    }, [toRedirect])
 
-                setIsLoading(false);
-
-                if (error) {
-                    console.log(error);
-                }
-
-                if (data) {
-                    console.log(count);
-                    setRecentMessages(data);
-                    setMessagesCount(count);
-                }
-            }
-        };
-
-        fetchData();
-    }, [recentMessages, isLoading]);
-    
     return(
-        <div className="container px-2 top-2 bg-white rounded-xl h-screen">
-            <Tabs defaultValue="messages" className="py-2 rounded-xl text-transparent">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="messages">Messages</TabsTrigger>
-                    <TabsTrigger value="connections">Connections</TabsTrigger>
-                </TabsList>
-                <TabsContent value="messages">
-                    {
-                        messagesCount == 0 ? 
-                        <div className="text-midnight">No recent messages...</div> :
-                        Array.isArray(recentMessages) && recentMessages?.map((item, index) => (
-                            <MessagePreview key={index} item={item}/>
-                        ))
-                    }
-                </TabsContent>
-                <TabsContent value="connections">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Connections</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            WTF
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+        <div>
+            {
+            recentMessagesCount === 0 ? 
+                <div className="text-midnight">No recent messages...</div> :
+                recentMessages?.map((item, index) => (
+                    <div className="hover:drop-shadow-md rounded-lg py-1" key={index} onClick={()=>setToRedirect(index)}>
+                        <MessagePreview key={index} item={item} session={session}/>
+                    </div>
+                ))
+            }
         </div>
     )
 }
