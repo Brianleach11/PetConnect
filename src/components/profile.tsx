@@ -21,7 +21,7 @@ const Profile: React.FC = () => {
         if (userError) console.error('Error fetching user data:', userError);
         else setUserData(userData);
 
-        const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('id', userId).single();
+        const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('owner_id', userId).single();
         if (petError) console.error('Error fetching pet data:', petError);
         else setPetData(petData);
       }
