@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import Image from 'next/image';
-import PetProfileForm from '@/components/petProfileForm';
+import Profile from '@/components/profile';
 
-const PetProfilePage: FC = () => {
+const ProfilePage: FC = () => {
   return (
     <>
       <div className='absolute inset-0 bg-softGreen'>
         <div className='h-full max-w-2x4 mx-auto flex flex-col items-center justify-center gap-20'>
-          <PetProfileForm />
+          <Profile />
         </div>
       </div>
       <div className='fixed top-0 inset-x-0 h-fit bg-softGreen border-b border-zinc-300 z-[10] py-2'>
@@ -20,4 +20,4 @@ const PetProfilePage: FC = () => {
   );
 };
 
-export default PetProfilePage;
+export default ProfilePage;

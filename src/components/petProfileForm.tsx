@@ -41,17 +41,6 @@ const PetProfileForm = () => {
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [bio, setBio] = useState<string>('');
 
-  useEffect(() => {
-    const savedFormData = JSON.parse(localStorage.getItem('petProfileForm') || '{}');
-    setName(savedFormData.name || '');
-    setPetType(savedFormData.petType || '');
-    setSex(savedFormData.sex || '');
-    setWeight(savedFormData.weight || null);
-    setBreed(savedFormData.breed || '');
-    setBirthday(savedFormData.birthday || null);
-    setBio(savedFormData.bio || '');
-  }, []);
-
   const handleSubmit = async() => {
 
         // Validation
@@ -74,15 +63,6 @@ const PetProfileForm = () => {
           return;
         }
 
-        localStorage.setItem('petProfileForm', JSON.stringify({
-          name,
-          petType,
-          sex,
-          weight,
-          breed,
-          birthday,
-          bio,
-        }));
 
   const {data: {user}, error} = await supabase.auth.getUser()
 
@@ -91,7 +71,7 @@ const PetProfileForm = () => {
       .from("pet")
       .upsert(
         {
-          owner_id: user?.id, 
+          owner_id: user?.id,
           name: name, 
           pet_type: petType, 
           sex: sex, 

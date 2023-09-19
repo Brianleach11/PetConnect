@@ -44,6 +44,10 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         email,
         password,
       });
+      
+      if (data?.user?.id) {
+        localStorage.setItem('userId', data.user.id); // Store user ID
+      }
 
       if (error) {
         toast({
