@@ -67,9 +67,10 @@ const PetProfileForm = () => {
   const {data: {user}, error} = await supabase.auth.getUser()
 
   if(user?.id && !error){
+    
     const {data, error} = await supabase
       .from("pet")
-      .upsert(
+      .insert(
         {
           owner_id: user?.id,
           name: name, 

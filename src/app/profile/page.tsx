@@ -1,22 +1,23 @@
 import React, { FC } from 'react';
 import Image from 'next/image';
 import Profile from '@/components/profile';
+import NavBar from '@/components/NavBar'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
-const ProfilePage: FC = () => {
+ const ProfilePage: FC = async() => {
+  const supabase = createServerComponentClient({ cookies })
+  const{
+    data: { session },
+  } = await supabase.auth.getSession()
+
+
   return (
-    <>
-      <div className='absolute inset-0 bg-softGreen'>
-        <div className='h-full max-w-2x4 mx-auto flex flex-col items-center justify-center gap-20'>
+    <div className = 'py-12'>
+      <NavBar session={session} authToken={false}/>
           <Profile />
         </div>
-      </div>
-      <div className='fixed top-0 inset-x-0 h-fit bg-softGreen border-b border-zinc-300 z-[10] py-2'>
-        <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
-          <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo" />
-          <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>PetConnect</p>
-        </div>
-      </div>
-    </>
+
   );
 };
 
