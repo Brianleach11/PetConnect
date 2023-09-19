@@ -127,7 +127,7 @@ const UserProfileForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-3xl mt-10 min-h-[300px] ">
+    <Card className="w-full max-w-3xl mt-10 min-h-[700px] ">
       <CardHeader>
         <CardTitle>User Profile Form</CardTitle>
         <CardDescription>Complete your profile</CardDescription>
