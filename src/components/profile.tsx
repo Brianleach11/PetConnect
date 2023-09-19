@@ -10,7 +10,7 @@ import Image from "next/image";
 
 const Profile: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
-  const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'][] | null>(null);
+  const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
 
   const supabase = createClientComponentClient<Database>();
   useEffect(() => {
@@ -21,7 +21,7 @@ const Profile: React.FC = () => {
         if (userError) console.error('Error fetching user data:', userError);
         else setUserData(userData);
 
-        const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('id', userId);
+        const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('id', userId).single();
         if (petError) console.error('Error fetching pet data:', petError);
         else setPetData(petData);
       }
@@ -34,32 +34,34 @@ const Profile: React.FC = () => {
   return (
     <div className="w-[1000px] mx-auto mt-100 space-y-4">
       {/* Pet Profile Card */}
-      {petData?.map((pet, index) => (
-        <Card key={index} className="white rounded-lg">
-          <CardHeader className="bg-white text-black flex items-center justify-between p-4 rounded-t-lg">
-            <div className="flex items-center">
-              <Avatar>
-                <AvatarImage src="/assets/logo.png" alt="Logo" />
-              </Avatar>
-              <h2 className="text-lg">{pet.name || 'Pet Name'}</h2>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
+      <Card className="white rounded-lg">
+        <CardHeader className="bg-white text-black flex items-center justify-between p-4 rounded-t-lg">
+          <div className="flex items-center">
+            <Avatar>
+              <AvatarImage src="/assets/logo.png" alt="Logo" />
+            </Avatar>
+            <h2 className="text-lg">{petData?.name || 'Pet Name'}</h2>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {petData ? (
             <div>
-              <p><strong>Type:</strong> {pet.pet_type}</p>
-              <p><strong>Breed:</strong> {pet.breed}</p>
-              <p><strong>Sex:</strong> {pet.sex}</p>
-              <p><strong>Birthday:</strong> {pet.birthday}</p>
-              <p><strong>Age:</strong> {pet.birthday}</p>
+              <p><strong>Type:</strong> {petData.pet_type}</p>
+              <p><strong>Breed:</strong> {petData.breed}</p>
+              <p><strong>Sex:</strong> {petData.sex}</p>
+              <p><strong>Birthday:</strong> {petData.birthday}</p>
+              <p><strong>Age:</strong> {petData.birthday}</p>
               <hr />
               <div className="mt-4">
                 <h3 className="text-lg font-semibold">Bio:</h3>
-                <p className="text-justify">{pet.bio}</p>
+                <p className="text-justify">{petData.bio}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ))}
+          ) : (
+            <p>Loading...</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* User Profile Card */}
       <Card className="white rounded-lg">
@@ -74,7 +76,7 @@ const Profile: React.FC = () => {
               <p><strong>Birthday:</strong> {userData.birthday}</p>
               <p><strong>City:</strong> {userData.city}</p>
               <p><strong>State:</strong> {userData.state}</p>
-              <p><strong>I am looking for:</strong> {userData.looking_for}</p>
+              <p><strong>Iam looking for:</strong> {userData.looking_for}</p>
             </div>
           ) : (
             <p>Loading...</p>
@@ -94,3 +96,4 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+
