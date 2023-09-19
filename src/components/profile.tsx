@@ -75,6 +75,7 @@ const Profile: React.FC = () => {
               <p><strong>Birthday:</strong> {userData.birthday}</p>
               <p><strong>City:</strong> {userData.city}</p>
               <p><strong>State:</strong> {userData.state}</p>
+              <p><strong>Iam looking for:</strong> {userData.looking_for}</p>
             </div>
           ) : (
             <p>Loading...</p>
