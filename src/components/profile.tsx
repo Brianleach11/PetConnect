@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, );
 
 
   return (
