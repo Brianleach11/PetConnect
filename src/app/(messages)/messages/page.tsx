@@ -19,8 +19,6 @@ const page = async () => {
         .limit(1)
         .single()
 
-    console.log(recentMessage)
-
     if(recentMessage){
         const href=`/messages/chat/${chatHrefConstructor(
             recentMessage.sender_id, 

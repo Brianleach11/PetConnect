@@ -32,13 +32,13 @@ function formatDate(dateString : string) {
 
 export default function MessagePreview({item, session}: {item: MessagePreviewItem, session:Session}){
     return(
-        <Card>
+        <Card className="max-w-1/3">
             <CardContent>
                 <p className="text-center">
                     {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
                 </p>
-                <p className="text-sm mx-auto">
-                    {item.message_content?.substring(0,37)}...
+                <p className="text-sm mx-auto overflow-ellipsis">
+                    {item.message_content?.substring(0,37)}
                 </p>
                 <p className="text-xs text-opacity-50 text-right">
                     {item.created_at !== null ? formatDate(item.created_at) : <></>}

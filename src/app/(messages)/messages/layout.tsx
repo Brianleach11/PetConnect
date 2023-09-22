@@ -51,7 +51,7 @@ const Layout = async({children}: LayoutProps) => {
         <NavBar session={session} authToken={false}/>
         <div className='h-screen pt-12'>
           <div className='px-4 py-2 rounded-3xl fixed left-0 w-1/3 h-screen bg-midnight'>
-          <div className="container px-2 bg-white rounded-xl h-full">
+            <div className="container px-2 bg-white rounded-xl h-full">
               <Tabs defaultValue="messages" className="py-2 rounded-xl text-transparent">
                   <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="messages">Messages</TabsTrigger>
