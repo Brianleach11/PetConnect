@@ -30,7 +30,7 @@ const ChatWindow: FC<ChatWindowProps> = ({chat, session, initialChats}) => {
             schema: 'public', 
             table: 'messages'
         }, (payload) => {
-            setRealtimeChats([...initialChats, payload.new as Chats])
+            setRealtimeChats(oldArray => [payload.new as Chats, ...oldArray])
         }).subscribe()
 
         return () => {
@@ -45,17 +45,11 @@ const ChatWindow: FC<ChatWindowProps> = ({chat, session, initialChats}) => {
         }
     }
 
-    useEffect(() => {
-        // Scroll to the bottom of the chat container when messages are loaded or updated.
-        if (scrolldownRef.current) {
-            scrolldownRef.current.scrollTop = scrolldownRef.current.scrollHeight;
-            console.log(scrolldownRef.current.scrollTop)
-            console.log(scrolldownRef.current.offsetHeight)
-        }
-    }, [realtimeChats]);
-
-    return (
-    <ScrollArea className='h-full flex flex-col-reverse' ref={scrolldownRef}>
+return (
+    <div
+        id='messages'
+        className='flex h-full flex-1 flex-col-reverse pb-1 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch'>
+        <div ref={scrolldownRef}/>
         {
         //container for the chat messages, needs to scroll
         }
@@ -72,19 +66,19 @@ const ChatWindow: FC<ChatWindowProps> = ({chat, session, initialChats}) => {
                             'justify-end': isCurrentUser,
                         })}>
                         <div className={cn(
-                            'flex flex-col space-y-2 text-base max-w-xs mx-2',
+                            'flex flex-col py-0.5 text-base max-w-xs mx-2',
                             {
                                 'order-1 items-end': isCurrentUser,
                                 'order-2 items-start': !isCurrentUser,
                             }
                             )}>
                             <span
-                                className={cn('px-4 py-2 rounded-lg inline-block', {
-                                    'bg-indigo-600 text-black': isCurrentUser,
-                                    'bg-gray-200 text-gray-900': !isCurrentUser,
-                                    'rounded-br-none':
+                                className={cn('px-4 py-1.5 rounded-lg inline-block', {
+                                    'bg-softGreen text-black': isCurrentUser,
+                                    'bg-testGreen text-gray-900': !isCurrentUser,
+                                    'rounded-tr-none':
                                     !hasNextMessageFromSameUser && isCurrentUser,
-                                    'rounded-bl-none':
+                                    'rounded-tl-none':
                                     !hasNextMessageFromSameUser && !isCurrentUser,
                                 })}>
                                 {item.message_content}{' '}
@@ -98,7 +92,7 @@ const ChatWindow: FC<ChatWindowProps> = ({chat, session, initialChats}) => {
             )
         }) : 
         <div className='text-center py-48 text-lg'>Loading...</div>}
-    </ScrollArea>
+    </div>
   )
 }
 

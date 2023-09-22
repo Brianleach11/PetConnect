@@ -36,6 +36,7 @@ const page = async ({params}: PageProps) => {
 
   const chatPartnerUsername = (data?.recipient_id === chatPartner) ? data.recipient_username : data?.sender_username
   let {data: chats} = await supabase.from('chats').select("*").eq('chat_id', chatId)
+  chats?.reverse()
 
   return (
     <div className="px-4 py-2 rounded-3xl fixed right-0 w-2/3 h-screen bg-midnight">

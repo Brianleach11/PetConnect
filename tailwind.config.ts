@@ -80,6 +80,7 @@ module.exports = {
       'pastelYellow': '#f6f6cb',
       'midnight': '#283c49',
       'whiteGreen': '#E0FEE5',
+      'testGreen': '#B6D0E2',
     },
   },
   plugins: [require("tailwindcss-animate")],
