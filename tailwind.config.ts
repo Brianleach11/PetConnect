@@ -74,11 +74,13 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      'white': '#FFFFFF',
       'softGreen': '#bee0c9',
       'darkGreen': '#7a9988',
       'pastelYellow': '#f6f6cb',
       'midnight': '#283c49',
       'whiteGreen': '#E0FEE5',
+      'testGreen': '#B6D0E2',
     },
   },
   plugins: [require("tailwindcss-animate")],
