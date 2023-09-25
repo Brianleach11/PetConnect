@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { Unbounded } from 'next/font/google'
 import { Toaster } from "@/components/ui/toaster"
 
-
 const unbounded = Unbounded({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
