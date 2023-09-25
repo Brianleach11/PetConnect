@@ -15,7 +15,8 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) 
+{
   return (
     <html lang='en' className={unbounded.className}>
       <body className='pt-12'>

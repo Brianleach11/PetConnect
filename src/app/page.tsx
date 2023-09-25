@@ -23,5 +23,5 @@ export default async function Home() {
         <PetCardList />
       </div>
     </div>
-  );
+  )
 }

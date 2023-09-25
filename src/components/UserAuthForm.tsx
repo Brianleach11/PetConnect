@@ -1,4 +1,5 @@
 'use client'
+
 import { cn } from '@/lib/utils'
 import * as React from 'react'
 import { FC } from 'react'
@@ -7,7 +8,6 @@ import { useToast } from '@/components/ui/use-toast'
 import { Icons } from './Icons'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-import { Database } from '@/types/supabase';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -18,39 +18,21 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
   const router = useRouter()
 
   const loginWithGoogle = async () => {
-    const supabase = createClientComponentClient<Database>();
+    setIsLoading(true)
 
-    setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      
-      if (error) throw error;
-/*
-      const { data: userData, error: userError } = await supabase
-        .from('user')
-        .select('username')
-        .single();
-
-      if (!userData?.username) {
-        toast({
-          title: "Notice",
-          description: "No data for user. Redirecting to profile setup...",
-          variant: 'default',
-        });
-        router.push("/userProfile");
-        return;
-      }
-      */
+      const {error} = await supabase.auth.signInWithOAuth({provider: 'google'});
+      if(error) throw error;
     } catch (error) {
       toast({
         title: 'Error',
         description: 'There was an error logging in with Google',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className={cn('flex justify-center', className)} {...props}>
@@ -60,8 +42,7 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
         size='sm'
         className='w-full'
         onClick={loginWithGoogle}
-        disabled={isLoading}
-      >
+        disabled={isLoading}>
         {isLoading ? null : <Icons.google className='h-4 w-4 mr-2' />}
         Google
       </Button>
