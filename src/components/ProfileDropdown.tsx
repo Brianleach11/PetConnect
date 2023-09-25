@@ -12,12 +12,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -29,6 +24,7 @@ export default function ProfileDropdown(){
 
     const handleSignOut = async () => {
         try {
+          console.log("logging out")
           await supabase.auth.signOut();
           await router.refresh();
         } catch (error) {
@@ -36,31 +32,35 @@ export default function ProfileDropdown(){
           alert("Error logging out. Check console for details.");
         }
       };
+      
+      const navigateToProfile = () => {
+        router.push('/profile'); 
+    };
 
-    return(
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button>Menu</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <User className="mr-2 h-4 w-4"/>
-                        <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <PawPrint className="mr-2 h-4 w-4"/>
-                        <span>Pets</span>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4"/>
-                    <span onClick={handleSignOut}>Sign Out</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>Menu</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={navigateToProfile}>
+              <User className="mr-2 h-4 w-4"/>
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <PawPrint className="mr-2 h-4 w-4"/>
+              <span>Pets</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <LogOut className="mr-2 h-4 w-4"/>
+            <span onClick={handleSignOut}>Sign Out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
-}
+  }

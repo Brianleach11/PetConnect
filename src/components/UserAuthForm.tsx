@@ -50,4 +50,4 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
   )
 }
 
-export default UserAuthForm
+export default UserAuthForm;

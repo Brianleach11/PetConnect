@@ -15,11 +15,12 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) 
+{
   return (
     <html lang='en' className={unbounded.className}>
-      <body className='container min-h-screen pt-12 bg-slate-50 antialiased'>
-        <div className='container max-w-7xl mx-auto h-full pt-12'>
+      <body className='pt-12'>
+        <div className='h-full'>
           {children}
         </div>
         <Toaster/>
