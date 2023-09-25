@@ -22,11 +22,11 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   return (
     <div className="flex justify-center items-center mb-6"> 
         <Card 
-            className={`w-72 transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'shadow-lg' : 'shadow-md'}  rounded-lg border-2 border-gray-200`}
+            className={`relative w-72 bg-card transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'scale-105 shadow-2xl' : 'shadow-lg'} rounded-lg border-2 border-gray-200`}
             onMouseEnter={() => setIsCardHovered(true)}
             onMouseLeave={() => setIsCardHovered(false)}
         >
-            <CardHeader>
+            <CardHeader className="absolute top-[-38px] left-1/2 transform -translate-x-1/2 z-10">
                 <img
                     src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500"
                     alt="Pet Image"
@@ -34,7 +34,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
                 />
             </CardHeader>
             
-            <CardContent className="text-center font-sans">
+            <CardContent className="pt-20 text-center font-sans">
                 <CardTitle className="text-4xl text-gray-500 mb-2.5">
                     {pet.name || 'Loading...'}
                 </CardTitle>
@@ -50,7 +50,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
                 <CardDescription className="text-lg text-gray-700 mb-2.5">
                     {`Birthday: ${pet.birthday ? moment(pet.birthday).format('YYYY-MM-DD') : 'Loading...'}`}
                 </CardDescription>
-                
             </CardContent>
 
             <CardFooter className="flex justify-center gap-2.5 my-2">
@@ -70,6 +69,9 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         </Card>
     </div>
 );
+
+
+
   
 
 };
