@@ -66,20 +66,20 @@ export interface Database {
           {
             foreignKeyName: "friends_receiving_user_fkey"
             columns: ["receiving_user"]
-            referencedRelation: "users"
+            referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "friends_sending_user_fkey"
             columns: ["sending_user"]
-            referencedRelation: "users"
+            referencedRelation: "user"
             referencedColumns: ["id"]
           }
         ]
       }
       messages: {
         Row: {
-          chat_id: number | null
+          chat_id: string | null
           created_at: string
           id: number
           message_content: string | null
@@ -87,7 +87,7 @@ export interface Database {
           sender_id: string | null
         }
         Insert: {
-          chat_id?: number | null
+          chat_id?: string | null
           created_at?: string
           id?: number
           message_content?: string | null
@@ -95,7 +95,7 @@ export interface Database {
           sender_id?: string | null
         }
         Update: {
-          chat_id?: number | null
+          chat_id?: string | null
           created_at?: string
           id?: number
           message_content?: string | null
@@ -241,7 +241,7 @@ export interface Database {
     Views: {
       chats: {
         Row: {
-          chat_id: number | null
+          chat_id: string | null
           created_at: string | null
           message_content: string | null
           recipient_id: string | null
@@ -264,7 +264,7 @@ export interface Database {
       }
       recent_messages: {
         Row: {
-          chat_id: number | null
+          chat_id: string | null
           created_at: string | null
           message_content: string | null
           recipient_id: string | null

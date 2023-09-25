@@ -7,7 +7,7 @@ import { chatHrefConstructor } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 interface RecentMessages{
-    chat_id: number | null;
+    chat_id: string | null;
     created_at: string | null;
     message_content: string | null;
     recipient_id: string | null;

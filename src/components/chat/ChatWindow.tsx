@@ -6,12 +6,11 @@ import { ScrollArea } from '../ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 interface ChatWindowProps{
-    chat: number,
     session: Session,
     initialChats: ChatsArray
 }
 interface Chats{
-    chat_id: number | null
+    chat_id: string | null
     created_at: string | null
     message_content: string | null
     recipient_id: string | null
@@ -19,7 +18,7 @@ interface Chats{
 }
 type ChatsArray = Chats[]
 
-const ChatWindow: FC<ChatWindowProps> = ({chat, session, initialChats}) => {
+const ChatWindow: FC<ChatWindowProps> = ({session, initialChats}) => {
     const supabase = createClientComponentClient<Database>()
     const [realtimeChats, setRealtimeChats] = useState(initialChats)
     const scrolldownRef = useRef<HTMLDivElement | null>(null)
@@ -57,6 +56,7 @@ return (
         realtimeChats.map((item, index) => {
             const isCurrentUser = item.sender_id === session.user.id
             const hasNextMessageFromSameUser = realtimeChats[index - 1]?.sender_id === realtimeChats[index].sender_id
+            if(item.message_content === "") return;
             return(
                 <div
                     className='chat-message'

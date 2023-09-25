@@ -13,6 +13,7 @@ import {
   } from "@/components/ui/card"
 import MessageHistory from "@/components/chat/MessageHistory"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import ConnectionsList from "@/components/connections/ConnectionsList"
 
 interface LayoutProps {
   children: ReactNode
@@ -27,7 +28,16 @@ const Layout = async({children}: LayoutProps) => {
   /*const {data: messages, error: messagesError, count: messagesCount} = await supabase
         .from('messages')
         .select('*', {count:"exact"})
-        .order('recipient_id', {ascending: false})*/
+        .order('recipient_id', {ascending: false})
+        */
+  const {data: connections, error: connectionsError} = await supabase
+        .from("friends")
+        .select(`
+          id,
+          created_at,
+          sending_user,
+          receiving_user`)
+        .or(`receiving_user.eq.${session.user.id}, sending_user.eq.${session.user.id}`)
 
   let { data: recentMessages, count: recentMessagesCount, error } = await supabase
         .from("recent_messages")
@@ -63,14 +73,12 @@ const Layout = async({children}: LayoutProps) => {
                     </ScrollArea>
                   </TabsContent>
                   <TabsContent value="connections">
-                      <Card>
-                          <CardHeader>
-                              <CardTitle>Connections</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                              WTF
-                          </CardContent>
-                      </Card>
+                    <div className="w-full h-10 border-midnight text-midnight px-2">
+                      Connection Requests
+                    </div>
+                    <ScrollArea>
+                      <ConnectionsList session={session} connections={connections}/>
+                    </ScrollArea>
                   </TabsContent>
               </Tabs>
             </div>

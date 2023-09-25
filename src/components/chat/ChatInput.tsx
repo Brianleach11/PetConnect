@@ -10,7 +10,7 @@ import TextAreaAutosize from 'react-textarea-autosize'
 
 interface ChatInputProps{
     chatPartner: string,
-    chatId: number,
+    chatId: string,
     session: Session
 }
 

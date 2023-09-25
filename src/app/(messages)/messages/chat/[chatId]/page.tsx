@@ -22,7 +22,7 @@ const page = async ({params}: PageProps) => {
   }
 
   const chatProps = params.chatId.split("--")
-  const chatId = parseInt(chatProps[2])
+  const chatId = chatProps[2]
   const user1 = chatProps[0]
   const user2 = chatProps[1]
 
@@ -59,7 +59,7 @@ const page = async ({params}: PageProps) => {
             </div>
           </div>
 
-          <ChatWindow chat={chatId} session={session} initialChats={chats ?? []}/>
+          <ChatWindow session={session} initialChats={chats ?? []}/>
           <div className="mb-4">
             <ChatInput session={session} chatId={chatId} chatPartner={chatPartner}/>
           </div>
