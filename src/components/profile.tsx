@@ -1,14 +1,15 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import moment from 'moment';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
-const Profile: React.FC = () => {
+const Profile: FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
+  const [vaccinationD, setVaccinationD] = useState<Database['public']['Tables']['vaccination']['Row']>()
 
   const supabase = createClientComponentClient<Database>();
   useEffect(() => {
@@ -22,6 +23,19 @@ const Profile: React.FC = () => {
         const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('owner_id', userId).single();
         if (petError) console.error('Error fetching pet data:', petError);
         else setPetData(petData);
+
+        if(petData){
+          const {data: vaccinationData, error: vaccinationError} = await supabase
+          .from('vaccination')
+          .select('*')
+          .eq('pet_id', petData.id.toString())
+          .maybeSingle()
+          if(vaccinationError) console.log(vaccinationError)
+          if(vaccinationData){
+            setVaccinationD(vaccinationData)
+          }
+        }
+        
       }
     };
 
@@ -73,7 +87,9 @@ const Profile: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap">
-              
+              <div className='text-midnight'>
+                {vaccinationD?.id.toString()}, {vaccinationD?.date_adminstered}, {vaccinationD?.date_due}, {vaccinationD?.type}
+              </div>
             </div>
           </CardContent>
         </Card>
