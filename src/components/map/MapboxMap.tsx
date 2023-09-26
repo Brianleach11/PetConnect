@@ -10,65 +10,49 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl from 'mapbox-gl';
 import React, { CSSProperties } from 'react';
 import mapboxSdk from '@mapbox/mapbox-sdk/services/geocoding'
+import { get } from 'http';
 
-/*export interface AutoWidthCSS extends CSSProperties {
-  '--autowidth': string
-}
-export interface AutoLengthCSS extends CSSProperties {
-  '--autolength': string
-}*/
-
-export default function MapboxMap({session, city, state}: {session: Session | null, city: string | undefined, state: string | undefined}) {
-
-  //default center if no location
-  var lng = -96.1;
-  var lat = 39.5;
-
-  const mapboxClient = require('@mapbox/mapbox-sdk');
+export default function MapboxMap({session, city, state}: {session: Session | null, city: string, state: string}) {
+  //const mapboxClient = require('@mapbox/mapbox-sdk');
+  const geocodingClient = mapboxSdk({ accessToken: process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN ?? ""});
   
-  const geocodingClient = mapboxSdk({ accessToken: 'pk.eyJ1IjoicGV0LWNvbm5lY3QiLCJhIjoiY2xtZmswYm5pMDFuazNsbWV1ampseHl6YiJ9.NnNxP18_d4ankhK-woxOWA'});
-
-  const query = city + " " + state;
-  console.log("Query: ", query);
-
-  if (city && state) {
+  function getLocation(_coordinates: number[]) {
+    var long;
+    var latt;
     geocodingClient.forwardGeocode({
       query: city + " " + state,
       countries: ['us'], // Limit results to United States
-      types: ['region'], // Only include regions in the results
       autocomplete: false,
       limit: 1
     }).send()
       .then((response: { body: { features: any; }; }) => {
         const features = response.body.features;
         // Do something with the search results
-        lng = features[0].geometry[0];
-        lat = features[0].geometry[1];
+        long = features[0].center[0];
+        latt = features[0].center[1];
+        _coordinates[0] = features[0].center[0];
+        _coordinates[1] = features[0].center[1];
         console.log(features);
-        console.log(features[0].geometry)
-        console.log("longitude and latitude: ", lng, lat);
-      })
-      .catch((err: { message: any; }) => {
-        console.log(err.message);
+        console.log("longitude and latitude: ", long, latt);
       });
-  }
-  
-
-
-  /*const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v12',
-    center: [lng, lat],
-    zoom: 13
-  })*/
-
-  function getUserLocation() {
-      //get user location from supabase 
-          //passed in from page
-      //then turn that into coord
+      return _coordinates;
       
-      //plug into 
   }
+
+  //default center if no location
+  var lng = -96.1;
+  var lat = 39.5;
+  
+  var coord = [0,0];
+  coord = getLocation(coord);
+  console.log("Coordinates: ", coord);
+
+  var startViewState = {    
+    longitude: coord[0],
+    latitude: coord[1],
+    zoom: 7
+  };
+      
   const geocoder = new MapboxGeocoder({
       accessToken: mapboxgl.accessToken,
       mapboxgl: mapboxgl
@@ -80,8 +64,6 @@ export default function MapboxMap({session, city, state}: {session: Session | nu
     <div id="map">   
     </div>
   );*/
-
-  
 
   /*
   useEffect(() => {
@@ -95,17 +77,14 @@ export default function MapboxMap({session, city, state}: {session: Session | nu
       fetchLocations();
     }, []);
 */
-  
-
-
   return (
       <div>
           <Map 
               mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN}
-              initialViewState={{
-                  longitude: lng,
-                  latitude: lat,
-                  zoom: 7
+              initialViewState={{    
+                longitude: coord[0],
+                latitude: coord[1],
+                zoom: 7
               }}
               style={{width: 800, height: 500}}
               
