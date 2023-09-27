@@ -15,9 +15,8 @@ import { cookies } from 'next/headers'
   return (
     <div className = 'py-12'>
       <NavBar session={session} authToken={false}/>
-          <Profile />
-        </div>
-
+      <Profile />
+    </div>
   );
 };
 
