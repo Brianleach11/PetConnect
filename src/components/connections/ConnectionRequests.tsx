@@ -33,7 +33,7 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({unseenConnections, uns
 
     const requestsReceived = unseenConnectionsCount - requestsSent;
     return(
-        <Card className="h-full flex flex-col">
+        <Card className="h-full flex flex-col border-none">
             <CardHeader className="text-2xl font-semibold my-4 border-b-4 w-full items-center">
                 Connection Requests
             </CardHeader>
