@@ -40,9 +40,9 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({unseenConnections, uns
             {
                 unseenConnectionsCount > 0 ?
                 <CardContent className="items-left grid grid-rows-2 w-full h-full">
-                    <div className="border-2 h-3/4">
-                        <CardTitle className="my-2 text-lg pr-2">Incoming Connection Requests [{requestsReceived}]</CardTitle>
-                        <ScrollArea>
+                    <div className=" h-3/4">
+                        <CardTitle className="my-2 text-lg pr-4">Incoming Connection Requests [{requestsReceived}]</CardTitle>
+                        <ScrollArea className="h-48 border-2 border-midnight rounded-lg space-x-4">
                         {
                             unseenConnections?.map((item, index) => (
                                 item.receiving_user === session.user.id ?
@@ -53,9 +53,9 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({unseenConnections, uns
                         }
                         </ScrollArea>
                     </div>
-                    <div className="border-2 w-full h-3/4 -mt-10">
+                    <div className="w-full h-3/4 -mt-10 overflow-hidden">
                         <CardTitle className="my-2 text-lg">Pending Connections Sent [{requestsSent}]</CardTitle>
-                        <ScrollArea >
+                        <ScrollArea className=" h-48 border-2 border-midnight rounded-lg space-x-4">
                         {
                             unseenConnections?.map((item, index) => (
                                 item.sending_user === session.user.id ? 

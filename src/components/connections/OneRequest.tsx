@@ -36,7 +36,9 @@ function formatDate(dateString : string) {
 
 const OneRequest: FC<ConnectionPreviewProps> = ({item, session}) => {
     const supabase = createClientComponentClient<Database>()
-    const [username, setUsername] = useState<string>("");
+    const [username, setUsername] = useState<string>("")
+    const [hideCancel, setHideCancel] = useState<boolean>(false)
+    const [hideAccept, setHideAccept] = useState<boolean>(false)
     const router = useRouter()
     const searchUser = (item.sending_user === session.user.id) ? item!.receiving_user : item!.sending_user;
     if(!searchUser)return null;
@@ -63,6 +65,7 @@ const OneRequest: FC<ConnectionPreviewProps> = ({item, session}) => {
     // if item.receiving user id = sender or receiver
     const acceptRequest = async() => {
         if(item.sending_user && item.receiving_user){
+            setHideAccept(true)
             const {error: insertError} = await supabase
                 .from('friends')
                 .insert([{
@@ -74,42 +77,45 @@ const OneRequest: FC<ConnectionPreviewProps> = ({item, session}) => {
                 .delete()
                 .eq('sending_user', item.sending_user)
                 .eq('receiving_user', item.receiving_user)
+            router.refresh()
 
             if(insertError) console.log("INSERT ERROR: " + insertError)
             if(deleteError) console.log("INSERT ERROR: " + deleteError)
         }   
-
+        setHideAccept(false)
     }
 
     //cancel request not working, probably the double .eq
     //accept request and then work on displaying sent requests
     const cancelRequest = async() => {
         if(item.sending_user && item.receiving_user){
+            setHideCancel(true)
             const {error} = await supabase
                 .from('friend_requests')
                 .delete()
                 .eq('sending_user', item.sending_user)
                 .eq('receiving_user', item.receiving_user)
             if(error)return;
+            router.refresh()
         }
-        
+        setHideCancel(false)
     }
     return(
-        <div className="flex-1 flex items-center space-x-2">
+        <div className="flex-1 flex items-center space-x-2 mt-2">
             <span className="mr-2">{username}</span>
             <span className="text-xs text-midnight">
                 {formatDate(item.created_at)}
             </span>
             {
                 item.sending_user !== session.user.id ?
-                    <span onClick={()=>{acceptRequest()}}>
-                        <Check 
+                    <span onClick={()=>{acceptRequest()}} hidden={hideAccept}>
+                        <Check
                             className="bg-softGreen rounded-full w-6 h-6 flex items-center justify-center hover:shadow-lg hover:ring-2 hover:ring-midnight"
                         />
                     </span>
                     :null
             }
-            <span onClick={()=>{cancelRequest()}}>
+            <span onClick={()=>{cancelRequest()}} hidden={hideCancel}>
                 <X 
                     className="bg-red rounded-full w-6 h-6 flex items-center justify-center hover:shadow-lg hover:ring-2 hover:ring-midnight"
                 />
