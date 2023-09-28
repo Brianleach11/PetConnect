@@ -56,25 +56,16 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
             }
         };
         
-        fetchData(); // Call the async function to fetch data
+        fetchData();
     }, [item]);
 
     const redirectUser = async() =>{
         console.log("REDIRECT TRIGGERED")
         if(!item.sending_user || !item.receiving_user) return null
-        //not specific enough, needs to check or session and or searchUser
-        /*
-        const {data: chatId, error: chatIdError} = await supabase
-            .from('chats')
-            .select('chat_id')
-            .or(`recipient_id.eq.${session.user.id},sender_id.eq.${searchUser}`)
-            .or(`sender_id.eq.${session.user.id},recipient_id.eq.${searchUser}`)
-            .maybeSingle()*/
         let chatId
         let {data: query, error: chatIdError} = await supabase
             .from('chats')
             .select('chat_id, sender_id, recipient_id')
-        //returns all chat ids for the user
         if (query && Array.isArray(query)) {
             for(const chatInfo of query){
                 if((chatInfo.sender_id == session.user.id && chatInfo.recipient_id == searchUser) ||
@@ -87,7 +78,6 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
         if(chatIdError) console.log(chatIdError)
         console.log("RETURNED CHAT ID"+chatId)
     
-        //if chatId doesnt exist
         if(!chatId){
             const {data: enteredChat, error: newChatError} = await supabase
                 .from('messages')
@@ -105,11 +95,13 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
                 console.log("Im setting it!" + enteredChat.chat_id)
                 setNewChatId(enteredChat.chat_id)
             }
-        }//if it does exist
+        }
         else{
             setNewChatId(chatId)
             console.log("Chat ID already exists: " + chatId)
         }
+        //new line to test
+        router.refresh()
     }
     useEffect(()=>{
         if(newChatId){
