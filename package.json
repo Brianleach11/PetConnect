@@ -32,7 +32,7 @@
     "lucide-react": "^0.270.0",
     "mdb-react-ui-kit": "^6.3.0",
     "moment": "^2.29.4",
-    "next": "13.4.16",
+    "next": "^13.5.2",
     "node-fetch": "^3.3.2",
     "postcss": "8.4.28",
     "react": "18.2.0",

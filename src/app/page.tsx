@@ -14,7 +14,7 @@ export default async function Home() {
   } = await supabase.auth.getSession();
 
   return (
-    <div className="flex flex-col min-h-screen bg-darkGreen">
+    <div className="flex flex-col min-h-screen bg-whiteGreen">
       <NavBar session={session} authToken={authToken} />
       <h1 className="font-fredokaOne text-3xl text-center mt-12 mb-8 text-darkBlue z-10">
         Time to connect with others!

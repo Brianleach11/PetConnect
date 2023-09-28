@@ -4,8 +4,10 @@ import Profile from '@/components/profile';
 import NavBar from '@/components/NavBar'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import ProfileDisplay from '@/components/profileDisplay';
 
-const ProfilePage: FC = async () => {
+const PProfilePage: FC = async () => {
+  const userId = typeof window !== 'undefined' ? localStorage.getItem('clickedUserId') : null;
   const supabase = createServerComponentClient({ cookies });
   const {
     data: { session },
@@ -15,10 +17,10 @@ const ProfilePage: FC = async () => {
     <div className="flex flex-col min-h-screen bg-whiteGreen">
       <NavBar session={session} authToken={false} />
       <div className="mt-8"> {/* <-- Add this div with a margin class */}
-        <Profile />
+        <ProfileDisplay />
       </div>
     </div>
   );
 };
 
-export default ProfilePage;
+export default PProfilePage;
