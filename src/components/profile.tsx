@@ -6,7 +6,7 @@ import moment from 'moment';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import OwnerPetCardList from '@/components/OwnerPetCardList';
-
+import { Button } from '@/components/ui/button';
 
 const Profile: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
@@ -34,7 +34,10 @@ const Profile: React.FC = () => {
     fetchData();
 }, [supabase]);
 
-  
+const handleEditProfileClick = () => {
+  console.log("Edit Profile button clicked");
+  // TODO: Implement redirection or modal opening for profile editing
+}
 
 
 return (
@@ -60,6 +63,18 @@ return (
 <p className="text-l">I was born on {`${petData?.birthday}`}</p>
 <p className="text-l">{userData?.city}, {userData?.state}</p>
       </div>
+
+      <div className="flex mt-4  md:ml-4 gap-2.5">
+
+      <Button 
+            onClick={handleEditProfileClick} 
+            className="rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          >
+            Edit Profile
+          </Button>
+
+          </div>
+
     </header>
     
 {/* Bio Card */}
@@ -75,6 +90,13 @@ return (
 </div>
     
     <hr className="my-4"/> {/* Horizontal line */}
+
+      {/* My Pets title and paw print */}
+      <div className="flex items-center justify-center mb-4">
+        <span className="text-3xl mr-4">🐾</span>
+        <h2 className="text-2xl font-semibold">My Pets</h2>
+        <span className="text-2xl mr-4"> 🎖️</span>
+      </div>
 
     <div className="flex justify-center">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
