@@ -8,31 +8,34 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import OwnerPetCardList from '@/components/OwnerPetCardList';
 
 
-const Profile: React.FC = () => {
+const UserProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
+  const [userId, setUserId] = useState<string>("");
+
   const supabase = createClientComponentClient<Database>();
   
 
   useEffect(() => {
+    const userIdFromStorage = sessionStorage.getItem('clickedUserId') || '';
+    const ownerIdFromStorage = sessionStorage.getItem('clickedOwnerId') || '';
+
+    setUserId(userIdFromStorage);
+    
     const fetchData = async () => {
-        const response = await supabase.auth.getSession();
+      if (userIdFromStorage && ownerIdFromStorage) {
+        const { data: userData, error: userError } = await supabase.from('user').select('*').eq('id', userIdFromStorage).single();
+        if (userError) console.error('Error fetching user data:', userError);
+        else setUserData(userData);
 
-        if (response.data.session) {
-            const userId = response.data.session.user.id;
-
-            const { data: userData, error: userError } = await supabase.from('user').select('*').eq('id', userId).single();
-            if (userError) console.error('Error fetching user data:', userError);
-            else setUserData(userData);
-
-            const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('owner_id', userId).single();
-            if (petError) console.error('Error fetching pet data:', petError);
-            else setPetData(petData);
-        }
+        const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('id', ownerIdFromStorage).single();
+        if (petError) console.error('Error fetching pet data:', petError);
+        else setPetData(petData);
+      }
     };
 
     fetchData();
-}, [supabase]);
+  }, []);
 
   
 
@@ -78,7 +81,7 @@ return (
 
     <div className="flex justify-center">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-      <OwnerPetCardList userId={userData?.id || ''} />
+      <OwnerPetCardList userId={userId} />
       </div>
     </div>
   </div>
@@ -86,5 +89,5 @@ return (
 
 };
 
-export default Profile;
+export default UserProfileDisplay;
 

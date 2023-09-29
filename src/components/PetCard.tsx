@@ -13,15 +13,33 @@ import { Database } from '@/types/supabase';
 import moment from 'moment';
 import { useRouter } from 'next/navigation'; 
 import { useToast } from '@/components/ui/use-toast'; 
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+
+const supabase = createClientComponentClient<Database>();
+
 
 interface PetCardProps {
   pet: Database['public']['Tables']['pet']['Row'];
 }
 
 const PetCard: React.FC<PetCardProps> = ({ pet }) => {
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCurrentUserId = async () => {
+      const response = await supabase.auth.getSession();
+      const userId = response?.data?.session?.user?.id || null;
+      setCurrentUserId(userId);
+    };
+
+    fetchCurrentUserId();
+  }, []);
 
   const calculateAge = (birthday: string | null): string => {
     if (birthday) {
@@ -33,10 +51,27 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     return 'Loading...';
   };
 
-  const handleCardClick = () => {
-    if (pet.owner_id) {
-      localStorage.setItem('clickedUserId', pet.owner_id);
-      router.push(`/pProfile`);
+  const handleCardClick = async () => {
+    if (isButtonHovered) return;
+
+    if (pet.id && pet.owner_id) {
+      sessionStorage.setItem('clickedUserId', pet.id.toString());
+      sessionStorage.setItem('clickedOwnerId', pet.owner_id.toString());
+      const { data, error } = await supabase
+        .from('user')
+        .select('username')
+        .eq('id', pet.owner_id)
+        .single();
+
+      if (data && data.username) {
+        router.push(`/profile/myPets`);
+      } else if (error) {
+        toast({
+          title: 'Error',
+          description: error.message || 'Unable to fetch username.',
+          variant: 'destructive',
+        });
+      }
     } else {
       toast({
         title: 'Error',
@@ -84,18 +119,27 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         </CardContent>
 
         <CardFooter className="flex justify-center gap-2.5 my-2">
-          <Button
-            className="px-5 py-2.5 rounded-md hover:bg-gray-100 transition-colors duration-300"
-            onClick={() => console.log(`Connected with ${pet.name}`)}
-          >
-            Connect
-          </Button>
-          <Button
-            className="px-5 py-2.5 rounded-md hover:bg-gray-100 transition-colors duration-300"
-            onClick={() => console.log(`Message sent to ${pet.name}`)}
-          >
-            Message
-          </Button>
+          {currentUserId !== pet.owner_id && (
+            <>
+              <Button
+                className="px-5 py-2.5 rounded-md  transform hover:scale-105"
+                onClick={() => console.log(`Connected with ${pet.name}`)}
+                onMouseEnter={() => setIsButtonHovered(true)}
+                onMouseLeave={() => setIsButtonHovered(false)}
+              >
+                Connect
+              </Button>
+
+              <Button
+                className="px-5 py-2.5 rounded-md transform hover:scale-105 "
+                onClick={() => console.log(`Message sent to ${pet.name}`)}
+                onMouseEnter={() => setIsButtonHovered(true)}
+                onMouseLeave={() => setIsButtonHovered(false)}
+              >
+                Message
+              </Button>
+            </>
+          )}
         </CardFooter>
       </Card>
     </div>
