@@ -57,29 +57,45 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     if (pet.id && pet.owner_id) {
       sessionStorage.setItem('clickedUserId', pet.id.toString());
       sessionStorage.setItem('clickedOwnerId', pet.owner_id.toString());
-      const { data, error } = await supabase
-        .from('user')
-        .select('username')
-        .eq('id', pet.owner_id)
-        .single();
-
-      if (data && data.username) {
-        router.push(`/profile/myPets`);
-      } else if (error) {
-        toast({
-          title: 'Error',
-          description: error.message || 'Unable to fetch username.',
-          variant: 'destructive',
-        });
-      }
-    } else {
-      toast({
-        title: 'Error',
-        description: 'Missing user ID.',
-        variant: 'destructive',
-      });
+      
+      if(pet.owner_id != currentUserId){
+        const { data, error } = await supabase
+            .from('user')
+            .select('username')
+            .eq('id', pet.owner_id)
+            .single();
+  
+        if (data && data.username) {
+            router.push(`/profile/public/${data.username}/myPets`);
+        } else if (error) {
+            toast({
+                title: 'Error',
+                description: error.message || 'Unable to fetch username.',
+                variant: 'destructive',
+            });
+        }
     }
-  };
+    
+    // If the current user id exists, navigate to the current user's profile
+    else  {
+        const { data, error } = await supabase
+            .from('user')
+            .select('username')
+            .eq('id', pet.owner_id)
+            .single();
+  
+        if (data && data.username) {
+            router.push(`/profile/myPets`);
+        } else if (error) {
+            toast({
+                title: 'Error',
+                description: error.message || 'Unable to fetch username.',
+                variant: 'destructive',
+            });
+        }
+    }
+  }
+};
 
   return (
     <div>

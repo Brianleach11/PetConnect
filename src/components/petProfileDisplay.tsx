@@ -57,7 +57,7 @@ const PetProfileDisplay: React.FC = () => {
         .single();
 
       if (data && data.username) {
-        router.push(`public/${userData.username}`);
+        router.push(`/profile/public/${userData.username}`);
       } else if (error) {
         toast({
           title: 'Error',

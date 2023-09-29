@@ -35,8 +35,7 @@ const UserProfileDisplay: React.FC = () => {
     };
 
     fetchData();
-  }, []);
-
+}, []);
   
 
 
