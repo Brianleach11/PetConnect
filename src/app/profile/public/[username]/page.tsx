@@ -15,7 +15,7 @@ const ProfilePage: FC = async () => {
   return (
     <div className="flex flex-col min-h-screen bg-whiteGreen">
       <NavBar session={session} authToken={false} />
-      <div className="mt-8"> {/* <-- Add this div with a margin class */}
+      <div className="mt-8"> 
         <UserProfileDisplay />
       </div>
     </div>
