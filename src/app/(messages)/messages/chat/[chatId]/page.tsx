@@ -34,6 +34,8 @@ const page = async ({params}: PageProps) => {
     .eq('chat_id', chatId)
     .single()
 
+  if(data && data.deleted_by === session.user.id) redirect('/messages')
+  
   const chatPartnerUsername = (data?.recipient_id === chatPartner) ? data.recipient_username : data?.sender_username
   let {data: chats} = await supabase.from('chats').select("*").eq('chat_id', chatId)
   chats?.reverse()

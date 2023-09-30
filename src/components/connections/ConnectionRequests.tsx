@@ -14,8 +14,8 @@ import { ScrollArea } from "../ui/scroll-area";
 interface Connection {
     created_at: string;
     id: number;
-    receiving_user: string | null;
-    sending_user: string | null;
+    receiving_user: string;
+    sending_user: string;
 }
   
   type nullableConnections = Connection[] | null

@@ -40,6 +40,7 @@ const Layout = async({children}: LayoutProps) => {
           sending_user,
           receiving_user`)
         .or(`receiving_user.eq.${session.user.id}, sending_user.eq.${session.user.id}`)
+        .order('created_at', {ascending: false})
 
   let { data: recentMessages, count: recentMessagesCount, error } = await supabase
         .from("recent_messages")
@@ -73,7 +74,7 @@ const Layout = async({children}: LayoutProps) => {
                   </TabsList>
                   <TabsContent value="messages">
                     <ScrollArea>
-                      <MessageHistory session={session} recentMessages={recentMessages} recentMessagesCount={recentMessagesCount}/>
+                      <MessageHistory session={session} recentMessages={recentMessages ?? []} recentMessagesCount={recentMessagesCount}/>
                     </ScrollArea>
                   </TabsContent>
                   <TabsContent value="connections">

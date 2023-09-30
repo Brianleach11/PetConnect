@@ -14,6 +14,7 @@ const page = async () => {
     const {data: recentMessage} = await supabase
         .from("recent_messages")
         .select("*")
+        .is('deleted_by', null)
         .or(`recipient_id.eq.${session.user.id}, sender_id.eq.${session.user.id}`)
         .order('created_at', {ascending:false})
         .limit(1)
@@ -27,9 +28,7 @@ const page = async () => {
         redirect(href)
     }
     return (
-        <div>
-        
-        </div>
+        <div/>
     )
 }
 
