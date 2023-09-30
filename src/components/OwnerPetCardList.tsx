@@ -43,9 +43,11 @@ const OwnerPetCardList: React.FC<Props> = ({ userId }) => {
   if (error) return <p>Error loading pets. Please try again later.</p>;
 
   return (
-    <div>
+    <div className="flex justify-start items-start gap-1">
       {pets.map(pet => (
-        <PetCard key={pet.id} pet={pet} />
+        <div key={pet.id} className="w-full md:w-1/1 p-2">
+          <PetCard pet={pet} />
+        </div>
       ))}
     </div>
   );

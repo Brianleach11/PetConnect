@@ -50,6 +50,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -70,6 +71,9 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      backgroundImage: (theme: any) => ({
+        'half-gradient': `linear-gradient(to bottom, ${theme('colors.softGreen')}, transparent)`,
+      }),
     },
     colors: {
       transparent: 'transparent',

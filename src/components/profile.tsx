@@ -7,12 +7,14 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import OwnerPetCardList from '@/components/OwnerPetCardList';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation'; 
 
 const Profile: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
   const supabase = createClientComponentClient<Database>();
-  
+  const router = useRouter();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +40,12 @@ const handleEditProfileClick = () => {
   console.log("Edit Profile button clicked");
   // TODO: Implement redirection or modal opening for profile editing
 }
+const handleAddMorePets = () => {
+
+  router.push('/petProfile');
+  console.log("Add More Pets clicked");
+
+}
 
 
 return (
@@ -53,15 +61,11 @@ return (
         />
       </div>
       <div>
-        <h2 className="text-2xl font-light mb-3">
+        <h2 className="text-2xl font-semibold mb-1">
           {userData?.username || 'Username'}
           </h2>
-        <h1 className="text-2xl font-semibold mb-1">
-    My name is {petData?.name || 'Pet Name'} :)
-    </h1>
-<span className="text-l">I am a {petData?.pet_type}, My breed is {petData?.breed}</span>
-<p className="text-l">I was born on {`${petData?.birthday}`}</p>
-<p className="text-l">{userData?.city}, {userData?.state}</p>
+     
+        <p className="text-l">{userData?.city}, {userData?.state}</p>
       </div>
 
       <div className="flex mt-4  md:ml-4 gap-2.5">
@@ -95,6 +99,9 @@ return (
       <div className="flex items-center justify-center mb-4">
         <span className="text-3xl mr-4">🐾</span>
         <h2 className="text-2xl font-semibold">My Pets</h2>
+        <button onClick={handleAddMorePets} className="ml-4 underline hover:text-blue-600 cursor-pointer">
+          Add More Pets
+        </button>
         <span className="text-2xl mr-4"> 🎖️</span>
       </div>
 
