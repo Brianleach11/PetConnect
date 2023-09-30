@@ -1,6 +1,5 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import {FC} from 'react'
 import { ChevronRight } from 'lucide-react';
 
 const ConnectionRequestsButton = ({unseenConnectionsCount}:{unseenConnectionsCount:number}) => {

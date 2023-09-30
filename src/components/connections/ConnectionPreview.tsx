@@ -115,7 +115,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
         }
     }, [newChatId])
     return(
-        <div className="max-w-1/3 max-h-12 text-midnight border-2 border-midnight rounded-lg">
+        <div className="max-h-12 text-midnight border-2 border-midnight rounded-lg hover:border-4">
             <div className="grid grid-cols-2 justify-items-end align-middle py-2 px-4">
                 <div>
                     <p className="text-left text-lg">

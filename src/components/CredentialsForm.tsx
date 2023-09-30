@@ -46,6 +46,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
       if (data?.user?.id) {
         localStorage.setItem('userId', data.user.id); // Store user ID
       }
+      router.refresh()
 
       if (error) {
         toast({
