@@ -16,7 +16,6 @@ import MessageHistory from "@/components/chat/MessageHistory"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import ConnectionsList from "@/components/connections/ConnectionsList"
 import ConnectionRequestsButton from "@/components/connections/ConnectionRequestsButton"
-import SearchAddConnection from "@/components/connections/SearchAddConnection"
 
 interface LayoutProps {
   children: ReactNode
@@ -79,13 +78,6 @@ const Layout = async({children}: LayoutProps) => {
                     </ScrollArea>
                   </TabsContent>
                   <TabsContent value="connections">
-                    <p className="text-midnight text-sm p-2">
-                      Add a new user by their username:
-                    </p>
-                    <div className="h-4 mb-8">
-                      <SearchAddConnection session={session}/>
-                    </div>
-                    <hr className=" border-b-2 border-gray-300 my-4" />
                     <div className="mb-4">
                       <ConnectionRequestsButton unseenConnectionsCount={unseenConnectionsCount}/>
                     </div>

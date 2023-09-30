@@ -2,13 +2,14 @@
 import { FC, useState } from 'react';
 import { Session, createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import ConnectionPreview from './ConnectionPreview';
-import { UserMinus2, Trash2, X } from 'lucide-react';
+import { UserMinus2, Trash2, X, UserPlus2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Button } from '../ui/button';
 import { Database } from '@/types/supabase';
 import { useToast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
+import SearchAddConnection from "@/components/connections/SearchAddConnection"
 
 interface Connections {
   id: number;
@@ -27,6 +28,7 @@ const ConnectionsList: FC<ConnectionsListProps> = ({ session, connections }) => 
   let numConnections = connections?.length;
   if (!numConnections || numConnections === undefined) numConnections = 0;
   const [deleteConnections, setDeleteConnections] = useState<boolean>(false);
+  const [addNewConnection, setAddNewConnection] = useState<boolean>(false)
   const supabase = createClientComponentClient<Database>()
   const {toast} = useToast()
   const router = useRouter()
@@ -61,13 +63,39 @@ const ConnectionsList: FC<ConnectionsListProps> = ({ session, connections }) => 
     <div className=' text-midnight relative'>
       <div className='flex justify-end pr-4'>
         <UserMinus2
-          className={`items-right top-0 hover:bg-midnight rounded-sm hover:text-white`}
+          className={`items-right top-0 hover:bg-midnight rounded-sm hover:text-white mr-4`}
           onClick={() => {
             deleteConnections ? 
             setDeleteConnections(false) :
             setDeleteConnections(true)
           }}
         />
+        <UserPlus2
+          className={`items-right top-0 hover:bg-midnight rounded-sm hover:text-white`}
+          onClick={() => {
+            addNewConnection ? 
+            setAddNewConnection(false) :
+            setAddNewConnection(true)
+          }}
+        />
+      </div>
+      <div className={`${addNewConnection ? '' : 'hidden'}`}>
+        <hr className=" border-b-2 border-gray-300 my-4" />
+        <X
+          className='absolute top-12 right-0 hover:bg-midnight rounded-sm hover:text-white'
+          onClick={() => {
+            addNewConnection ? 
+            setAddNewConnection(false) :
+            setAddNewConnection(true)
+          }}
+        />
+        <p className="text-midnight text-sm p-2">
+          Add a new user by their username:
+        </p>
+        <div className="h-4 mb-8">
+          <SearchAddConnection session={session}/>
+        </div>
+        <hr className=" border-b-2 border-gray-300 my-4" />
       </div>
       {numConnections === 0 ? (
         <div className='text-midnight'>No connections to display...</div>
@@ -77,8 +105,7 @@ const ConnectionsList: FC<ConnectionsListProps> = ({ session, connections }) => 
             <div className='flex items-center'>
               <ConnectionPreview key={index} item={item} session={session} />
               <div
-                className={`ml-2 bg-red rounded-full w-6 h-8 flex items-center justify-center ${
-                  deleteConnections ? '' : 'hidden'
+                className={`ml-2 bg-red rounded-full w-6 h-8 flex items-center justify-center ${deleteConnections ? '' : 'hidden'
                 }`}
               >
                 <Dialog.Root key={index}>

@@ -5,10 +5,11 @@ import MessagePreview from "./MessagePreview"
 import { useState, useEffect } from "react"
 import { chatHrefConstructor } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import { Pen, PenSquare, Trash2, MailMinus } from "lucide-react"
+import { X, PenSquare, Trash2, MailMinus } from "lucide-react"
 import * as Dialog from '@radix-ui/react-dialog';
 import { Button } from "../ui/button"
 import { Database } from "@/types/supabase"
+import SearchAddMessage from "./SearchAddMessage"
 
 interface Message {
     chat_id: string | null;
@@ -135,8 +136,6 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                 router.push(href)
             } 
         }
-        
-
     }, [toRedirect])
 
     return(
@@ -164,12 +163,22 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                 </div>
             </div>
             <div className={`w-full ${showSearchBar ? '' : 'hidden'}`}>
+                <hr className=" border-b-2 border-gray-300 my-4" />
+                <X
+                    className='absolute top-14 text-midnight right-0 hover:bg-midnight rounded-sm hover:text-white'
+                    onClick={() => {
+                        showSearchBar ? 
+                        setSearchBar(false) :
+                        setSearchBar(true)
+                    }}
+                />
                 <p className="text-midnight text-sm p-2">
                     Add a new message by the user's username:
                 </p>
                 <div className="h-4 mb-8">
-                    {/*<SearchAddMessage session={session}/>*/}
+                    <SearchAddMessage session={session}/>
                 </div>
+                <hr className=" border-b-2 border-gray-300 my-4" />
             </div>
             {
             realtimePreviews.length === 0 ? 

@@ -7,11 +7,11 @@ import { Database } from '@/types/supabase';
 import { useToast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
 
-interface SeaerchAddConnectionProps {
+interface SearchAddConnectionProps {
     session: Session
 }
 
-const SearchAddConnection: FC<SeaerchAddConnectionProps> = ({session}) => {
+const SearchAddConnection: FC<SearchAddConnectionProps> = ({session}) => {
     const [username, setUsername] = useState<string>("");
     const supabase = createClientComponentClient<Database>()
     const {toast} = useToast()

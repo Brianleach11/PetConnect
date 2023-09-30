@@ -86,7 +86,8 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
                         sender_id: session.user.id, 
                         recipient_id: searchUser, 
                         message_content:"", 
-                        chat_id: uuidv4()}
+                        chat_id: uuidv4()
+                    }
                 )
                 .select()
                 .single()

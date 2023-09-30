@@ -39,11 +39,7 @@ function formatDate(dateString : string) {
 
 const MessagePreview: FC<MessagePreviewProps> = ({item, session}) =>{
     if(session.user.id === item.deleted_by){
-      return (
-        <p>
-          
-        </p>
-      )
+      return null
     }
     return(
         <Card className="max-w-1/3 hover:border-2 hover:border-midnight">
