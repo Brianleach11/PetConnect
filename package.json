@@ -12,6 +12,7 @@
     "@ducanh2912/next-pwa": "^9.4.0",
     "@nextui-org/react": "^2.1.12",
     "@radix-ui/react-avatar": "^1.0.3",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-select": "^1.2.2",
