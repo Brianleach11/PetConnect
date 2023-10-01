@@ -14,6 +14,8 @@ import moment from 'moment';
 import { useRouter } from 'next/navigation'; 
 import { useToast } from '@/components/ui/use-toast'; 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Trash2, Pencil } from 'lucide-react';
+import * as Dialog from '@radix-ui/react-dialog';
 
 
 const supabase = createClientComponentClient<Database>();
@@ -28,8 +30,9 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [isCardHovered, setIsCardHovered] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  
+  const [openDialog, setOpenDialog] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
     const fetchCurrentUserId = async () => {
@@ -76,7 +79,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         }
     }
     
-    // If the current user id exists, navigate to the current user's profile
     else  {
         const { data, error } = await supabase
             .from('user')
@@ -97,6 +99,38 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   }
 };
 
+const handleDelete = async (petId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('pet')
+      .delete()
+      .eq('id', petId);
+
+    if (error) throw error;
+
+
+    toast({
+      title: 'Success',
+      description: 'Pet deleted successfully.',
+      variant: 'default',
+    });
+
+    setIsDeleted(true);
+    
+  } catch (error) {
+    toast({
+      title: 'Error',
+      description:'Error deleting pet.',
+      variant: 'destructive',
+    });
+  }
+
+};
+
+if (isDeleted) {
+  return null;
+}
+
   return (
     <div>
       <Card
@@ -105,7 +139,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         onMouseEnter={() => setIsCardHovered(true)}
         onMouseLeave={() => setIsCardHovered(false)}
       >
-        <CardHeader className="absolute top-[-38px] left-1/2 transform -translate-x-1/2 z-10">
+          <CardHeader className="absolute top-[-38px] left-1/2 transform -translate-x-1/2 z-10">
           <img
             src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500"
             alt="Pet Image"
@@ -135,7 +169,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         </CardContent>
 
         <CardFooter className="flex justify-center gap-2.5 my-2">
-          {currentUserId !== pet.owner_id && (
+          {currentUserId !== pet.owner_id &&   (
             <>
               <Button
                 className="px-5 py-2.5 rounded-md  transform hover:scale-105"
@@ -155,11 +189,54 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
                 Message
               </Button>
             </>
-          )}
+          )} 
+
+{currentUserId == pet.owner_id && (
+  <div className="absolute top-2 right-2 flex items-center space-x-4">
+    <Pencil 
+      className="w-6 h-6 cursor-pointer hover:text-gray-600 inline-block" 
+      onClick={(event) => {
+        event.stopPropagation(); // This will stop the event from propagating up to parent elements
+      }} 
+    />
+    <Trash2 
+      className="w-6 h-6 cursor-pointer hover:text-red-600 inline-block" 
+      onClick={(event) => {
+        event.stopPropagation(); 
+        setOpenDialog(true);
+      }}     />
+  </div>
+)}
+
         </CardFooter>
       </Card>
-    </div>
-  );
+      
+      <Dialog.Root open={openDialog} onOpenChange={(open) => setOpenDialog(open)}>
+      <Dialog.Overlay className="fixed inset-0 bg-darkGreen bg-opacity-50 z-50" />
+      <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-lg z-50">
+        <p className="mb-4">Are you sure you want to delete this pet?</p>
+        <div className="flex justify-end space-x-4">
+          <button
+            className="px-4 py-2 bg-gray-300 border rounded-md hover:bg-red transition-colors duration-300"
+            onClick={() => setOpenDialog(false)}
+          >
+            Cancel
+          </button>
+          <Dialog.Close asChild>
+          <button
+            className="px-4 py-2 bg-red-500  border rounded-md hover:bg-red transition-colors duration-300"
+            onClick={() => handleDelete(pet.id.toString())}
+          >
+            Yes, Delete
+          </button>
+          </Dialog.Close>
+
+        </div>
+      </Dialog.Content>
+    </Dialog.Root>
+  </div>
+);
+ 
 };
 
 export default PetCard;

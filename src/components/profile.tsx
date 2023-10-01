@@ -8,10 +8,22 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import OwnerPetCardList from '@/components/OwnerPetCardList';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation'; 
-
+import * as Dialog from '@radix-ui/react-dialog';
 const Profile: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false); // state to handle modal open/close
+
+  // States for pet details
+  const [name, setName] = useState("");
+  const [petType, setPetType] = useState("");
+  const [sex, setSex] = useState("");
+  const [weight, setWeight] = useState("");
+  const [breed, setBreed] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [bio, setBio] = useState("");
+  // TODO: State for profilePicture if needed
+
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
 
@@ -38,14 +50,41 @@ const Profile: React.FC = () => {
 
 const handleEditProfileClick = () => {
   console.log("Edit Profile button clicked");
-  // TODO: Implement redirection or modal opening for profile editing
 }
+
 const handleAddMorePets = () => {
-
-  router.push('/petProfile');
-  console.log("Add More Pets clicked");
-
+  setModalOpen(true);
 }
+
+const handleSavePet = async () => {
+  const {data: {user}, error} = await supabase.auth.getUser()
+  if (user?.id && !error) {
+
+    if (user?.id) {
+      const { data, error } = await supabase
+        .from("pet")
+        .insert({
+          owner_id: user.id,
+          name: name,
+          pet_type: petType,
+          sex: sex,
+          weight: parseFloat(weight),
+          breed: breed,
+          birthday: birthday,
+          bio: bio,
+          // picture: profilePicture  // Uncomment this if you're handling images
+        })
+        .select();
+      console.log('inside The insert');
+      if (!error) {
+        setModalOpen(false);
+        router.refresh();
+      }
+    }
+  }
+};
+
+
 
 
 return (
@@ -63,57 +102,157 @@ return (
       <div>
         <h2 className="text-2xl font-semibold mb-1">
           {userData?.username || 'Username'}
-          </h2>
-     
+        </h2>
         <p className="text-l">{userData?.city}, {userData?.state}</p>
       </div>
 
       <div className="flex mt-4  md:ml-4 gap-2.5">
-
-      <Button 
-            onClick={handleEditProfileClick} 
-            className="rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-          >
-            Edit Profile
-          </Button>
-
-          </div>
-
+        <Button 
+          onClick={handleEditProfileClick} 
+          className="rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+        >
+          Edit Profile
+        </Button>
+      </div>
     </header>
     
-{/* Bio Card */}
-<div className="mb-4">
-    <Card className="bg-transparent">
+    <div className="mb-4">
+      <Card className="bg-transparent">
         <CardHeader className="bg-transparent">
-            <h3 className="text-xl font-semibold">Bio</h3>
+          <h3 className="text-xl font-semibold">Bio</h3>
         </CardHeader>
         <CardContent className="bg-transparent">
-            <p className="text-gray-600">{userData?.bio || 'This user has no bio.'}</p>
+          <p className="text-gray-600">{userData?.bio || 'This user has no bio.'}</p>
         </CardContent>
-    </Card>  
-</div>
+      </Card>  
+    </div>
     
-    <hr className="my-4"/> {/* Horizontal line */}
+    <hr className="my-4"/>
 
-      {/* My Pets title and paw print */}
-      <div className="flex items-center justify-center mb-4">
-        <span className="text-3xl mr-4">🐾</span>
-        <h2 className="text-2xl font-semibold">My Pets</h2>
-        <button onClick={handleAddMorePets} className="ml-4 underline hover:text-blue-600 cursor-pointer">
-          Add More Pets
-        </button>
-        <span className="text-2xl mr-4"> 🎖️</span>
-      </div>
+    <div className="flex items-center justify-center mb-4">
+      <span className="text-3xl mr-4">🐾</span>
+      <h2 className="text-2xl font-semibold">My Pets</h2>
+      <button onClick={handleAddMorePets} className="ml-4 underline hover:text-blue-600 cursor-pointer">
+        Add More Pets
+      </button>
+      <span className="text-2xl mr-4"> 🎖️</span>
+    </div>
 
     <div className="flex justify-center">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-      <OwnerPetCardList userId={userData?.id || ''} />
+        <OwnerPetCardList userId={userData?.id || ''} />
       </div>
     </div>
-  </div>
-);
 
-};
+    <Dialog.Root open={isModalOpen} onOpenChange={setModalOpen}>
+    <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-darkGreen" />
+        <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[90vh] w-[90vw] max-w-[500px] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-[30px] shadow-xl border-t-8 border-softGreen">
+            
+            <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-darkGreen">
+                     Add New Pet 🐾
+                </h3>
+                <Dialog.Close asChild>
+                    <button className="focus:outline-none">
+                        <span>✖️</span>
+                    </button>
+                </Dialog.Close>
+            </div>
+
+            <div className="mt-8 space-y-4">
+                {/* Pet Name */}
+                <label htmlFor="name" className="block text-softBlue text-lg font-semibold mb-1">Name:</label>
+                <input
+                    id="name"
+                    type="text"
+                    className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+
+                {/* Pet Type */}
+                <label htmlFor="petType" className="block text-softBlue text-lg font-semibold mb-1">Type (e.g., Dog, Cat):</label>
+                <input
+                    id="petType"
+                    type="text"
+                    className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                    value={petType}
+                    onChange={(e) => setPetType(e.target.value)}
+                />
+
+                {/* Pet Gender */}
+                <label htmlFor="sex" className="block text-softBlue text-lg font-semibold mb-1">Sex:</label>
+                <select
+                    id="sex"
+                    value={sex}
+                    onChange={(e) => setSex(e.target.value)}
+                    className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                >
+                    <option value="">Select a gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+
+                {/* Pet Weight */}
+                <label htmlFor="weight" className="block text-softBlue text-lg font-semibold mb-1">Weight (in lbs):</label>
+                <input
+                    id="weight"
+                    type="number"
+                    className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                />
+
+                {/* Pet Breed */}
+                <label htmlFor="breed" className="block text-softBlue text-lg font-semibold mb-1">Breed:</label>
+                <input
+                    id="breed"
+                    type="text"
+                    className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                    value={breed}
+                    onChange={(e) => setBreed(e.target.value)}
+                />
+
+                {/* Pet Birthday */}
+                <label htmlFor="birthday" className="block text-softBlue text-lg font-semibold mb-1">Birthday:</label>
+                <input
+                    id="birthday"
+                    type="date"
+                    className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                    value={birthday}
+                    onChange={(e) => setBirthday(e.target.value)}
+                />
+
+    
+
+                {/* Pet Bio */}
+                <label htmlFor="bio" className="block text-softBlue text-lg font-semibold mb-1">Short Bio:</label>
+                <textarea
+                    id="bio"
+                    rows={4}
+                    className="border-2 border-softBlue w-full rounded-md text-midnight px-3 py-2"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                />
+
+                {/* TODO: Add input for profilePicture, microchip number, vaccinations, etc. if needed */}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+                <Button 
+                    className="px-5 py-2 bg-softGreen text-black rounded-md hover:bg-lightblue transition-colors duration-300"
+                    onClick={handleSavePet}
+                >
+                    Save Pet
+                </Button>
+            </div>
+        </Dialog.Content>
+    </Dialog.Portal>
+</Dialog.Root>
+
+    </div>
+  );
+}
 
 export default Profile;
-
