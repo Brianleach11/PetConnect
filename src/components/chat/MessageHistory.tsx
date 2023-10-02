@@ -76,7 +76,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
             getRecentMessage(newPayload)
                 .then((newRecentMessage) => {
                     if (newRecentMessage !== undefined) {
-                        newRecentMessage.seen = false;
+                        newRecentMessage.seen = true;
                         // Check if there's an existing chat that matches the sender and recipient IDs
                         const existingChatIndex = realtimePreviews.findIndex((chat) =>
                           (chat.sender_id === newRecentMessage.sender_id && chat.recipient_id === newRecentMessage.recipient_id) ||
