@@ -45,14 +45,14 @@ const MessagePreview: FC<MessagePreviewProps> = ({item, session}) =>{
     }
     return(
         <Card className="max-w-1/3 hover:border-2 hover:border-midnight">
-            <CardContent>
-              <div className="flex items-center justify-center">
+            <CardContent className="py-2">
+              <div className="flex items-center justify-between">
                 <p>
                   {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
                 </p>
-                {item.seen && <div className="bg-softGreen rounded-full px-2 text-xs">New</div>}
+                {item.seen && <div className="bg-softGreen rounded-full px-2 text-xs ml-auto">New</div>}
               </div>
-                <p className={`text-sm mx-auto overflow-ellipsis ${item.seen ? 'font-semibold' : ''}`}>
+                <p className={`text-sm mx-auto text-midnight text-opacity-80 overflow-ellipsis ${item.seen ? 'font-semibold' : ''}`}>
                     {item.message_content?.substring(0,37)}
                 </p>
                 <p className="text-xs text-opacity-50 text-right">
