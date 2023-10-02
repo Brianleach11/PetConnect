@@ -30,6 +30,7 @@ interface RecentMessages{
     sender_id: string | null;
     sender_username: string | null;
     deleted_by: string | null;
+    seen: boolean;
 }
 type RecentMessagesArray = RecentMessages[]
 
@@ -46,6 +47,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
     const router = useRouter()
     const supabase = createClientComponentClient<Database>()
     const [realtimePreviews, setRealtimePreviews] = useState(recentMessages)
+    const [currentPathname, setCurrentPathname] = useState<string>('')
 
     const getRecentMessage = async(newPayload: Message) => {
         const chatId = newPayload.chat_id;
@@ -59,7 +61,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                 .single()
 
             if(recentMessage)
-                return recentMessage
+                return recentMessage as RecentMessages
             else return
         }   
     }
@@ -74,6 +76,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
             getRecentMessage(newPayload)
                 .then((newRecentMessage) => {
                     if (newRecentMessage !== undefined) {
+                        newRecentMessage.seen = false;
                         // Check if there's an existing chat that matches the sender and recipient IDs
                         const existingChatIndex = realtimePreviews.findIndex((chat) =>
                           (chat.sender_id === newRecentMessage.sender_id && chat.recipient_id === newRecentMessage.recipient_id) ||
@@ -85,10 +88,17 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                           setRealtimePreviews((oldArray) => {
                             const newArray = [...oldArray];
                             newArray[existingChatIndex] = newRecentMessage;
+                            newArray.splice(existingChatIndex, 1);
+                            newArray.unshift(newRecentMessage);
+                            if(newRecentMessage.chat_id && currentPathname.includes(newRecentMessage.chat_id.toString())){
+                                newRecentMessage.seen = false;
+                            }
+                            else newRecentMessage.seen = true;
                             return newArray;
                           });
                         } else {
                           // If it doesn't match any existing chat, add it as a new chat preview
+                          newRecentMessage.seen = true
                           setRealtimePreviews((oldArray) => [newRecentMessage, ...oldArray]);
                         }
                       }
@@ -101,7 +111,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [supabase, setRealtimePreviews, realtimePreviews, session.user.id])
+    }, [supabase, setRealtimePreviews, realtimePreviews, session.user.id, currentPathname, setCurrentPathname])
 
     const handleDeleteMessages = async(index:number) => {
         if(realtimePreviews && realtimePreviews[index]){
@@ -126,17 +136,23 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
     useEffect(()=>{
         if(realtimePreviews && toRedirect !== null && toRedirect !== undefined)
         {
+            realtimePreviews[toRedirect].seen = false;
             if(realtimePreviews[toRedirect].sender_id && realtimePreviews[toRedirect].recipient_id && realtimePreviews[toRedirect].chat_id){
                 const href = `/messages/chat/${chatHrefConstructor(
                     realtimePreviews[toRedirect].sender_id, 
                     realtimePreviews[toRedirect].recipient_id, 
                     realtimePreviews[toRedirect].chat_id
                 )}`
+                setCurrentPathname(href)
                 router.refresh()
                 router.push(href)
             } 
         }
     }, [toRedirect])
+
+    useEffect(()=>{
+        setCurrentPathname(window.location.href)
+    }, [])
 
     return(
         <div>
