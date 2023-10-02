@@ -6,6 +6,7 @@ import {
 import {Session} from '@supabase/auth-helpers-nextjs'
 import { UUID } from "crypto";
 import { FC } from "react";
+import { ChevronUp } from "lucide-react";
 
 interface MessagePreviewItem {
     chat_id: string | null;
@@ -16,10 +17,11 @@ interface MessagePreviewItem {
     sender_id: string | null;
     sender_username: string | null;
     deleted_by: string | null;
+    seen: boolean;
 }
 interface MessagePreviewProps{
     session: Session,
-    item: MessagePreviewItem
+    item: MessagePreviewItem,
 }
 
 function formatDate(dateString : string) {
@@ -43,11 +45,14 @@ const MessagePreview: FC<MessagePreviewProps> = ({item, session}) =>{
     }
     return(
         <Card className="max-w-1/3 hover:border-2 hover:border-midnight">
-            <CardContent>
-                <p className="text-center">
-                    {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
+            <CardContent className="py-2">
+              <div className="flex items-center justify-between">
+                <p>
+                  {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
                 </p>
-                <p className="text-sm mx-auto overflow-ellipsis">
+                {item.seen && <div className="bg-softGreen rounded-full px-2 text-xs ml-auto">New</div>}
+              </div>
+                <p className={`text-sm mx-auto text-midnight text-opacity-80 overflow-ellipsis ${item.seen ? 'font-semibold' : ''}`}>
                     {item.message_content?.substring(0,37)}
                 </p>
                 <p className="text-xs text-opacity-50 text-right">
