@@ -25,7 +25,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/types/supabase';
 
 
-
 const PetProfileForm = () => {
   const supabase = createClientComponentClient();
   const router = useRouter();

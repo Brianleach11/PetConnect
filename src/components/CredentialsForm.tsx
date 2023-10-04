@@ -48,6 +48,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
       if (data?.user?.id) {
         localStorage.setItem('userId', data.user.id); // Store user ID
       }
+      router.refresh()
 
       if (error) {
         toast({
@@ -57,8 +58,7 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         });
         return;
       }
-     
-      
+
       const { data: userData, error: userError } = await supabase
         .from('user')
         .select('username')
@@ -91,7 +91,6 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
             router.push('/petProfile');
 
           } else {
-
           toast({
             title: 'Success',
             description: 'Logged in successfully!',
@@ -100,7 +99,6 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
           router.push('/');
         }
       }
-    
     }
     catch (error) {
       toast({

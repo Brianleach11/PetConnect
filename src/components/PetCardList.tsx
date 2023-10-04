@@ -9,7 +9,6 @@ import { Database } from '@/types/supabase';
 import PetCard from './PetCard';
 import { PostgrestError } from '@supabase/supabase-js';  // Import PostgrestError
 
-
 const PetCardsList: React.FC = () => {
   const [pets, setPets] = useState<Database['public']['Tables']['pet']['Row'][]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +29,7 @@ const PetCardsList: React.FC = () => {
           setError(error);  // This line should now work without TypeScript issues
           setLoading(false);
           return;
-      }      
+        }      
         setPets(data || []);
         setLoading(false);
       }

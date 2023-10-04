@@ -16,11 +16,12 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code)
 
     const {data, error} = await supabase.from('user').select('username').single()
+
     if(!error && data?.username){
       return NextResponse.redirect(requestUrl.origin)
     }
   }
 
   // URL to redirect to after sign in process completes
-      return NextResponse.redirect('/userProfile')
+  return NextResponse.redirect('/userProfile')
 }

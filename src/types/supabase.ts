@@ -13,20 +13,20 @@ export interface Database {
         Row: {
           created_at: string
           id: number
-          receiving_user: string | null
-          sending_user: string | null
+          receiving_user: string
+          sending_user: string
         }
         Insert: {
           created_at?: string
           id?: number
-          receiving_user?: string | null
-          sending_user?: string | null
+          receiving_user: string
+          sending_user: string
         }
         Update: {
           created_at?: string
           id?: number
-          receiving_user?: string | null
-          sending_user?: string | null
+          receiving_user?: string
+          sending_user?: string
         }
         Relationships: [
           {
@@ -47,59 +47,71 @@ export interface Database {
         Row: {
           created_at: string
           id: number
-          receiving_user: string | null
-          sending_user: string | null
+          receiving_user: string
+          sending_user: string
         }
         Insert: {
           created_at?: string
           id?: number
-          receiving_user?: string | null
-          sending_user?: string | null
+          receiving_user: string
+          sending_user: string
         }
         Update: {
           created_at?: string
           id?: number
-          receiving_user?: string | null
-          sending_user?: string | null
+          receiving_user?: string
+          sending_user?: string
         }
         Relationships: [
           {
             foreignKeyName: "friends_receiving_user_fkey"
             columns: ["receiving_user"]
-            referencedRelation: "users"
+            referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "friends_sending_user_fkey"
             columns: ["sending_user"]
-            referencedRelation: "users"
+            referencedRelation: "user"
             referencedColumns: ["id"]
           }
         ]
       }
       messages: {
         Row: {
+          chat_id: string | null
           created_at: string
+          deleted_by: string | null
           id: number
           message_content: string | null
           recipient_id: string | null
           sender_id: string | null
         }
         Insert: {
+          chat_id?: string | null
           created_at?: string
+          deleted_by?: string | null
           id?: number
           message_content?: string | null
           recipient_id?: string | null
           sender_id?: string | null
         }
         Update: {
+          chat_id?: string | null
           created_at?: string
+          deleted_by?: string | null
           id?: number
           message_content?: string | null
           recipient_id?: string | null
           sender_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "messages_deleted_by_fkey"
+            columns: ["deleted_by"]
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_recipient_id_fkey"
             columns: ["recipient_id"]
@@ -142,7 +154,6 @@ export interface Database {
           sex?: string | null
           weight?: number | null
           color?: string | null
-
         }
         Update: {
           bio?: string | null
@@ -240,10 +251,77 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      chats: {
+        Row: {
+          chat_id: string | null
+          created_at: string | null
+          deleted_by: string | null
+          message_content: string | null
+          recipient_id: string | null
+          sender_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_deleted_by_fkey"
+            columns: ["deleted_by"]
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      recent_messages: {
+        Row: {
+          chat_id: string | null
+          created_at: string | null
+          deleted_by: string | null
+          message_content: string | null
+          recipient_id: string | null
+          recipient_username: string | null
+          sender_id: string | null
+          sender_username: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_deleted_by_fkey"
+            columns: ["deleted_by"]
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      delete_chat_for_user: {
+        Args: {
+          deletinguser: string
+          deletingchat: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

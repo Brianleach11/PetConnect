@@ -5,18 +5,17 @@ import NavBar from '@/components/NavBar'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 
-const ProfilePage: FC = async () => {
-  const supabase = createServerComponentClient({ cookies });
-  const {
+ const ProfilePage: FC = async() => {
+  const supabase = createServerComponentClient({ cookies })
+  const{
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await supabase.auth.getSession()
+
 
   return (
-    <div className="flex flex-col min-h-screen bg-whiteGreen">
-      <NavBar session={session} authToken={false} />
-      <div className="mt-8"> 
-        <Profile />
-      </div>
+    <div className = 'py-12'>
+      <NavBar session={session} authToken={false}/>
+      <Profile />
     </div>
   );
 };
