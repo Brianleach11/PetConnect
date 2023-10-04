@@ -87,7 +87,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       const age = today.diff(birthdate, 'years');
       return `${age} years`;
     }
-    return 'Loading...';
+    return 'Loading..';
   };
 
   const handleCardClick = async () => {
