@@ -8,12 +8,23 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation'; 
 import { useToast } from '@/components/ui/use-toast'; 
 import { Button } from '@/components/ui/button';
+import * as Dialog from '@radix-ui/react-dialog';
+import {X} from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea';  
+
+
 
 const PetProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+    const [editedName, setEditedName] = useState<string | null>(null);
+    const [editedType, setEditedType] = useState<string | null>(null);
+    const [editedBreed, setEditedBreed] = useState<string | null>(null);
+    const [editedBio, setEditedBio] = useState<string | null>(null);
 
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -108,7 +119,54 @@ const PetProfileDisplay: React.FC = () => {
     }
 
 }
+const handleSaveChanges = async () => {
+  try {
+      if (!petData || !petData.id) {
+          toast({
+              title: 'Error',
+              description: 'Missing pet data.',
+              variant: 'destructive',
+          });
+          return;
+      }
 
+      // Update the pet data in the database
+      const { data, error } = await supabase
+          .from('pet')
+          .update({
+            name: editedName ?? petData.name,
+            pet_type: editedType ?? petData.pet_type,
+            breed: editedBreed ?? petData.breed,
+            bio: editedBio ?? petData.bio,
+        })      
+          .eq('id', petData.id) 
+          .select();
+
+      // Check if there's an error
+      if (error) {
+          throw error;
+      }
+
+      // Update local state with new pet data
+      setPetData(data[0]);
+
+      toast({
+          title: 'Success',
+          description: 'Pet profile updated successfully.',
+          variant: 'default',
+      });
+
+      setIsEditDialogOpen(false); // Close the dialog after saving
+
+  } catch (error) {
+      console.error('Error updating pet data:', error);
+      toast({
+          title: 'Error',
+          description:'An error occurred while updating pet data.',
+          variant: 'destructive',
+      });
+  }
+};
   return (
     <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
@@ -154,16 +212,89 @@ const PetProfileDisplay: React.FC = () => {
           </div>
         ) : (
           <div className="mt-4 md:ml-10">
-            <Button 
-              onClick={handleEditProfileClick} 
-              className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-            >
-              Edit Profile
-            </Button>
-          </div>
-        )}
+ <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+  <Dialog.Trigger asChild>
+    <Button className="px-5 py-2.5 rounded-md border border-softBlue hover:bg-softPink transition-colors duration-300">
+      Edit Profile 🐾
+    </Button>
+  </Dialog.Trigger>
+
+  <Dialog.Portal>
+    <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-darkGreen" />
+    <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[90vh] w-[90vw] max-w-[500px] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-[30px] shadow-xl border-t-8 border-softGreen">
+      
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold text-softGreen"> Edit Pet Profile 🐾</h3>
+        <Dialog.Close asChild>
+          <button className="focus:outline-none">
+            <X size={20} />
+          </button>
+        </Dialog.Close>
       </div>
-        </div>
+
+      <div className="mt-8 space-y-4">
+        
+        {/* Pet Name */}
+        <label htmlFor="editedName" className="block text-softBlue text-lg font-semibold mb-1">Name:</label>
+        <input
+          id="editedName"
+          type="text"
+          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+          defaultValue ={petData?.name || 'Pet Name' }
+          onChange={(e) => setEditedName(e.target.value)}
+        />
+      
+        {/* Pet Type */}
+        <label htmlFor="editedType" className="block text-softBlue text-lg font-semibold mb-1">Type (e.g., Dog, Cat):</label>
+        <input
+          id="editedType"
+          type="text"
+          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+          defaultValue ={petData?.pet_type || 'Pet Type'}
+          onChange={(e) => setEditedType(e.target.value)}
+        />
+      
+        {/* Pet Breed */}
+        <label htmlFor="editedBreed" className="block text-softBlue text-lg font-semibold mb-1">Breed:</label>
+        <input
+          id="editedBreed"
+          type="text"
+          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+          defaultValue ={petData?.breed || 'Pet Breed'}
+          onChange={(e) => setEditedBreed(e.target.value)}
+        />
+      
+        {/* Pet Bio */}
+        <label htmlFor="editedBio" className="block text-softBlue text-lg font-semibold mb-1">Short Bio:</label>
+        <textarea
+          id="editedBio"
+          rows={4}
+          className="border-2 border-softBlue w-full rounded-md text-midnight px-3 py-2"
+          defaultValue ={petData?.bio || 'Pet Bio' }
+          onChange={(e) => setEditedBio(e.target.value)}
+        />
+
+        {/* we can expand the  comments to add additional attributes like profilePicture, microchip number, vaccinations, etc. if needed */}
+      
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <Button className="px-5 py-2 bg-softGreen text-white rounded-md hover:bg-lightblue transition-colors duration-300" onClick={handleSaveChanges}>
+          Save Changes
+        </Button>
+      </div>
+
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
+
+</div> 
+
+        )}
+</div>
+
+</div>
+
       </header>
 
  {/* Bio Card */}
@@ -186,7 +317,7 @@ const PetProfileDisplay: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap">
-              {/* Expected Document components go here */}
+                    {/* Medication here */}
             </div>
           </CardContent>
         </Card>
