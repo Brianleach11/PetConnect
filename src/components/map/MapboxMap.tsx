@@ -1,52 +1,57 @@
 'use client'
-import { useEffect, FC, useState } from "react";
+import { useEffect, FC, useState, useRef } from "react";
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { Map } from 'react-map-gl'
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import mapboxSdk from '@mapbox/mapbox-sdk/services/geocoding'
+import mapboxgl, { VectorSource } from "mapbox-gl";
 
 interface MapboxMapProps{
-  city: string,
-  state: string,
+  coords: number[]
 }
 
-const MapboxMap: FC<MapboxMapProps> = ({city, state}) => {
-  //const mapboxClient = require('@mapbox/mapbox-sdk');
-  const geocodingClient = mapboxSdk({ accessToken: process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN ?? ""});
-  const [center, setCenter] = useState<number[]>([])
+const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
+  mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN ?? '';
+  const mapContainer = useRef<any>()
+  const map = useRef<any>()
 
-  useEffect(()=>{
-    async function getLocation() {
-      const res = await geocodingClient.forwardGeocode({
-        query: city + " " + state,
-        countries: ['us'], // Limit results to United States
-        autocomplete: false,
-        limit: 1
-      }).send()
-      setCenter(res.body.features[0].center)
-    }
-    getLocation()
-  }, [city, state])
+  useEffect(() => {
+    if (map.current) return //if already initialized, return
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current, 
+      style: 'mapbox://styles/mapbox/streets-v12', 
+      center: [coords[0], coords[1]], 
+      zoom: 12 
+    });
+
+    map.current.on('load', function() {
+      map.current.addSource('mapbox-streets', {
+        type: 'vector',
+        url: 'mapbox://styles/mapbox/streets-v8'
+      })
+      
+      //our set of different layers: figure POI labels
+      var layerTypes = ['dog-park', 'veterinary', ]
+      //for loop to add each of the different layers
+  
+      map.current.addLayer(
+        {
+          'id': 'vet',
+          'source': 'mapbox-streets',
+          'source-layer': 'poi_label',
+          'type': 'circle',
+          'paint': {
+            'circle-radius': 6,
+            'circle-color': '#007cbf'
+          },
+          'filter': ['==', 'icon', 'veterinary'] //idk how to do filters yet but get on that asap
+        })
+      map.current.setLayoutProperty('vet', 'visibility',)
+    })
+  }, []);
+  
 
   return (
-      <div>
-        {center.length > 0 ? 
-          <Map 
-              mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN}
-              initialViewState={{    
-                longitude: center[0],
-                latitude: center[1],
-                zoom: 10
-              }}
-              style={{width: 800, height: 500}}
-              
-              mapStyle="mapbox://styles/mapbox/streets-v12"
-          />
-          :
-          <div className="text-lg text-midnight"> Loading...</div>
-          }
-      </div>
-      
+    <div className="map-container" ref={mapContainer} style={{width: "100%", height: "80vh"}}></div>
     );
 }
 

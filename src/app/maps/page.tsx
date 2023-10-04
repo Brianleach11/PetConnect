@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import NavBar from '@/components/NavBar'
 import MapboxMap from '@/components/map/MapboxMap'
 import { redirect } from 'next/navigation';
+import MapboxMapcopy from '@/components/map/MapboxMap';
 //export const dynamic = 'force-dynamic'
 
 export default async function Home() {
@@ -27,6 +28,18 @@ export default async function Home() {
     city = userData.city
     state = userData.state
   }
+  else {
+    city = "Davie"
+    state= "Florida"
+  }
+  
+  async function getCenter() {
+    const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${city}%20${state}.json?limit=1&types=place&autocomplete=false&access_token=${process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN}`,
+    { method: 'GET'});
+    const data = await response.json()
+    return [data.features[0].center[0], data.features[0].center[1]]
+  }
+
   return (
     <>
       <NavBar session={session} authToken={false}/>
@@ -34,7 +47,7 @@ export default async function Home() {
         <div>Welcome to the maps page!</div>
         <div>Explore other pet owners in your area, as well as pet-centered locations like parks, pet groomers, and more!</div>
         <div className="relative center flex-auto w-full">
-          <MapboxMap city={city ? city:"Davie"} state={state ? state:"Florida"}/>
+          <MapboxMap coords={await getCenter()}/>
         </div>
       </div>
     </>
