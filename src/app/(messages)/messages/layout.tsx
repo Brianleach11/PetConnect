@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { Database } from "@/types/supabase"
 import NavBar from "@/components/NavBar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ChevronRight } from "lucide-react"
 import {
     Card,
     CardContent,
@@ -14,6 +15,7 @@ import {
 import MessageHistory from "@/components/chat/MessageHistory"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import ConnectionsList from "@/components/connections/ConnectionsList"
+import ConnectionRequestsButton from "@/components/connections/ConnectionRequestsButton"
 
 interface LayoutProps {
   children: ReactNode
@@ -38,6 +40,7 @@ const Layout = async({children}: LayoutProps) => {
           sending_user,
           receiving_user`)
         .or(`receiving_user.eq.${session.user.id}, sending_user.eq.${session.user.id}`)
+        .order('created_at', {ascending: false})
 
   let { data: recentMessages, count: recentMessagesCount, error } = await supabase
         .from("recent_messages")
@@ -45,17 +48,19 @@ const Layout = async({children}: LayoutProps) => {
         .or(`recipient_id.eq.${session.user.id}, sender_id.eq.${session.user.id}`)
         .order('created_at', {ascending:false})
 
+  let {count: unseenConnectionsCount, error: unseenConnectionsError} = await supabase
+        .from('friend_requests')
+        .select("", {count: "exact"})
+        .eq(`receiving_user`, session.user.id)
+        .order('created_at', {ascending: false})
+
+  if(!unseenConnectionsCount){
+    unseenConnectionsCount = 0
+  }
   if(!recentMessagesCount){
     recentMessagesCount = 0
   }
-  /*
-  if(recentMessages && recentMessages[0]){
-    const href=`/messages/chat/${chatHrefConstructor(
-      recentMessages[0].sender_id, 
-      recentMessages[0].recipient_id, 
-      recentMessages[0].chat_id)}`
-    redirect(href)
-  }*/
+
   return(
     <div className='h-screen bg-whiteGreen w-full fixed'>
         <NavBar session={session} authToken={false}/>
@@ -69,13 +74,14 @@ const Layout = async({children}: LayoutProps) => {
                   </TabsList>
                   <TabsContent value="messages">
                     <ScrollArea>
-                      <MessageHistory session={session} recentMessages={recentMessages} recentMessagesCount={recentMessagesCount}/>
+                      <MessageHistory session={session} recentMessages={recentMessages ?? []} recentMessagesCount={recentMessagesCount}/>
                     </ScrollArea>
                   </TabsContent>
                   <TabsContent value="connections">
-                    <div className="w-full h-10 border-midnight text-midnight px-2">
-                      Connection Requests
+                    <div className="mb-4">
+                      <ConnectionRequestsButton unseenConnectionsCount={unseenConnectionsCount}/>
                     </div>
+                    <hr className=" border-b-2 border-gray-300 my-4" />
                     <ScrollArea>
                       <ConnectionsList session={session} connections={connections}/>
                     </ScrollArea>

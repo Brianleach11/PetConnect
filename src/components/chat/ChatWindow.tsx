@@ -4,6 +4,7 @@ import { createClientComponentClient, Session } from '@supabase/auth-helpers-nex
 import {FC, useEffect, useState, useRef} from 'react'
 import { ScrollArea } from '../ui/scroll-area'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface ChatWindowProps{
     session: Session,
@@ -15,6 +16,7 @@ interface Chats{
     message_content: string | null
     recipient_id: string | null
     sender_id: string | null
+    deleted_by: string | null
 }
 type ChatsArray = Chats[]
 
@@ -22,6 +24,8 @@ const ChatWindow: FC<ChatWindowProps> = ({session, initialChats}) => {
     const supabase = createClientComponentClient<Database>()
     const [realtimeChats, setRealtimeChats] = useState(initialChats)
     const scrolldownRef = useRef<HTMLDivElement | null>(null)
+    const router = useRouter()
+    const [currentChatId, setCurrentChatId] = useState<string | null>(null);
 
     useEffect(()=>{
         const channel = supabase.channel('realtime chats').on('postgres_changes', {
@@ -29,13 +33,22 @@ const ChatWindow: FC<ChatWindowProps> = ({session, initialChats}) => {
             schema: 'public', 
             table: 'messages'
         }, (payload) => {
-            setRealtimeChats(oldArray => [payload.new as Chats, ...oldArray])
+            const newPayload = payload.new as Chats
+            if(newPayload.chat_id !== initialChats[0].chat_id){
+                setCurrentChatId(newPayload.chat_id)
+                //supabase.removeChannel(channel)
+                //router.refresh()
+            } 
+            else {
+                setRealtimeChats(oldArray => [newPayload, ...oldArray])
+            }
+            //setRealtimeChats(oldArray => [payload.new as Chats, ...oldArray])
         }).subscribe()
 
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [supabase, realtimeChats, setRealtimeChats, session.user.id])
+    }, [supabase, realtimeChats, setRealtimeChats, session.user.id, router, currentChatId, setCurrentChatId])
 
     const formatTimestamp = (dateString: string | null) => {
         if(dateString){
@@ -56,7 +69,7 @@ return (
         realtimeChats.map((item, index) => {
             const isCurrentUser = item.sender_id === session.user.id
             const hasNextMessageFromSameUser = realtimeChats[index - 1]?.sender_id === realtimeChats[index].sender_id
-            if(item.message_content === "") return;
+            if(item.message_content === "" || item.deleted_by === session.user.id) return;
             return(
                 <div
                     className='chat-message'

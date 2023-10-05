@@ -4,7 +4,9 @@ import {
     CardContent,
 } from "@/components/ui/card"
 import {Session} from '@supabase/auth-helpers-nextjs'
+import { UUID } from "crypto";
 import { FC } from "react";
+import { ChevronUp } from "lucide-react";
 
 interface MessagePreviewItem {
     chat_id: string | null;
@@ -14,11 +16,54 @@ interface MessagePreviewItem {
     recipient_username: string | null;
     sender_id: string | null;
     sender_username: string | null;
+    deleted_by: string | null;
+    seen: boolean;
 }
 interface MessagePreviewProps{
     session: Session,
-    item: MessagePreviewItem
+    item: MessagePreviewItem,
 }
+
+function formatDate(dateString : string) {
+    const today = new Date();
+    const date = new Date(dateString);
+  
+    if (date.toDateString() === today.toDateString()) {
+      // Display only time if it's today
+      return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    } else {
+      // Display both date and time if it's not today
+      return (
+        date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+      );
+    }
+}
+
+const MessagePreview: FC<MessagePreviewProps> = ({item, session}) =>{
+    if(session.user.id === item.deleted_by){
+      return null
+    }
+    return(
+        <Card className="max-w-1/3 hover:border-2 hover:border-midnight">
+            <CardContent className="py-2">
+              <div className="flex items-center justify-between">
+                <p>
+                  {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
+                </p>
+                {item.seen && <div className="bg-softGreen rounded-full px-2 text-xs ml-auto">New</div>}
+              </div>
+                <p className={`text-sm mx-auto text-midnight text-opacity-80 overflow-ellipsis ${item.seen ? 'font-semibold' : ''}`}>
+                    {item.message_content?.substring(0,37)}
+                </p>
+                <p className="text-xs text-opacity-50 text-right">
+                    {item.created_at !== null ? formatDate(item.created_at) : <></>}
+                </p>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default MessagePreview
 
 /*
 create view
@@ -62,38 +107,3 @@ from
 order by
   m.chat_id,
   m.created_at desc;*/
-
-function formatDate(dateString : string) {
-    const today = new Date();
-    const date = new Date(dateString);
-  
-    if (date.toDateString() === today.toDateString()) {
-      // Display only time if it's today
-      return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-    } else {
-      // Display both date and time if it's not today
-      return (
-        date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-      );
-    }
-}
-
-const MessagePreview: FC<MessagePreviewProps> = ({item, session}) =>{
-    return(
-        <Card className="max-w-1/3">
-            <CardContent>
-                <p className="text-center">
-                    {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
-                </p>
-                <p className="text-sm mx-auto overflow-ellipsis">
-                    {item.message_content?.substring(0,37)}
-                </p>
-                <p className="text-xs text-opacity-50 text-right">
-                    {item.created_at !== null ? formatDate(item.created_at) : <></>}
-                </p>
-            </CardContent>
-        </Card>
-    )
-}
-
-export default MessagePreview
