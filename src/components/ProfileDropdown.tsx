@@ -37,10 +37,7 @@ export default function ProfileDropdown(){
       const navigateToProfile = () => {
         router.push('/profile'); 
     };
-
-      const navigateToProfile = () => {
-        router.push('/profile'); 
-    };
+    
     const navigateTouserProfile = () => {
       router.push('/userProfile'); 
     };
