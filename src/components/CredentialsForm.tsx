@@ -6,7 +6,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 
-
 interface CredentialsFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
@@ -43,6 +42,11 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         email,
         password,
       });
+      
+      if (data?.user?.id) {
+        localStorage.setItem('userId', data.user.id); // Store user ID
+      }
+      router.refresh()
 
       if (error) {
         toast({
@@ -52,17 +56,48 @@ const CredentialsForm: FC<CredentialsFormProps> = ({ className, ...props }) => {
         });
         return;
       }
+
+      const { data: userData, error: userError } = await supabase
+        .from('user')
+        .select('username')
+        .eq('id', data.user.id)
+        .single();
+
+        if (!userData?.username) {
+          console.log("No userData, redirecting to profile setup.");
+          toast({
+            title: 'Notice',
+            description: 'No data for user. Redirecting to profile setup...',
+            variant: 'default',
+          });
+          router.push('/userProfile');
+        } else {
+          // Check for existing pet data
+          const { data: petData, error: petError } = await supabase
+            .from('pet')
+            .select('*')
+            .eq('owner_id', data.user.id)
+            .single();
       
+          if (!petData) {
+            console.log("No petData, redirecting to pet profile setup.");
+            toast({
+              title: 'Notice',
+              description: 'No pet profile found. Redirecting to pet profile setup...',
+              variant: 'default',
+            });
+            router.push('/petProfile');
 
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-        variant: 'default',
-      });
+          } else {
 
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+          toast({
+            title: 'Success',
+            description: 'Logged in successfully!',
+            variant: 'default',
+          });
+          router.push('/');
+        }
+      }
     }
     catch (error) {
       toast({
