@@ -101,6 +101,7 @@ module.exports = {
       merleBlue: '#777788',
       merleRed: '#AA7766',
       brindle: '#733d1a',
-  },
+    },
   plugins: [require("tailwindcss-animate")],
+  }
 }

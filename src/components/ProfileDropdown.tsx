@@ -33,10 +33,6 @@ export default function ProfileDropdown(){
           alert("Error logging out. Check console for details.");
         }
       };
-      
-      const navigateToProfile = () => {
-        router.push('/profile'); 
-    };
 
       const navigateToProfile = () => {
         router.push('/profile'); 

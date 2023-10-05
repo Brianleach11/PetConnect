@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, FC, useState, useRef } from "react";
 import 'mapbox-gl/dist/mapbox-gl.css'
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl, { VectorSource } from "mapbox-gl";
 
 interface MapboxMapProps{
