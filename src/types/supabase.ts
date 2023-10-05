@@ -139,6 +139,7 @@ export interface Database {
           picture: string | null
           sex: string | null
           weight: number | null
+          color: string | null
         }
         Insert: {
           bio?: string | null
@@ -152,6 +153,7 @@ export interface Database {
           picture?: string | null
           sex?: string | null
           weight?: number | null
+          color?: string | null
         }
         Update: {
           bio?: string | null
@@ -165,6 +167,7 @@ export interface Database {
           picture?: string | null
           sex?: string | null
           weight?: number | null
+          color?: string | null
         }
         Relationships: [
           {

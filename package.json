@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^9.4.0",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-sdk": "^0.15.3",
     "@radix-ui/react-checkbox": "^1.0.4",
