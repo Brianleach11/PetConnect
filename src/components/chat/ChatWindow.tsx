@@ -88,7 +88,7 @@ return (
                             <span
                                 className={cn('px-4 py-1.5 rounded-lg inline-block', {
                                     'bg-softGreen text-black': isCurrentUser,
-                                    'bg-testGreen text-gray-900': !isCurrentUser,
+                                    'bg-lightblue text-gray-900': !isCurrentUser,
                                     'rounded-tr-none':
                                     !hasNextMessageFromSameUser && isCurrentUser,
                                     'rounded-tl-none':
