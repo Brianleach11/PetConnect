@@ -5,15 +5,7 @@ import { redirect } from "next/navigation"
 import { Database } from "@/types/supabase"
 import NavBar from "@/components/NavBar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronRight } from "lucide-react"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
 import MessageHistory from "@/components/chat/MessageHistory"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import ConnectionsList from "@/components/connections/ConnectionsList"
 import ConnectionRequestsButton from "@/components/connections/ConnectionRequestsButton"
 
@@ -80,9 +72,7 @@ const Layout = async({children}: LayoutProps) => {
                       <ConnectionRequestsButton unseenConnectionsCount={unseenConnectionsCount}/>
                     </div>
                     <hr className=" border-b-2 border-gray-300 my-4" />
-                    <ScrollArea className="h-96">
                       <ConnectionsList session={session} connections={connections}/>
-                    </ScrollArea>
                   </TabsContent>
               </Tabs>
             </div>

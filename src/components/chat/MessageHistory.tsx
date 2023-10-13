@@ -175,7 +175,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
     }, [])
 
     return(
-        <div>
+        <div className="h-screen">
             <div className="flex justify-end pr-4 space-x-4">
                 <div>
                     <MailMinus
@@ -216,7 +216,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                 </div>
                 <hr className=" border-b-2 border-gray-300 my-4" />
             </div>
-            <ScrollArea className="h-30 w-30">
+            <ScrollArea className="h-2/3 overflow-auto">
                 {
                 realtimePreviews.length === 0 ? 
                     <p className="text-midnight">No recent messages...</p> :
