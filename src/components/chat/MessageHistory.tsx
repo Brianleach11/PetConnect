@@ -140,7 +140,6 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
         const chatPath = window.location.href.split('/').pop();
         if(!chatPath) return
         const chatIdFromUrl = chatPath.split("--").pop();
-        console.log("ChatIdFromURL: " + chatIdFromUrl)
     
         // Find the index of the chat with matching chatId
         const chatIndex = realtimePreviews.findIndex(
