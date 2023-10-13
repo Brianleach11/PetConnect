@@ -60,7 +60,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
     }, [item]);
 
     const redirectUser = async() =>{
-        console.log("REDIRECT TRIGGERED")
+        //console.log("REDIRECT TRIGGERED")
         if(!item.sending_user || !item.receiving_user) return null
         let chatId
         let {data: query, error: chatIdError} = await supabase
@@ -76,7 +76,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
         }
     
         if(chatIdError) console.log(chatIdError)
-        console.log("RETURNED CHAT ID"+chatId)
+        //console.log("RETURNED CHAT ID"+chatId)
     
         if(!chatId){
             const {data: enteredChat, error: newChatError} = await supabase
@@ -91,7 +91,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
                 )
                 .select()
                 .single()
-            console.log(enteredChat)
+            //console.log(enteredChat)
             if(enteredChat && enteredChat.chat_id){
                 console.log("Im setting it!" + enteredChat.chat_id)
                 setNewChatId(enteredChat.chat_id)
@@ -99,7 +99,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
         }
         else{
             setNewChatId(chatId)
-            console.log("Chat ID already exists: " + chatId)
+            //console.log("Chat ID already exists: " + chatId)
         }
         //new line to test
         router.refresh()

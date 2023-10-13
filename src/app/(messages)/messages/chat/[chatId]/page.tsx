@@ -41,8 +41,8 @@ const page = async ({params}: PageProps) => {
   chats?.reverse()
 
   return (
-    <div className="px-4 py-2 rounded-3xl fixed right-0 w-2/3 h-screen bg-midnight">
-      <div className="container px-2 top-2 bg-white rounded-xl h-full">
+    <div className=" pt-14 py-2 rounded-3xl fixed right-0 w-2/3 h-screen bg-midnight">
+      <div className="container px-2 top-2 bg-white rounded-tr-xl h-full border-l-2 drop-shadow-lg">
         <div className='flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]'>
           <div className='flex sm:items-center justify-between py-3 border-b-2 border-gray-200 mb-1'>
             <div className='relative flex items-center space-x-4'>
@@ -50,7 +50,6 @@ const page = async ({params}: PageProps) => {
                 <div className='relative w-8 sm:w-12 h-8 sm:h-12'>
                 </div>
               </div>
-
               <div className='flex flex-col leading-tight'>
                 <div className='text-l flex items-center'>
                   <span className='text-gray-700 mr-3 font-medium'>

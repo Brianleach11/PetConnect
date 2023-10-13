@@ -17,11 +17,12 @@ interface MessagePreviewItem {
     sender_id: string | null;
     sender_username: string | null;
     deleted_by: string | null;
-    seen: boolean;
+    //seen: boolean;
 }
 interface MessagePreviewProps{
     session: Session,
     item: MessagePreviewItem,
+    isActive: boolean,
 }
 
 function formatDate(dateString : string) {
@@ -39,33 +40,34 @@ function formatDate(dateString : string) {
     }
 }
 
-const MessagePreview: FC<MessagePreviewProps> = ({item, session}) =>{
+const MessagePreview: FC<MessagePreviewProps> = ({item, session, isActive}) =>{
     if(session.user.id === item.deleted_by){
       return null
     }
     return(
-        <Card className="max-w-1/3 hover:border-2 hover:border-midnight">
-            <CardContent className="py-2">
-              <div className="flex items-center justify-between">
-                <p>
-                  {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
-                </p>
-                {item.seen && <div className="bg-softGreen rounded-full px-2 text-xs ml-auto">New</div>}
-              </div>
-                <p className={`text-sm mx-auto text-midnight text-opacity-80 overflow-ellipsis ${item.seen ? 'font-semibold' : ''}`}>
-                    {item.message_content?.substring(0,37)}
-                </p>
-                <p className="text-xs text-opacity-50 text-right">
-                    {item.created_at !== null ? formatDate(item.created_at) : <></>}
-                </p>
-            </CardContent>
-        </Card>
+      <Card className={`max-w-1/3 hover:border-2 hover:border-midnight ${isActive ? 'bg-gray bg-opacity-25 drop-shadow-lg border-2 border-midnight': ''}`}>
+          <CardContent className="py-2">
+            <div className="flex items-center justify-between">
+              <p>
+                {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
+              </p>
+            </div>
+              <p className={`text-sm mx-auto text-midnight text-opacity-80 overflow-ellipsis`}>
+                  {item.message_content?.substring(0,37)}
+              </p>
+              <p className="text-xs text-opacity-50 text-right">
+                  {item.created_at !== null ? formatDate(item.created_at) : <></>}
+              </p>
+          </CardContent>
+      </Card>
     )
 }
 
 export default MessagePreview
 
 /*
+{item.seen && <div className="bg-softGreen rounded-full px-2 text-xs ml-auto">New</div>}
+${item.seen ? 'font-semibold' : ''}
 create view
   public.chats as
 select

@@ -64,25 +64,23 @@ const Layout = async({children}: LayoutProps) => {
   return(
     <div className='h-screen bg-whiteGreen w-full fixed'>
         <NavBar session={session} authToken={false}/>
-        <div className='h-screen pt-12'>
-          <div className='px-4 py-2 rounded-3xl fixed left-0 w-1/3 h-screen bg-midnight'>
-            <div className="container px-2 bg-white rounded-xl h-full">
+        <div className='h-screen bg-midnight'>
+          <div className='py-2 pt-14 fixed left-0 w-1/3 h-screen'>
+            <div className="container px-2 bg-white rounded-tl-xl h-full">
               <Tabs defaultValue="messages" className="py-2 rounded-xl text-transparent">
                   <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="messages">Messages</TabsTrigger>
                       <TabsTrigger value="connections">Connections</TabsTrigger>
                   </TabsList>
                   <TabsContent value="messages">
-                    <ScrollArea>
-                      <MessageHistory session={session} recentMessages={recentMessages ?? []} recentMessagesCount={recentMessagesCount}/>
-                    </ScrollArea>
+                    <MessageHistory session={session} recentMessages={recentMessages ?? []} recentMessagesCount={recentMessagesCount}/>
                   </TabsContent>
                   <TabsContent value="connections">
                     <div className="mb-4">
                       <ConnectionRequestsButton unseenConnectionsCount={unseenConnectionsCount}/>
                     </div>
                     <hr className=" border-b-2 border-gray-300 my-4" />
-                    <ScrollArea>
+                    <ScrollArea className="h-96">
                       <ConnectionsList session={session} connections={connections}/>
                     </ScrollArea>
                   </TabsContent>
