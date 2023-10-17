@@ -40,7 +40,7 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({unseenConnections, uns
             {
                 unseenConnectionsCount > 0 ?
                 <CardContent className="items-left grid grid-rows-2 w-full h-full">
-                    <div className=" h-3/4">
+                    <div className="">
                         <CardTitle className="my-2 text-lg pr-4">Incoming Connection Requests [{requestsReceived}]</CardTitle>
                         <ScrollArea className="h-48 border-2 border-midnight rounded-lg space-x-4">
                         {
@@ -53,7 +53,7 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({unseenConnections, uns
                         }
                         </ScrollArea>
                     </div>
-                    <div className="w-full h-3/4 -mt-10 overflow-hidden">
+                    <div className="w-full overflow-hidden">
                         <CardTitle className="my-2 text-lg">Pending Connections Sent [{requestsSent}]</CardTitle>
                         <ScrollArea className=" h-48 border-2 border-midnight rounded-lg space-x-4">
                         {

@@ -2,23 +2,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "./ui/button";
-import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import {useRouter} from 'next/navigation'
-import { useEffect } from "react";
+import { Session } from "@supabase/auth-helpers-nextjs";
+import { useEffect, FC } from "react";
 import ProfileDropdown from "./ProfileDropdown";
 //initial session, null. Until manual refresh when session isnt null
 
+interface NavBarProps {
+  session: Session | null
+}
 
-export default function NavBar({session, authToken}: {session: Session | null, authToken: boolean}) {
 
-  const supabase = createClientComponentClient()
-  const router = useRouter()
-
-  useEffect(()=>{
-    if(authToken){
-      router.refresh()
-    }
-  })
+const NavBar: FC<NavBarProps> = ({session})=> {
 
   return (
     <>
@@ -37,3 +31,5 @@ export default function NavBar({session, authToken}: {session: Session | null, a
     </>
   );
 };
+
+export default NavBar;
