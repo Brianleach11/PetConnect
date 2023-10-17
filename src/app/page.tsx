@@ -16,12 +16,10 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-whiteGreen">
       <NavBar session={session} authToken={authToken} />
-      <h1 className="font-fredokaOne text-3xl text-center mt-12 mb-8 text-darkBlue z-10">
-        Time to connect with others!
-      </h1>
-      <div className="flex-grow">
+      <div className="flex-grow mt-20"> {/* Added mt-4 for margin-top */}
         <PetCardList />
       </div>
     </div>
   );
+  
 }

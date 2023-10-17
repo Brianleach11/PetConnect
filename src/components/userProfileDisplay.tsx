@@ -52,15 +52,11 @@ return (
         />
       </div>
       <div>
-        <h2 className="text-2xl font-light mb-3">
+      <h2 className="text-2xl font-semibold mb-1">
           {userData?.username || 'Username'}
-          </h2>
-        <h1 className="text-2xl font-semibold mb-1">
-    My name is {petData?.name || 'Pet Name'} :)
-    </h1>
-<span className="text-l">I am a {petData?.pet_type}, My breed is {petData?.breed}</span>
-<p className="text-l">I was born on {`${petData?.birthday}`}</p>
-<p className="text-l">{userData?.city}, {userData?.state}</p>
+        </h2>
+
+    <p className="text-l">{userData?.city}, {userData?.state}</p>
       </div>
     </header>
     
