@@ -103,7 +103,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     if (isButtonHovered) return;
 
     if (pet.id && pet.owner_id) {
-      sessionStorage.setItem('clickedUserId', pet.id.toString());
+      sessionStorage.setItem('clickedPetId', pet.id.toString());
       sessionStorage.setItem('clickedOwnerId', pet.owner_id.toString());
       
       if (pet.owner_id != currentUserId) {
@@ -342,27 +342,43 @@ useEffect(()=>{
 
 
 const checkFriendship = async () => {
-  if (!pet.owner_id || !currentUserId) { // Added this check
+  if (!pet.owner_id || !currentUserId) { 
     console.error("Invalid IDs for checking friendship status");
     return;
   }
 
-  const { data, error } = await supabase
+  const { data: sentFriendship, error: sentError } = await supabase
     .from('friends')
     .select('*')
     .eq('sending_user', currentUserId)
     .eq('receiving_user', pet.owner_id);
 
-  if (error) {
-    console.error("Error fetching friendship status:", error);
+  if (sentError) {
+    console.error("Error fetching friendship status for sent request:", sentError);
     return;
   }
 
-  // If there's an entry in the friends table for these two users, set areFriends to true
-  if (data && data.length > 0) {
+  if (sentFriendship && sentFriendship.length > 0) {
+    setAreFriends(true);
+    return;
+  }
+
+  const { data: receivedFriendship, error: receivedError } = await supabase
+    .from('friends')
+    .select('*')
+    .eq('sending_user', pet.owner_id)
+    .eq('receiving_user', currentUserId);
+
+  if (receivedError) {
+    console.error("Error fetching friendship status for received request:", receivedError);
+    return;
+  }
+
+  if (receivedFriendship && receivedFriendship.length > 0) {
     setAreFriends(true);
   }
 }
+
 
 
 

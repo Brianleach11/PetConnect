@@ -75,10 +75,12 @@ return (
     <hr className="my-4"/> {/* Horizontal line */}
 
     <div className="flex justify-center">
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
-      <OwnerPetCardList userId={userId} />
-      </div>
-    </div>
+     <div className="grid grid-cols-1 ">
+    <OwnerPetCardList userId={userId} />
+  </div>
+</div>
+
+
   </div>
 );
 

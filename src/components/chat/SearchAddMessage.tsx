@@ -141,23 +141,22 @@ const SearchAddMessage: FC<SearchAddMessageProps> = ({session}) => {
         }
     }, [route])
 
-    return(
-        <div className='flex flex-row w-full'>
-            <div className="flex-grow">
-                <input
+    return (
+        <div className='flex w-full p-4 bg-gray-100 rounded-lg shadow-md'>
+            <input
                 type="text"
-                className="border-2 border-midnight border-opacity-100 w-3/4 rounded-sm h-full text-midnight"
+                placeholder="Search by username..."
+                className="flex-grow border-2 border-gray-300 bg-white rounded-l-sm px-3 py-2 text-gray-700 focus:outline-none focus:border-midnight"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                />
-            </div>
-            <div className="">
-                <Button className={buttonVariants({variant: 'default'})} onClick={() => handleSearch()}>
-                    Add
-                </Button>
-            </div>
+            />
+            <Button 
+                className={`${buttonVariants({ variant: 'default' })} rounded-l-none rounded-r-sm`} 
+                onClick={() => handleSearch()}>
+                Add
+            </Button>
         </div>
-    )
+    );
 }
 
-export default SearchAddMessage
+export default SearchAddMessage;

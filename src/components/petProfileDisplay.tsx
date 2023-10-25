@@ -41,7 +41,7 @@ const PetProfileDisplay: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const userIdFromStorage = sessionStorage.getItem('clickedUserId');
+    const userIdFromStorage = sessionStorage.getItem('clickedPetId');
     const ownerIdFromStorage = sessionStorage.getItem('clickedOwnerId');
     setUserId(userIdFromStorage);
     const fetchData = async () => {
