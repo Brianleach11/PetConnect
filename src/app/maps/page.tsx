@@ -46,7 +46,7 @@ export default async function Home() {
       <div className='py-12'>
         <div>Welcome to the maps page!</div>
         <div>Explore other pet owners in your area, as well as pet-centered locations like parks, pet groomers, and more!</div>
-        <div className="relative center flex-auto w-full">
+        <div>
           <MapboxMap coords={await getCenter()}/>
         </div>
       </div>
