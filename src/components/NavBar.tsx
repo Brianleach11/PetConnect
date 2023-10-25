@@ -2,9 +2,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "./ui/button";
+<<<<<<< HEAD
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {useRouter} from 'next/navigation'
 import { useState, useEffect, useRef, RefObject } from 'react';
+=======
+import { Session } from "@supabase/auth-helpers-nextjs";
+import { useEffect, FC } from "react";
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
 import ProfileDropdown from "./ProfileDropdown";
 import { Check,X } from "lucide-react"
 import { Bell } from 'lucide-react';
@@ -19,6 +24,7 @@ type FriendRequestNotification = {
   username?: string; // New field to store the username
 };
 
+<<<<<<< HEAD
 function timeSince(date: string | Date): string {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
   let interval = Math.floor(seconds / 31536000);
@@ -86,6 +92,14 @@ export default function NavBar({session, authToken}: {session: Session | null, a
       router.refresh()
     }
   })
+=======
+interface NavBarProps {
+  session: Session | null
+}
+
+
+const NavBar: FC<NavBarProps> = ({session})=> {
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
 
 
   const fetchFriendRequests = async () => {
@@ -251,6 +265,7 @@ useEffect(() => {
           onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
 />
       </div>
+<<<<<<< HEAD
 
       {session && (
         <div className="relative" ref={notificationBtnRef}>
@@ -305,3 +320,10 @@ useEffect(() => {
 
 );
 };
+=======
+    </>
+  );
+};
+
+export default NavBar;
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a

@@ -60,6 +60,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
         fetchData();
     }, [item]);
 
+<<<<<<< HEAD
     // Handle chat redirection
     const redirectUser = async () => {
         console.log("REDIRECT TRIGGERED");
@@ -68,6 +69,13 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
 
         let chatId;
         const { data: query, error: chatIdError } = await supabase
+=======
+    const redirectUser = async() =>{
+        //console.log("REDIRECT TRIGGERED")
+        if(!item.sending_user || !item.receiving_user) return null
+        let chatId
+        let {data: query, error: chatIdError} = await supabase
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
             .from('chats')
             .select('chat_id, sender_id, recipient_id');
 
@@ -81,11 +89,20 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
                 }
             }
         }
+<<<<<<< HEAD
 
         if (chatIdError) console.error(chatIdError);
 
         if (!chatId) {
             const { data: enteredChat, error: newChatError } = await supabase
+=======
+    
+        if(chatIdError) console.log(chatIdError)
+        //console.log("RETURNED CHAT ID"+chatId)
+    
+        if(!chatId){
+            const {data: enteredChat, error: newChatError} = await supabase
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
                 .from('messages')
                 .insert({
                     sender_id: session.user.id,
@@ -94,14 +111,23 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
                     chat_id: uuidv4()
                 })
                 .select()
+<<<<<<< HEAD
                 .single();
 
             if (enteredChat && enteredChat.chat_id) {
                 setNewChatId(enteredChat.chat_id);
+=======
+                .single()
+            //console.log(enteredChat)
+            if(enteredChat && enteredChat.chat_id){
+                console.log("Im setting it!" + enteredChat.chat_id)
+                setNewChatId(enteredChat.chat_id)
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
             }
         } else {
             setNewChatId(chatId);
         }
+<<<<<<< HEAD
 
         router.refresh();
     };
@@ -112,6 +138,11 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
             const href = `/messages/chat/${chatHrefConstructor(session.user.id.toString(), searchUser, newChatId)}`;
             setNewChatId('');
             router.push(href);
+=======
+        else{
+            setNewChatId(chatId)
+            //console.log("Chat ID already exists: " + chatId)
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
         }
     }, [newChatId]);
 
