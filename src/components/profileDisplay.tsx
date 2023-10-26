@@ -62,9 +62,9 @@ const ProfileDisplay: React.FC = () => {
         <h1 className="text-2xl font-semibold mb-1">
     My name is {petData?.name || 'Pet Name'} :)
     </h1>
-<span className="text-l">I am a {petData?.pet_type}, My breed is {petData?.breed}</span>
-<p className="text-l">I was born on {`${petData?.birthday}`}</p>
-<p className="text-l">{userData?.city}, {userData?.state}</p>
+    <span className="text-l">I am a {petData?.pet_type}, My breed is {petData?.breed}</span>
+    <p className="text-l">I was born on {`${petData?.birthday}`}</p>
+    <p className="text-l">{userData?.city}, {userData?.state}</p>
         </div>
         <div className="flex  mt-4 md:mt-0 md:ml-4 gap-2.5">
           <Button 

@@ -321,6 +321,31 @@ export interface Database {
           }
         ]
       }
+      notification: {
+        Row: {
+          chat_id: string | null
+          created_at: string | null
+          message_content: string | null
+          recipient_id: string | null
+          recipient_username: string | null
+          sender_id: string | null
+          sender_username: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       recent_messages: {
         Row: {
           chat_id: string | null
@@ -331,6 +356,7 @@ export interface Database {
           recipient_username: string | null
           sender_id: string | null
           sender_username: string | null
+          seen: boolean
         }
         Relationships: [
           {

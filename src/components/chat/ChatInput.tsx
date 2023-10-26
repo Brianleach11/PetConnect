@@ -49,13 +49,13 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
         }
     }
 
-    return(
-        <div className='border-t border-gray-200 px-4 pt-4 mb-1 sm:mb-0'>
-            <div className='relative flex-1 overflow-hidden rounded-lg shadow-lg ring-1 ring-midnight focus-within:ring-2'>
+    return (
+        <div className='border-t border-gray-300 px-4 pt-4 mb-2 sm:mb-0'>
+            <div className='relative flex-1 overflow-hidden rounded-lg shadow-lg ring-1 ring-lightblue-400 focus-within:ring-2'>
                 <TextAreaAutosize
                     ref={textareaRef}
-                    onKeyDown={(e)=>{
-                        if(e.key === 'Enter' && !e.shiftKey){
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
                             sendMessage()
                         }
@@ -64,7 +64,7 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your message..."
-                    className='w-full outline-none resize-none border-0 bg-transparent ring-muted text-gray-900 placeholder:text-gray-400 px-2 sm:py-1.5 sm:text-sm sm:leading-6'
+                    className='w-full outline-none resize-none border-0 bg-transparent ring-lightblue-400 text-gray-700 placeholder:text-gray-400 px-3 sm:py-2 sm:text-sm sm:leading-6'
                 />
                 <div
                     onClick={() => textareaRef.current?.focus()}
@@ -75,15 +75,14 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                     </div>
                 </div>
 
-                <div className='absolute right-0 bottom-0 flex justify-between py-2 pl-3 pr-2'>
-                    <div className='flex-shrin-0'>
-                        <Button isLoading={isLoading} onClick={sendMessage}>
-                            Send
-                        </Button>
-                    </div>
+                <div className='absolute right-0 bottom-0 flex justify-end py-2 pl-3 pr-2 space-x-2'>
+                    <Button isLoading={isLoading} onClick={sendMessage}>
+                        Send
+                    </Button>
                 </div>
             </div>
         </div>
     )
 }
-export default ChatInput
+
+export default ChatInput;

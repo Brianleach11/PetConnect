@@ -1,14 +1,10 @@
 'use client'
-import {
-    Card,
-    CardContent,
-} from "@/components/ui/card"
-import {Session} from '@supabase/auth-helpers-nextjs'
-import { UUID } from "crypto";
+import { Card, CardContent } from "@/components/ui/card";
+import { Session } from '@supabase/auth-helpers-nextjs';
 import { FC } from "react";
 import { ChevronUp } from "lucide-react";
 
-interface MessagePreviewItem {
+export interface MessagePreviewItem {
     chat_id: string | null;
     created_at: string | null;
     message_content: string | null;
@@ -19,27 +15,56 @@ interface MessagePreviewItem {
     deleted_by: string | null;
     //seen: boolean;
 }
-interface MessagePreviewProps{
+
+interface MessagePreviewProps {
     session: Session,
     item: MessagePreviewItem,
     isActive: boolean,
 }
 
-function formatDate(dateString : string) {
+
+function formatDate(dateString: string) {
     const today = new Date();
     const date = new Date(dateString);
-  
+
     if (date.toDateString() === today.toDateString()) {
-      // Display only time if it's today
-      return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+        return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
     } else {
-      // Display both date and time if it's not today
-      return (
-        date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-      );
+        return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     }
 }
 
+<<<<<<< HEAD
+const MessagePreview: FC<MessagePreviewProps> = ({ item, session }) => {
+    if (session.user.id === item.deleted_by) {
+        return null;
+    }
+
+    return (
+        <Card className="max-w-1/3 hover:shadow-lg transition-transform transform hover:-translate-y-1 hover:border-midnight p-4 rounded-lg">
+            <CardContent className="py-2">
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-lg">
+                        {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
+                    </h3>
+                    {item.seen && <span className="bg-softGreen text-white rounded-full px-2 py-1 text-xs font-semibold ml-auto">New</span>}
+                </div>
+                <p className={`text-sm text-gray-700 overflow-ellipsis ${item.seen ? 'font-medium' : ''}`}>
+                    {item.message_content?.substring(0, 37)}
+                </p>
+                <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-gray-400">
+                        {item.created_at !== null ? formatDate(item.created_at) : null}
+                    </p>
+                    <ChevronUp size={20} className="text-midnight" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default MessagePreview;
+=======
 const MessagePreview: FC<MessagePreviewProps> = ({item, session, isActive}) =>{
     if(session.user.id === item.deleted_by){
       return null
@@ -109,3 +134,4 @@ from
 order by
   m.chat_id,
   m.created_at desc;*/
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a

@@ -1,10 +1,11 @@
 'use client'
-import { Send } from "lucide-react"
-import { Database } from "@/types/supabase"
-import {Session, createClientComponentClient} from '@supabase/auth-helpers-nextjs'
-import {FC, useEffect, useState} from 'react'
-import { chatHrefConstructor } from "@/lib/utils"
-import { useRouter } from "next/navigation"
+
+import { Send } from "lucide-react";
+import { Database } from "@/types/supabase";
+import { Session, createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { FC, useEffect, useState } from 'react';
+import { chatHrefConstructor } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from 'uuid';
 
 interface ConnectionPreviewItem {
@@ -14,34 +15,36 @@ interface ConnectionPreviewItem {
     receiving_user: string | null;
 }
 
-interface ConnectionPreviewProps{
+interface ConnectionPreviewProps {
     session: Session,
     item: ConnectionPreviewItem
 }
 
-function formatDate(dateString : string) {
+/**
+ * Format date in a user-friendly manner.
+ * @param dateString - ISO date string
+ */
+function formatDate(dateString: string) {
     const today = new Date();
     const date = new Date(dateString);
-  
+
     if (date.toDateString() === today.toDateString()) {
-      // Display only time if it's today
-      return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+        return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
     } else {
-      // Display both date and time if it's not today
-      return (
-        date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-      );
+        return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     }
 }
 
-const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
-    const supabase = createClientComponentClient<Database>()
+const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
+    const supabase = createClientComponentClient<Database>();
     const [username, setUsername] = useState<string>("");
-    const [newChatId, setNewChatId] = useState<string>("")
-    const router = useRouter()
-    const searchUser = (item.sending_user === session.user.id) ? item!.receiving_user : item!.sending_user;
-    if(!searchUser)return null;
+    const [newChatId, setNewChatId] = useState<string>("");
+    const router = useRouter();
 
+    const searchUser = (item.sending_user === session.user.id) ? item.receiving_user : item.sending_user;
+    if (!searchUser) return null;
+
+    // Fetch username from the database
     useEffect(() => {
         const fetchData = async () => {
             const { data, error } = await supabase
@@ -49,84 +52,110 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({item, session}) => {
                 .select("username")
                 .eq("id", searchUser)
                 .single();
-            if(error) console.log(error)
-            
-            if (data && data.username) {
-            setUsername(data.username);
-            }
+
+            if (error) console.error(error);
+            if (data && data.username) setUsername(data.username);
         };
-        
+
         fetchData();
     }, [item]);
 
+<<<<<<< HEAD
+    // Handle chat redirection
+    const redirectUser = async () => {
+        console.log("REDIRECT TRIGGERED");
+
+        if (!item.sending_user || !item.receiving_user) return;
+
+        let chatId;
+        const { data: query, error: chatIdError } = await supabase
+=======
     const redirectUser = async() =>{
         //console.log("REDIRECT TRIGGERED")
         if(!item.sending_user || !item.receiving_user) return null
         let chatId
         let {data: query, error: chatIdError} = await supabase
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
             .from('chats')
-            .select('chat_id, sender_id, recipient_id')
+            .select('chat_id, sender_id, recipient_id');
+
         if (query && Array.isArray(query)) {
-            for(const chatInfo of query){
-                if((chatInfo.sender_id == session.user.id && chatInfo.recipient_id == searchUser) ||
-                    (chatInfo.sender_id == searchUser && chatInfo.recipient_id == session.user.id)){
-                    chatId = chatInfo.chat_id
+            for (const chatInfo of query) {
+                if (
+                    (chatInfo.sender_id == session.user.id && chatInfo.recipient_id == searchUser) ||
+                    (chatInfo.sender_id == searchUser && chatInfo.recipient_id == session.user.id)
+                ) {
+                    chatId = chatInfo.chat_id;
                 }
             }
         }
+<<<<<<< HEAD
+
+        if (chatIdError) console.error(chatIdError);
+
+        if (!chatId) {
+            const { data: enteredChat, error: newChatError } = await supabase
+=======
     
         if(chatIdError) console.log(chatIdError)
         //console.log("RETURNED CHAT ID"+chatId)
     
         if(!chatId){
             const {data: enteredChat, error: newChatError} = await supabase
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
                 .from('messages')
-                .insert(
-                    {
-                        sender_id: session.user.id, 
-                        recipient_id: searchUser, 
-                        message_content:"", 
-                        chat_id: uuidv4()
-                    }
-                )
+                .insert({
+                    sender_id: session.user.id,
+                    recipient_id: searchUser,
+                    message_content: "",
+                    chat_id: uuidv4()
+                })
                 .select()
+<<<<<<< HEAD
+                .single();
+
+            if (enteredChat && enteredChat.chat_id) {
+                setNewChatId(enteredChat.chat_id);
+=======
                 .single()
             //console.log(enteredChat)
             if(enteredChat && enteredChat.chat_id){
                 console.log("Im setting it!" + enteredChat.chat_id)
                 setNewChatId(enteredChat.chat_id)
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
             }
+        } else {
+            setNewChatId(chatId);
         }
+<<<<<<< HEAD
+
+        router.refresh();
+    };
+
+    // Redirect to the chat page when a new chat ID is set
+    useEffect(() => {
+        if (newChatId) {
+            const href = `/messages/chat/${chatHrefConstructor(session.user.id.toString(), searchUser, newChatId)}`;
+            setNewChatId('');
+            router.push(href);
+=======
         else{
             setNewChatId(chatId)
             //console.log("Chat ID already exists: " + chatId)
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
         }
-        //new line to test
-        router.refresh()
-    }
-    useEffect(()=>{
-        if(newChatId){
-            const href = `/messages/chat/${chatHrefConstructor(
-                session.user.id.toString(), 
-                searchUser, 
-                newChatId
-            )}`
-            setNewChatId('')
-            router.push(href)
-        }
-    }, [newChatId])
-    return(
+    }, [newChatId]);
+
+    return (
         <div className="max-h-12 text-midnight border-2 border-midnight rounded-lg hover:border-4">
             <div className="grid grid-cols-2 justify-items-end align-middle py-2 px-4">
                 <div>
-                    <p className="text-left text-lg">
-                        {username}
-                    </p>
+                    <p className="text-left text-lg">{username}</p>
                 </div>
-                <Send className="right-0 items-center" onClick={redirectUser}/>
+                <Send className="right-0 items-center" onClick={redirectUser} />
             </div>
         </div>
-    )
+    );
 }
 
-export default ConnectionPreview
+export default ConnectionPreview;

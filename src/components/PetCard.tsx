@@ -17,6 +17,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Trash2, Pencil } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { v4 as uuidv4 } from 'uuid';
+import { chatHrefConstructor } from "@/lib/utils"
 
 const supabase = createClientComponentClient<Database>();
 
@@ -34,6 +36,12 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [colorDialogOpen, setColorDialogOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>(''); // default color, or get it from 'pet' prop
+  const [newChatId, setNewChatId] = useState<string>("")
+  const [connectionSent, setConnectionSent] = useState(false);
+  const [sentConnections, setSentConnections] = useState(new Set<string>());
+  const [areFriends, setAreFriends] = useState(false);
+  const [fetchingCompleted, setFetchingCompleted] = useState(false);
+  
 
   useEffect(() => {
     const fetchCurrentUserId = async () => {
@@ -95,7 +103,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     if (isButtonHovered) return;
 
     if (pet.id && pet.owner_id) {
-      sessionStorage.setItem('clickedUserId', pet.id.toString());
+      sessionStorage.setItem('clickedPetId', pet.id.toString());
       sessionStorage.setItem('clickedOwnerId', pet.owner_id.toString());
       
       if (pet.owner_id != currentUserId) {
@@ -201,6 +209,183 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
 
 
+
+
+  useEffect(() => {
+    const checkConnection = async () => {
+        if (currentUserId) {  // Ensure currentUserId is not null
+            const {data} = await supabase
+                .from('friend_requests')
+                .select('receiving_user')
+                .eq('sending_user', currentUserId);
+
+            if (data && Array.isArray(data)) {
+                const updatedConnections = new Set(data.map(entry => entry.receiving_user));
+                setSentConnections(updatedConnections);
+            }
+        }
+    };
+
+    checkConnection();
+}, [currentUserId]);
+
+
+
+  const sendConnection = async () => {
+    if (!currentUserId || !pet.owner_id) {
+        console.error("User ID or pet owner ID is null or undefined");
+        return;
+    }
+
+    const { error } = await supabase
+    .from('friend_requests')
+    .insert({
+      sending_user: currentUserId,
+      receiving_user: pet.owner_id
+    });
+
+    if (error) {
+      console.error("Error sending connection: ", error);
+    } else {
+      const updatedSet = new Set(sentConnections);
+      updatedSet.add(pet.owner_id);
+      setSentConnections(updatedSet);
+      setConnectionSent(true);
+      router.refresh();
+    }
+
+
+};
+
+
+  const removeConnection = async () => {
+    if (!currentUserId || !pet.owner_id) {
+        console.error("User ID or pet owner ID is null or undefined");
+        return;
+    }
+
+    const { error } = await supabase
+      .from('friend_requests')
+      .delete()
+      .eq('sending_user', currentUserId)
+      .eq('receiving_user', pet.owner_id);
+
+    if (error) {
+      console.error("Error removing connection: ", error);
+    } else {
+      const updatedSet = new Set(sentConnections);
+      updatedSet.delete(pet.owner_id);
+      setSentConnections(updatedSet);
+      setConnectionSent(false);
+      router.refresh();
+    }
+};
+
+
+  const redirectUser = async() =>{
+    console.log("REDIRECT TRIGGERED")
+    if(!currentUserId || !pet.owner_id) return null
+    let chatId
+    let {data: query, error: chatIdError} = await supabase
+        .from('chats')
+        .select('chat_id, sender_id, recipient_id')
+    if (query && Array.isArray(query)) {
+        for(const chatInfo of query){
+            if((chatInfo.sender_id == pet.owner_id && chatInfo.recipient_id == currentUserId) ||
+                (chatInfo.sender_id == currentUserId && chatInfo.recipient_id == pet.owner_id)){
+                chatId = chatInfo.chat_id
+            }
+        }
+    }
+
+    if(chatIdError) console.log(chatIdError)
+    console.log("RETURNED CHAT ID"+chatId)
+
+    if(!chatId){
+        const {data: enteredChat, error: newChatError} = await supabase
+            .from('messages')
+            .insert(
+                {
+                    sender_id: currentUserId, 
+                    recipient_id: pet.owner_id, 
+                    message_content:"", 
+                    chat_id: uuidv4()
+                }
+            )
+            .select()
+            .single()
+        console.log(enteredChat)
+        if(enteredChat && enteredChat.chat_id){
+            console.log("Im setting it!" + enteredChat.chat_id)
+            setNewChatId(enteredChat.chat_id)
+        }
+    }
+    else{
+        setNewChatId(chatId)
+        console.log("Chat ID already exists: " + chatId)
+    }
+    //new line to test
+    router.refresh()
+}  
+
+useEffect(()=>{
+  if(newChatId){
+      const href = `/messages/chat/${chatHrefConstructor(
+          currentUserId, 
+          pet.owner_id, 
+          newChatId
+      )}`
+      setNewChatId('')
+      router.push(href)
+  }
+}, [newChatId])
+
+
+const checkFriendship = async () => {
+  if (!pet.owner_id || !currentUserId) { 
+    console.error("Invalid IDs for checking friendship status");
+    return;
+  }
+
+  const { data: sentFriendship, error: sentError } = await supabase
+    .from('friends')
+    .select('*')
+    .eq('sending_user', currentUserId)
+    .eq('receiving_user', pet.owner_id);
+
+  if (sentError) {
+    console.error("Error fetching friendship status for sent request:", sentError);
+    return;
+  }
+
+  if (sentFriendship && sentFriendship.length > 0) {
+    setAreFriends(true);
+    return;
+  }
+
+  const { data: receivedFriendship, error: receivedError } = await supabase
+    .from('friends')
+    .select('*')
+    .eq('sending_user', pet.owner_id)
+    .eq('receiving_user', currentUserId);
+
+  if (receivedError) {
+    console.error("Error fetching friendship status for received request:", receivedError);
+    return;
+  }
+
+  if (receivedFriendship && receivedFriendship.length > 0) {
+    setAreFriends(true);
+  }
+}
+
+
+
+
+useEffect(() => {
+  checkFriendship();
+}, [currentUserId, pet.owner_id]);
+
   return (
     <div>
       <Card
@@ -242,18 +427,33 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         <CardFooter className="flex justify-center gap-2.5 my-2">
           {currentUserId !== pet.owner_id && (
             <>
-              <Button
-                className="px-5 py-2.5 rounded-md transform hover:scale-105"
-                onClick={() => console.log(`Connected with ${pet.name}`)}
-                onMouseEnter={() => setIsButtonHovered(true)}
-                onMouseLeave={() => setIsButtonHovered(false)}
-              >
-                Connect
-              </Button>
+{
+  areFriends || !pet.owner_id ? null : (
+    sentConnections.has(pet.owner_id) ? (
+      <Button
+        className="px-5 py-2.5 rounded-md transform hover:scale-105"
+        onClick={removeConnection}
+        onMouseEnter={() => setIsButtonHovered(true)}
+        onMouseLeave={() => setIsButtonHovered(false)}
+      >
+        Connection Sent
+      </Button>
+    ) : (
+      <Button
+        className="px-5 py-2.5 rounded-md transform hover:scale-105"
+        onClick={sendConnection}
+        onMouseEnter={() => setIsButtonHovered(true)}
+        onMouseLeave={() => setIsButtonHovered(false)}
+      >
+        Connect
+      </Button>
+    )
+  )
+}
 
               <Button
                 className="px-5 py-2.5 rounded-md transform hover:scale-105 "
-                onClick={() => console.log(`Message sent to ${pet.name}`)}
+                onClick={redirectUser}
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
               >

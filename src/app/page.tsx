@@ -16,6 +16,12 @@ export default async function Home() {
   } = await supabase.auth.getSession();
 
   return (
+<<<<<<< HEAD
+    <div className="flex flex-col min-h-screen bg-whiteGreen">
+      <NavBar session={session} authToken={authToken} />
+      <div className="flex-grow mt-20"> {/* Added mt-4 for margin-top */}
+        <PetCardList />
+=======
     session ? (
       <div className="flex flex-col min-h-screen bg-whiteGreen">
         <NavBar session={session} />
@@ -25,6 +31,7 @@ export default async function Home() {
         <div className="flex-grow">
           <PetCardList />
         </div>
+>>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
       </div>
     )
     :
@@ -35,4 +42,5 @@ export default async function Home() {
       <SimpleNav session={session} authToken={authToken}/>
     </div>
   );
+  
 }
