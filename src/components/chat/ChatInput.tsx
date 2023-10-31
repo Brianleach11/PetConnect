@@ -25,7 +25,7 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
         if(!input || input === '') return
         setIsLoading(true)
         try{
-            const {error} = await supabase
+            const {data: newMessage,error: messagesError} = await supabase
             .from('messages')
             .insert(
                 {
@@ -35,7 +35,32 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                     recipient_id: chatPartner
                 }
             )
-            if(error) console.log(error.message + '\n' + error.hint + '\n' + error.code + '\n' + error.details)
+            .select()
+            .single()
+
+            if(messagesError)
+            {
+                console.log(messagesError.message + '\n' + messagesError.hint + '\n' + messagesError.code + '\n' + messagesError.details);
+                return;
+            }
+
+            const {error: notificationsError} = await supabase
+            .from("notifications")
+            .insert(
+                {
+                    message_content: input,
+                    receiving_user: chatPartner,
+                    seen: false,
+                    message_id: newMessage.id,
+                }
+            )
+
+            if(notificationsError)
+            {
+                console.log(notificationsError.message + '\n' + notificationsError.hint + '\n' + notificationsError.code + '\n' + notificationsError.details)
+                return;
+            } 
+            
             setInput('')
             textareaRef.current?.focus()
         } catch(error){

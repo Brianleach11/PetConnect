@@ -192,7 +192,6 @@ useEffect(() => {
       .from('notifications')
       .update({ seen: true }) // Set seen to true
       .eq('receiving_user', session?.user?.id)
-      .eq('seen', false); // Only update messages where seen is currently false
   
     if (error) {
       console.error("Error updating unread messages:", error);
