@@ -2,14 +2,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "./ui/button";
-<<<<<<< HEAD
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {useRouter} from 'next/navigation'
 import { useState, useEffect, useRef, RefObject } from 'react';
-=======
-import { Session } from "@supabase/auth-helpers-nextjs";
-import { useEffect, FC } from "react";
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
 import ProfileDropdown from "./ProfileDropdown";
 import { Check,X } from "lucide-react"
 import { Bell } from 'lucide-react';
@@ -24,7 +19,7 @@ type FriendRequestNotification = {
   username?: string; // New field to store the username
 };
 
-<<<<<<< HEAD
+
 function timeSince(date: string | Date): string {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
   let interval = Math.floor(seconds / 31536000);
@@ -92,15 +87,6 @@ export default function NavBar({session, authToken}: {session: Session | null, a
       router.refresh()
     }
   })
-=======
-interface NavBarProps {
-  session: Session | null
-}
-
-
-const NavBar: FC<NavBarProps> = ({session})=> {
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
-
 
   const fetchFriendRequests = async () => {
     const { data, error } = await supabase
@@ -237,93 +223,83 @@ useEffect(() => {
 
 
  return (
-  <>
-  <div className='fixed top-0 inset-x-0 h-fit bg-softGreen z-[10] py-2'>
-    <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
-      <Link href='/' className='flex gap-2 items-center'>
-        <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo"/>
-        <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
-      </Link>
-      <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Posts</Link>
-      <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
-      <div className="relative">
-      <button 
-        onClick={toggleChatMenu} 
-         className={buttonVariants({variant: "ghost"})} 
-         style={{ position: 'relative' }}
-          >
-          <MessagesSquare className="w-full h-6 text-gray-600" />
-          {unreadMessagesCount > 0 && (
-            <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
-              {unreadMessagesCount}
-            </span>
-          )}
-        </button>
-        <ChatDropDownMenu 
-         session={session}
-          isOpen={isChatMenuOpen}
-          onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
-/>
-      </div>
-<<<<<<< HEAD
-
-      {session && (
-        <div className="relative" ref={notificationBtnRef}>
-          <button onClick={() => setShowDropdown(!showDropdown)} className="relative p-2 rounded-md hover:bg-white transition-all ">
-            <Bell className="w-6 h-6 text-gray-600" />
-            {notifications.length > 0 && (
-              <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
-                {notifications.length}
-              </span>
-            )}
-          </button>
-          {showDropdown && (
-            <div className="absolute top-full mt-2 right-0 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 overflow-hidden" ref={notificationDropdownRef}>
-              <div className="flex justify-between items-center border-b border-gray-200 p-5 bg-gray-50">
-                <span className="font-semibold text-xl">Notifications</span>
-              </div>
-              {notifications.length > 0 ? (
-                notifications.map(notification => (
-                  <div key={notification.created_at} className="border-b-2 flex justify-between items-center p-5">
-                    <div className="w-5/6">
-                      <span className="font-bold">{notification.username}</span>
-                      <div className="text-merleBlue" style={{ fontSize: '0.8rem' }}>
-                        {timeSince(new Date(notification.created_at))}
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      {notification.sending_user !== session.user.id ? (
-                        <span onClick={() => acceptRequest(notification.sending_user, session.user.id)}>
-                          <Check className="bg-softGreen rounded-full w-7 h-7 flex items-center justify-center hover:shadow-lg hover:ring-2 hover:ring-midnight" />
-                        </span>
-                      ) : null}
-                      <span onClick={() => rejectRequest(notification.sending_user, session.user.id)} className="ml-3">
-                        <X className="bg-red rounded-full w-7 h-7 flex items-center justify-center hover:shadow-lg hover:ring-2 hover:ring-midnight" />
-                      </span>
-                    </div>
+    <>
+      <div className='fixed top-0 inset-x-0 h-fit bg-softGreen z-[10] py-2'>
+        <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
+          <Link href='/' className='flex gap-2 items-center'>
+            <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo"/>
+            <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
+          </Link>
+          <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Posts</Link>
+          <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
+          <div className="relative">
+          <button 
+            onClick={toggleChatMenu} 
+            className={buttonVariants({variant: "ghost"})} 
+            style={{ position: 'relative' }}
+              >
+              <MessagesSquare className="w-full h-6 text-gray-600" />
+              {unreadMessagesCount > 0 && (
+                <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
+                  {unreadMessagesCount}
+                </span>
+              )}
+            </button>
+            <ChatDropDownMenu 
+            session={session}
+              isOpen={isChatMenuOpen}
+              onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
+            />
+          </div>
+          {session && (
+            <div className="relative" ref={notificationBtnRef}>
+              <button onClick={() => setShowDropdown(!showDropdown)} className="relative p-2 rounded-md hover:bg-white transition-all ">
+                <Bell className="w-6 h-6 text-gray-600" />
+                {notifications.length > 0 && (
+                  <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
+                    {notifications.length}
+                  </span>
+                )}
+              </button>
+              {showDropdown && (
+                <div className="absolute top-full mt-2 right-0 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 overflow-hidden" ref={notificationDropdownRef}>
+                  <div className="flex justify-between items-center border-b border-gray-200 p-5 bg-gray-50">
+                    <span className="font-semibold text-xl">Notifications</span>
                   </div>
-                ))
-              ) : (
-                <div className="p-5 text-center text-gray-500 text-lg">
-                  You have no incoming requests.
+                  {notifications.length > 0 ? (
+                    notifications.map(notification => (
+                      <div key={notification.created_at} className="border-b-2 flex justify-between items-center p-5">
+                        <div className="w-5/6">
+                          <span className="font-bold">{notification.username}</span>
+                          <div className="text-merleBlue" style={{ fontSize: '0.8rem' }}>
+                            {timeSince(new Date(notification.created_at))}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          {notification.sending_user !== session.user.id ? (
+                            <span onClick={() => acceptRequest(notification.sending_user, session.user.id)}>
+                              <Check className="bg-softGreen rounded-full w-7 h-7 flex items-center justify-center hover:shadow-lg hover:ring-2 hover:ring-midnight" />
+                            </span>
+                          ) : null}
+                          <span onClick={() => rejectRequest(notification.sending_user, session.user.id)} className="ml-3">
+                            <X className="bg-red rounded-full w-7 h-7 flex items-center justify-center hover:shadow-lg hover:ring-2 hover:ring-midnight" />
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-5 text-center text-gray-500 text-lg">
+                      You have no incoming requests.
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           )}
+
+          {session ? <ProfileDropdown/> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
         </div>
-      )}
-
-      {session ? <ProfileDropdown/> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
-    </div>
-  </div>
-</>
-
-);
-};
-=======
+      </div>
     </>
   );
 };
-
-export default NavBar;
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
