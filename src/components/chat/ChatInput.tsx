@@ -24,6 +24,8 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
     const sendMessage = async() => {
         if(!input || input === '') return
         setIsLoading(true)
+        setInput('')
+        textareaRef.current?.focus()
         try{
             const {data: newMessage,error: messagesError} = await supabase
             .from('messages')
@@ -44,25 +46,54 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                 return;
             }
 
-            const {error: notificationsError} = await supabase
-            .from("notifications")
-            .insert(
-                {
-                    message_content: input,
-                    receiving_user: chatPartner,
-                    seen: false,
-                    message_id: newMessage.id,
-                }
-            )
+            //this need to:
+            //either update an existing notification if one exists from sender to receiver
+            //or create one
+            const {data: notificationExists, error: failedToExist} = await supabase
+                .from('notifications')
+                .select("*")
+                .eq('receiving_user', chatPartner)
+                .eq('sending_user', session.user.id)
+                .single()
 
-            if(notificationsError)
+            if(notificationExists && notificationExists.sending_user == session.user.id)
             {
-                console.log(notificationsError.message + '\n' + notificationsError.hint + '\n' + notificationsError.code + '\n' + notificationsError.details)
-                return;
-            } 
-            
-            setInput('')
-            textareaRef.current?.focus()
+                const {error: notificationsError} = await supabase
+                    .from("notifications")
+                    .update(
+                        {
+                            message_content: input,
+                            message_id: newMessage.id,
+                        }
+                    )
+                    .eq("receiving_user", chatPartner)
+                    .eq('sending_user', session.user.id)
+
+                if(notificationsError)
+                {
+                    console.log(notificationsError.message + '\n' + notificationsError.hint + '\n' + notificationsError.code + '\n' + notificationsError.details)
+                    return;
+                } 
+            }
+            else
+            {
+                const {error: notificationsError} = await supabase
+                    .from("notifications")
+                    .insert(
+                        {
+                            message_content: input,
+                            message_id: newMessage.id,
+                            receiving_user: chatPartner,
+                            sending_user: session.user.id
+                        }
+                    )
+
+                if(notificationsError)
+                {
+                    console.log(notificationsError.message + '\n' + notificationsError.hint + '\n' + notificationsError.code + '\n' + notificationsError.details)
+                    return;
+                } 
+            }
         } catch(error){
             toast({
                 title: "Error",

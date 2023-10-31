@@ -162,6 +162,21 @@ useEffect(() => {
     fetchFriendRequests();
   };
 
+  useEffect(() => {
+    const channel = supabase.channel('realtime notifications').on('postgres_changes', {
+        event: '*', 
+        schema: 'public', 
+        table: 'notifications'
+    }, (payload) => {
+      console.log("NEW EVENT PAYLOAD: " + payload)
+        
+    }).subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase])
+
 
   const fetchUnreadMessagesCount = async () => {
     if (!session) return;
@@ -192,6 +207,7 @@ useEffect(() => {
       .from('notifications')
       .update({ seen: true }) // Set seen to true
       .eq('receiving_user', session?.user?.id)
+      .eq('seen', false)
   
     if (error) {
       console.error("Error updating unread messages:", error);
@@ -202,8 +218,6 @@ useEffect(() => {
   };
 
   const toggleChatDropDownMenu = () => {
-    console.log('toggle menu is open');
-    
     // Toggle the chat menu
     setIsChatMenuOpen(prevState => {
         // If the chat menu is currently closed
