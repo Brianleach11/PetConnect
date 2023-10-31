@@ -388,6 +388,7 @@ useEffect(() => {
 
   return (
     <div>
+      
       <Card
         onClick={handleCardClick}
         className={`relative w-72 m-10 bg-half-gradient transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'scale-105 shadow-2xl' : 'shadow-lg'} rounded-lg border border-gray-200`}

@@ -19,7 +19,6 @@ type FriendRequestNotification = {
   username?: string; // New field to store the username
 };
 
-
 function timeSince(date: string | Date): string {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
   let interval = Math.floor(seconds / 31536000);
@@ -77,9 +76,6 @@ export default function NavBar({session, authToken}: {session: Session | null, a
 
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
 
-  const toggleChatMenu = () => {
-      setIsChatMenuOpen(prevState => !prevState);
-  };
 
 
   useEffect(()=>{
@@ -167,47 +163,58 @@ useEffect(() => {
   };
 
 
-  const handleNotificationClick = () => {
-    // Redirect to the sender's profile
-    router.push(`/profile/`);
-  };
-
   const fetchUnreadMessagesCount = async () => {
-
     if (!session) return;
   
+    // Fetch unread messages from the notifications table where seen is false
     const { data, error } = await supabase
-      .from('recent_messages')
-      .select('*') // Fetch all columns as you mentioned
-      .eq('recipient_id', session.user.id);
-      console.log("after supabase call" + data?.length);
-
+      .from('notifications')
+      .select('*')  // Fetch all the rows
+      .eq('receiving_user', session.user.id)
+      .eq('seen', false); // Check where seen is false
+    
     if (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching unread notifications:", error);
       return;
     }
   
+    // Update the unread messages count using the length of the data array
     setUnreadMessagesCount(data?.length);
   };
   
   
-  const navigateToMessages = async () => {
+
+  const markAllChatMessagesAsRead = async () => {
+    if (!session) return;
+
+    // Mark all unread messages as read for the user
     const { error } = await supabase
-    .from('unread_messages')
-    .delete()
-    .eq('recipient_id', session?.user?.id);
+      .from('notifications')
+      .update({ seen: true }) // Set seen to true
+      .eq('receiving_user', session?.user?.id)
+      .eq('seen', false); // Only update messages where seen is currently false
   
-  if (error) {
-      console.error("Error deleting unread messages:", error);
-  }
-  
-    if (session) {
-      setUnreadMessagesCount(0);
-      router.push("/messages");
+    if (error) {
+      console.error("Error updating unread messages:", error);
+    }
+
+    // Update the unread messages count to 0
+    setUnreadMessagesCount(0);
+  };
+
+  const toggleChatDropDownMenu = () => {
+    console.log('toggle menu is open');
+    
+    // Toggle the chat menu
+    setIsChatMenuOpen(prevState => !prevState);
+    
+    // If the chat menu is currently closed
+    if (!isChatMenuOpen) {
+        markAllChatMessagesAsRead(); // Mark all messages as read when opening
     }
   };
   
-  
+
 
   useEffect(() => {
     if (session) {
@@ -222,7 +229,7 @@ useEffect(() => {
 }, notificationBtnRef);
 
 
- return (
+return (
     <>
       <div className='fixed top-0 inset-x-0 h-fit bg-softGreen z-[10] py-2'>
         <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
@@ -233,24 +240,25 @@ useEffect(() => {
           <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Posts</Link>
           <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
           <div className="relative">
-          <button 
-            onClick={toggleChatMenu} 
-            className={buttonVariants({variant: "ghost"})} 
-            style={{ position: 'relative' }}
-              >
-              <MessagesSquare className="w-full h-6 text-gray-600" />
-              {unreadMessagesCount > 0 && (
-                <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
-                  {unreadMessagesCount}
-                </span>
-              )}
-            </button>
-            <ChatDropDownMenu 
-            session={session}
-              isOpen={isChatMenuOpen}
-              onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
-            />
+            <button 
+              onClick={toggleChatDropDownMenu} 
+              className={buttonVariants({variant: "ghost"})} 
+              style={{ position: 'relative' }}
+                >
+                <MessagesSquare className="w-full h-6 text-gray-600" />
+                {unreadMessagesCount > 0 && (
+                  <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
+                    {unreadMessagesCount}
+                  </span>
+                )}
+              </button>
+              <ChatDropDownMenu 
+              session={session}
+                isOpen={isChatMenuOpen}
+                onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
+              />
           </div>
+
           {session && (
             <div className="relative" ref={notificationBtnRef}>
               <button onClick={() => setShowDropdown(!showDropdown)} className="relative p-2 rounded-md hover:bg-white transition-all ">
