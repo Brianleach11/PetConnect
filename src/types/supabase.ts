@@ -134,6 +134,7 @@ export interface Database {
           message_id: number | null
           receiving_user: string | null
           seen: boolean | null
+          sending_user: string | null
         }
         Insert: {
           created_at?: string
@@ -142,6 +143,7 @@ export interface Database {
           message_id?: number | null
           receiving_user?: string | null
           seen?: boolean | null
+          sending_user?: string | null
         }
         Update: {
           created_at?: string
@@ -150,6 +152,7 @@ export interface Database {
           message_id?: number | null
           receiving_user?: string | null
           seen?: boolean | null
+          sending_user?: string | null
         }
         Relationships: [
           {
@@ -161,6 +164,12 @@ export interface Database {
           {
             foreignKeyName: "notifications_receiving_user_fkey"
             columns: ["receiving_user"]
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_sending_user_fkey"
+            columns: ["sending_user"]
             referencedRelation: "user"
             referencedColumns: ["id"]
           }
