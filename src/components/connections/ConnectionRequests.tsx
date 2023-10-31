@@ -42,22 +42,16 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({ unseenConnections, un
             
             {unseenConnectionsCount > 0 ? (
                 <CardContent className="items-left grid grid-rows-2 w-full h-full">
-<<<<<<< HEAD
                     <section className="h-3/4">
                         <CardTitle className="my-2 text-lg pr-4">
                             Incoming Connection Requests [{requestsReceived}]
                         </CardTitle>
-=======
-                    <div className="">
-                        <CardTitle className="my-2 text-lg pr-4">Incoming Connection Requests [{requestsReceived}]</CardTitle>
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
                         <ScrollArea className="h-48 border-2 border-midnight rounded-lg space-x-4">
                             {unseenConnections?.map((item, index) => (
                                 item.receiving_user === session.user.id &&
                                 <OneRequest session={session} item={item} key={index} />
                             ))}
                         </ScrollArea>
-<<<<<<< HEAD
                     </section>
 
                     <section className="w-full h-3/4 -mt-10 overflow-hidden">
@@ -69,20 +63,6 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({ unseenConnections, un
                                 item.sending_user === session.user.id && 
                                 <OneRequest session={session} item={item} key={index} />
                             ))}
-=======
-                    </div>
-                    <div className="w-full overflow-hidden">
-                        <CardTitle className="my-2 text-lg">Pending Connections Sent [{requestsSent}]</CardTitle>
-                        <ScrollArea className=" h-48 border-2 border-midnight rounded-lg space-x-4">
-                        {
-                            unseenConnections?.map((item, index) => (
-                                item.sending_user === session.user.id ? 
-                                    <OneRequest session={session} item={item} key={index}/>
-                                : 
-                                null
-                            ))
-                        }
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
                         </ScrollArea>
                     </section>
                 </CardContent>

@@ -30,7 +30,6 @@ const ConnectionRequestsPage: FC = async () => {
     // Ensure count is never undefined
     const finalCount = unseenConnectionsCount ?? 0;
 
-<<<<<<< HEAD
     return (
         <div className="px-4 py-2 rounded-3xl fixed right-0 w-2/3 h-screen bg-midnight">
             <div className="container px-2 top-2 bg-white rounded-xl h-full">
@@ -42,19 +41,6 @@ const ConnectionRequestsPage: FC = async () => {
             </div>
         </div>
     );
-=======
-  return (
-    <div className="pt-14 py-2 rounded-3xl fixed right-0 w-2/3 h-screen bg-midnight">
-      <div className="container px-2 top-2 border-l-2 drop-shadow-lg bg-white rounded-tr-xl h-full">
-        <ConnectionRequests 
-          unseenConnections={unseenConnections} 
-          unseenConnectionsCount={unseenConnectionsCount} 
-          session={session}
-        />
-      </div>
-    </div>
-  )
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
 }
 
 export default ConnectionRequestsPage;

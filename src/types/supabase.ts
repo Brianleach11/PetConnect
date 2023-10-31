@@ -126,6 +126,48 @@ export interface Database {
           }
         ]
       }
+
+      notifications: {
+        Row: {
+          created_at: string
+          id: number
+          message_content: string | null
+          message_id: number | null
+          receiving_user: string | null
+          seen: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          message_content?: string | null
+          message_id?: number | null
+          receiving_user?: string | null
+          seen?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          message_content?: string | null
+          message_id?: number | null
+          receiving_user?: string | null
+          seen?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_message_id_fkey"
+            columns: ["message_id"]
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_receiving_user_fkey"
+            columns: ["receiving_user"]
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      
       pet: {
         Row: {
           bio: string | null

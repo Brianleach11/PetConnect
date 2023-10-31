@@ -2,14 +2,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "./ui/button";
-<<<<<<< HEAD
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {useRouter} from 'next/navigation'
 import { useState, useEffect, useRef, RefObject } from 'react';
-=======
-import { Session } from "@supabase/auth-helpers-nextjs";
-import { useEffect, FC } from "react";
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
 import ProfileDropdown from "./ProfileDropdown";
 import { Check,X } from "lucide-react"
 import { Bell } from 'lucide-react';
@@ -24,7 +19,6 @@ type FriendRequestNotification = {
   username?: string; // New field to store the username
 };
 
-<<<<<<< HEAD
 function timeSince(date: string | Date): string {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
   let interval = Math.floor(seconds / 31536000);
@@ -82,9 +76,6 @@ export default function NavBar({session, authToken}: {session: Session | null, a
 
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
 
-  const toggleChatMenu = () => {
-      setIsChatMenuOpen(prevState => !prevState);
-  };
 
 
   useEffect(()=>{
@@ -92,14 +83,6 @@ export default function NavBar({session, authToken}: {session: Session | null, a
       router.refresh()
     }
   })
-=======
-interface NavBarProps {
-  session: Session | null
-}
-
-
-const NavBar: FC<NavBarProps> = ({session})=> {
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
 
 
   const fetchFriendRequests = async () => {
@@ -181,47 +164,58 @@ useEffect(() => {
   };
 
 
-  const handleNotificationClick = () => {
-    // Redirect to the sender's profile
-    router.push(`/profile/`);
-  };
-
   const fetchUnreadMessagesCount = async () => {
-
     if (!session) return;
   
+    // Fetch unread messages from the notifications table where seen is false
     const { data, error } = await supabase
-      .from('recent_messages')
-      .select('*') // Fetch all columns as you mentioned
-      .eq('recipient_id', session.user.id);
-      console.log("after supabase call" + data?.length);
-
+      .from('notifications')
+      .select('*')  // Fetch all the rows
+      .eq('receiving_user', session.user.id)
+      .eq('seen', false); // Check where seen is false
+    
     if (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching unread notifications:", error);
       return;
     }
   
-    setUnreadMessagesCount(data?.length);
+    // Update the unread messages count using the length of the data array
+    setUnreadMessagesCount(data?.length || 0);
   };
   
   
-  const navigateToMessages = async () => {
+
+  const markAllChatMessagesAsRead = async () => {
+    if (!session) return;
+
+    // Mark all unread messages as read for the user
     const { error } = await supabase
-    .from('unread_messages')
-    .delete()
-    .eq('recipient_id', session?.user?.id);
+      .from('notifications')
+      .update({ seen: true }) // Set seen to true
+      .eq('receiving_user', session?.user?.id)
+      .eq('seen', false); // Only update messages where seen is currently false
   
-  if (error) {
-      console.error("Error deleting unread messages:", error);
-  }
-  
-    if (session) {
-      setUnreadMessagesCount(0);
-      router.push("/messages");
+    if (error) {
+      console.error("Error updating unread messages:", error);
+    }
+
+    // Update the unread messages count to 0
+    setUnreadMessagesCount(0);
+  };
+
+  const toggleChatDropDownMenu = () => {
+    console.log('toggle menu is open');
+    
+    // Toggle the chat menu
+    setIsChatMenuOpen(prevState => !prevState);
+    
+    // If the chat menu is currently closed
+    if (!isChatMenuOpen) {
+        markAllChatMessagesAsRead(); // Mark all messages as read when opening
     }
   };
   
-  
+
 
   useEffect(() => {
     if (session) {
@@ -248,7 +242,7 @@ useEffect(() => {
       <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
       <div className="relative">
       <button 
-        onClick={toggleChatMenu} 
+        onClick={toggleChatDropDownMenu} 
          className={buttonVariants({variant: "ghost"})} 
          style={{ position: 'relative' }}
           >
@@ -265,7 +259,6 @@ useEffect(() => {
           onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
 />
       </div>
-<<<<<<< HEAD
 
       {session && (
         <div className="relative" ref={notificationBtnRef}>
@@ -320,10 +313,3 @@ useEffect(() => {
 
 );
 };
-=======
-    </>
-  );
-};
-
-export default NavBar;
->>>>>>> 1fc1f4f7894ba8e02f8a385648faa9fd15dd0e7a
