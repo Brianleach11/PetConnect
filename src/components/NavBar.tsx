@@ -180,7 +180,7 @@ useEffect(() => {
     }
   
     // Update the unread messages count using the length of the data array
-    setUnreadMessagesCount(data?.length || 0);
+    setUnreadMessagesCount(data?.length);
   };
   
   

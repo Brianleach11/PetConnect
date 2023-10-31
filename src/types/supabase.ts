@@ -126,7 +126,6 @@ export interface Database {
           }
         ]
       }
-
       notifications: {
         Row: {
           created_at: string
@@ -167,7 +166,6 @@ export interface Database {
           }
         ]
       }
-      
       pet: {
         Row: {
           bio: string | null
