@@ -205,13 +205,16 @@ useEffect(() => {
     console.log('toggle menu is open');
     
     // Toggle the chat menu
-    setIsChatMenuOpen(prevState => !prevState);
-    
-    // If the chat menu is currently closed
-    if (!isChatMenuOpen) {
-        markAllChatMessagesAsRead(); // Mark all messages as read when opening
-    }
-  };
+    setIsChatMenuOpen(prevState => {
+        // If the chat menu is currently closed
+        if (!prevState) {
+            markAllChatMessagesAsRead(); // Mark all messages as read when opening
+        }
+
+        return !prevState; // Toggle the state
+    });
+};
+
   
 
 
