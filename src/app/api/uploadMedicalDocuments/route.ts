@@ -24,14 +24,13 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     if(userId === "" || userId === undefined) return new Response(JSON.stringify("No user id"), {status: 400})
     
     console.log("ID: " + userId);
+    const client = createClient(url, {
+        username: username,
+        password: password,
+        authType: AuthType.Password
+    })
     
     try{
-        const client = createClient(url, {
-            username: username,
-            password: password,
-            authType: AuthType.Password
-        })
-
         const exists = await client.exists(`/MedicalDocuments/${userId}`);
         if(!exists) createFolder = true; 
 
@@ -42,6 +41,14 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
 
     if(createFolder){
         //create the folder before trying to upload
+        try{
+            console.log("Creating medical documents user folder")
+            const response = await client.createDirectory(`/MedicalDocuments/${userId}`)
+        }
+        catch(error)
+        {
+            return new Response(JSON.stringify("Failed to create medical documents user folder"), {status: 400})
+        }
     }
     
     try {
