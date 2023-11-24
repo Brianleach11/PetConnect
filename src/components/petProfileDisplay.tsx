@@ -124,22 +124,23 @@ const PetProfileDisplay: React.FC = () => {
 
 }
 
+
 const handleFileUpload = async (event: any) => {
   const file = event?.target.files[0];
   if (!file) return;
 
-  console.log("There is a file");
   const formData = new FormData();
   formData.append('file', file);
+  if(!currentUserId || currentUserId === "") return;
+  formData.append('userId', currentUserId)
 
   try {
-    const response = await fetch('/api/getNextcloudFiles', {
+    const response = await fetch(`/api/uploadMedicalDocuments`, {
         method: 'POST',
-        body: formData,
+        body: formData
     });
 
     if (response.ok) {
-      console.log('File upload success');
       toast({
         title: "Success",
         description: "File upload success",
