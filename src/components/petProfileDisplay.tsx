@@ -11,6 +11,12 @@ import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
 import {X} from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';  
+import MedicalDocCard from './medicalDocuments/medicalDocCard';
+
+interface Document {
+  filename: string;
+  url: string;
+}
 
 const PetProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
@@ -22,8 +28,6 @@ const PetProfileDisplay: React.FC = () => {
     const [editedType, setEditedType] = useState<string | null>(null);
     const [editedBreed, setEditedBreed] = useState<string | null>(null);
     const [editedBio, setEditedBio] = useState<string | null>(null);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
-    const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const documentInputRef = useRef<HTMLInputElement>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
@@ -131,8 +135,8 @@ const handleFileUpload = async (event: any) => {
 
   const formData = new FormData();
   formData.append('file', file);
-  if(!currentUserId || currentUserId === "") return;
-  formData.append('userId', currentUserId)
+  if(!petData || !petData.id) return;
+  formData.append('petId', petData.id.toString())
 
   try {
     const response = await fetch(`/api/uploadMedicalDocuments`, {
@@ -153,8 +157,6 @@ const handleFileUpload = async (event: any) => {
   } catch (error) {
     console.error("Error:", error);
   }
-  //const res = await fetch('/api/upload')
-  //console.log(res)
 };
 
 const handleSaveChanges = async () => {
@@ -334,7 +336,7 @@ const handleSaveChanges = async () => {
 
  {/* Bio Card */}
 <div className="mb-4">
-    <Card className="bg-transparent">
+    <Card>
         <CardHeader className="bg-transparent">
             <h3 className="text-xl font-semibold">Bio</h3>
         </CardHeader>
@@ -351,21 +353,20 @@ const handleSaveChanges = async () => {
       <h3 className="text-xl font-semibold">Medication Documents</h3>
     </CardHeader>
     <CardContent>
-      <div className="flex flex-wrap">
-        <button
-          onClick={() => documentInputRef.current?.click()}
-          className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-        >
-          Upload Documents
-        </button>
-        <input
-          ref={documentInputRef}
-          type="file"
-          multiple
-          hidden
-          onChange={handleFileUpload}
-        />
-      </div>
+      <MedicalDocCard/>
+      <button
+        onClick={() => documentInputRef.current?.click()}
+        className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+      >
+        Upload Documents
+      </button>
+      <input
+        ref={documentInputRef}
+        type="file"
+        multiple
+        hidden
+        onChange={handleFileUpload}
+      />
     </CardContent>
   </Card>
 </div>
