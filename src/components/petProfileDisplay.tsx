@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
 import {X} from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';  
-import { uploadToNextcloud } from './WebDavTest'; // Adjust the import path as needed
 
 const PetProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
@@ -26,8 +25,7 @@ const PetProfileDisplay: React.FC = () => {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-    const documentInputRef = useRef<HTMLInputElement>(null);
-    const imageInputRef = useRef<HTMLInputElement>(null);
+  
   
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -124,47 +122,6 @@ const PetProfileDisplay: React.FC = () => {
     }
 
 }
-
-const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: 'documents' | 'images') => {
-  const files = event.target.files;
-  if (!files) return;
-
-  for (const file of Array.from(files)) {
-    console.log('Uploading file:', file); // Add this line for debugging
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
-
-    try {
-      const response = await fetch('/pages/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('File upload failed');
-      }
-
-      const result = await response.json();
-      const uploadedUrl = result.url;
-
-      if (type === 'documents') {
-        setUploadedDocuments(prev => [...prev, uploadedUrl]);
-      } else {
-        setUploadedImages(prev => [...prev, uploadedUrl]);
-      }
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to upload file.',
-        variant: 'destructive',
-      });
-    }
-  }
-};
-
 
 
 
@@ -365,13 +322,13 @@ const handleSaveChanges = async () => {
           <CardContent>
             <div className="flex flex-wrap">
               <button
-                onClick={() => documentInputRef.current?.click()}
+                onClick={() => console}
                 className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
               >
                 Upload Documents
               </button>
               <input
-                ref={documentInputRef}
+                ref={}
                 type="file"
                 multiple
                 hidden
