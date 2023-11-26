@@ -19,7 +19,7 @@ export default async function Home() {
     session ? (
       <div className="flex flex-col min-h-screen bg-whiteGreen">
         <NavBar session={session} authToken={authToken} />
-        <div className="flex-grow mt-20"> {/* Added mt-4 for margin-top */}
+        <div className="flex-grow mt-20"> 
           <PetCardList />
         </div>
       </div>

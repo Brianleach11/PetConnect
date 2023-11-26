@@ -21,6 +21,7 @@ const ProfileDisplay: React.FC = () => {
     setUserId(userIdFromStorage);
     
     const fetchData = async () => {
+      console.log("yoooooooo");
       if (userIdFromStorage) {
         const { data: userData, error: userError } = await supabase.from('user').select('*').eq('id', userIdFromStorage).single();
         if (userError) console.error('Error fetching user data:', userError);
@@ -42,6 +43,8 @@ const ProfileDisplay: React.FC = () => {
   const handleMessageClick = () => {
     console.log("Message button clicked");  // Add your desired functionality here
   }
+
+  
 
   return (
     <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
@@ -118,7 +121,6 @@ const ProfileDisplay: React.FC = () => {
               <img 
                 style={{ maxWidth: "300px", maxHeight: "300px" }}
                 className="w-full h-full object-cover border-2 border-pink-600 p-1" 
-                src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500" 
                 alt="Dog Image" 
               />
             </div>

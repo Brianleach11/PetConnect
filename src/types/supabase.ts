@@ -32,12 +32,14 @@ export interface Database {
           {
             foreignKeyName: "friend_requests_receiving_user_fkey"
             columns: ["receiving_user"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "friend_requests_sending_user_fkey"
             columns: ["sending_user"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -66,12 +68,14 @@ export interface Database {
           {
             foreignKeyName: "friends_receiving_user_fkey"
             columns: ["receiving_user"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "friends_sending_user_fkey"
             columns: ["sending_user"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           }
@@ -109,18 +113,21 @@ export interface Database {
           {
             foreignKeyName: "messages_deleted_by_fkey"
             columns: ["deleted_by"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_recipient_id_fkey"
             columns: ["recipient_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -158,18 +165,21 @@ export interface Database {
           {
             foreignKeyName: "notifications_message_id_fkey"
             columns: ["message_id"]
+            isOneToOne: false
             referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "notifications_receiving_user_fkey"
             columns: ["receiving_user"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "notifications_sending_user_fkey"
             columns: ["sending_user"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           }
@@ -222,6 +232,7 @@ export interface Database {
           {
             foreignKeyName: "pet_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -232,9 +243,11 @@ export interface Database {
           bio: string | null
           birthday: string | null
           city: string | null
+          filter_city: string | null
+          filter_state: string
           gender: string | null
           id: string
-          looking_for: string | null
+          looking_for: string
           state: string | null
           username: string | null
         }
@@ -242,9 +255,11 @@ export interface Database {
           bio?: string | null
           birthday?: string | null
           city?: string | null
+          filter_city?: string | null
+          filter_state?: string
           gender?: string | null
           id: string
-          looking_for?: string | null
+          looking_for?: string
           state?: string | null
           username?: string | null
         }
@@ -252,9 +267,11 @@ export interface Database {
           bio?: string | null
           birthday?: string | null
           city?: string | null
+          filter_city?: string | null
+          filter_state?: string
           gender?: string | null
           id?: string
-          looking_for?: string | null
+          looking_for?: string
           state?: string | null
           username?: string | null
         }
@@ -262,6 +279,7 @@ export interface Database {
           {
             foreignKeyName: "user_id_fkey"
             columns: ["id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -293,6 +311,7 @@ export interface Database {
           {
             foreignKeyName: "vaccination_pet_id_fkey"
             columns: ["pet_id"]
+            isOneToOne: false
             referencedRelation: "pet"
             referencedColumns: ["id"]
           }
@@ -313,18 +332,21 @@ export interface Database {
           {
             foreignKeyName: "messages_deleted_by_fkey"
             columns: ["deleted_by"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_recipient_id_fkey"
             columns: ["recipient_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -345,18 +367,21 @@ export interface Database {
           {
             foreignKeyName: "messages_deleted_by_fkey"
             columns: ["deleted_by"]
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_recipient_id_fkey"
             columns: ["recipient_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -373,7 +398,8 @@ export interface Database {
       }
     }
     Enums: {
-      [_ in never]: never
+      Filter: "City" | "State" | "Any"
+      Filtration: "Any" | "City" | "State" | "Looking_For"
     }
     CompositeTypes: {
       [_ in never]: never

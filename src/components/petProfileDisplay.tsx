@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import moment from 'moment';
@@ -11,8 +11,7 @@ import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
 import {X} from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';  
-
-
+import { uploadToNextcloud } from './WebDavTest'; // Adjust the import path as needed
 
 const PetProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
@@ -20,12 +19,16 @@ const PetProfileDisplay: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
     const [editedName, setEditedName] = useState<string | null>(null);
     const [editedType, setEditedType] = useState<string | null>(null);
     const [editedBreed, setEditedBreed] = useState<string | null>(null);
     const [editedBio, setEditedBio] = useState<string | null>(null);
-
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
+    const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+    const documentInputRef = useRef<HTMLInputElement>(null);
+    const imageInputRef = useRef<HTMLInputElement>(null);
+  
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
   const { toast } = useToast();
@@ -69,6 +72,8 @@ const PetProfileDisplay: React.FC = () => {
     console.log("Edit Profile button clicked");
     // Redirect or open the edit profile page/modal
   }
+
+
 
   const handleClick = async() => {
     if (userData?.id && petData?.owner_id && currentUserId) {
@@ -119,6 +124,51 @@ const PetProfileDisplay: React.FC = () => {
     }
 
 }
+
+const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: 'documents' | 'images') => {
+  const files = event.target.files;
+  if (!files) return;
+
+  for (const file of Array.from(files)) {
+    console.log('Uploading file:', file); // Add this line for debugging
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    try {
+      const response = await fetch('/pages/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('File upload failed');
+      }
+
+      const result = await response.json();
+      const uploadedUrl = result.url;
+
+      if (type === 'documents') {
+        setUploadedDocuments(prev => [...prev, uploadedUrl]);
+      } else {
+        setUploadedImages(prev => [...prev, uploadedUrl]);
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload file.',
+        variant: 'destructive',
+      });
+    }
+  }
+};
+
+
+
+
+
 const handleSaveChanges = async () => {
   try {
       if (!petData || !petData.id) {
@@ -289,13 +339,10 @@ const handleSaveChanges = async () => {
 </Dialog.Root>
 
 </div> 
-
         )}
 </div>
-
 </div>
-
-      </header>
+</header>
 
  {/* Bio Card */}
 <div className="mb-4">
@@ -309,7 +356,7 @@ const handleSaveChanges = async () => {
     </Card>  
 </div>
 
-      {/* Medication Documents */}
+      {/* Medication Documents Section */}
       <div className="mb-4">
         <Card>
           <CardHeader>
@@ -317,32 +364,67 @@ const handleSaveChanges = async () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap">
-                    {/* Medication here */}
+              <button
+                onClick={() => documentInputRef.current?.click()}
+                className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+              >
+                Upload Documents
+              </button>
+              <input
+                ref={documentInputRef}
+                type="file"
+                multiple
+                hidden
+                onChange={e => handleFileUpload(e, 'documents')}
+            />
+              {/* Displaying Uploaded Documents */}
+              {uploadedDocuments.map((docUrl, index) => (
+                <div key={index}>
+                  <a href={docUrl} target="_blank" rel="noopener noreferrer">
+                    View Document {index + 1}
+                  </a>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
       </div>
-      
+
       <hr className="my-4"/> {/* Horizontal line */}
 
-      <div className="flex justify-center">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {/* The code for displaying user posts with images */}
-          {[...Array(6)].map((_, index) => (
-            <div key={index}>
-              <img 
-                style={{ maxWidth: "300px", maxHeight: "300px" }}
-                className="w-full h-full object-cover border-2 border-pink-600 p-1" 
-                src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500" 
-                alt="Dog Image" 
-              />
-            </div>
-          ))}
+      {/* Image Upload Section */}
+      <div className="mb-4">
+        <button
+          onClick={() => imageInputRef.current?.click()}
+          className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+        >
+          Upload Image
+        </button>
+        <input
+                ref={imageInputRef}
+                type="file"
+                multiple
+                hidden
+                onChange={e => handleFileUpload(e, 'images')}
+            />
+        {/* Displaying Uploaded Images */}
+        <div className="flex justify-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {uploadedImages.map((imageUrl, index) => (
+              <div key={index}>
+                <img 
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                  className="w-full h-full object-cover border-2 border-pink-600 p-1" 
+                  src={imageUrl}
+                  alt={`Uploaded Image ${index}`}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-);
-
+  );
 };
 
 export default PetProfileDisplay;
