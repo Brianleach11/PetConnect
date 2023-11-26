@@ -130,21 +130,29 @@
   overflow: hidden;
 }
 
-.map-overlay::listing {
-  overflow: auto;
-  max-height: 100%;
-}
-
 .sidebar {
   position: absolute;
     width: "20vw";
     height: "80vh";
     top: 20;
     left: 0;
-    overflow: hidden;
+    overflow: auto;
     /*border-right: 1px solid rgba(0, 0, 0, 0.25);*/
 }
 
+.sidebar .listing {
+  overflow: auto;
+  max-height: "80vh";
+  
+}
+
+.sidebar .listing > *{
+  display: block;
+  padding: 5px 10px;
+  margin: 0;
+  font-size: 14px;
+  max-width: 95%;
+}
 
 .map {
   position: absolute;

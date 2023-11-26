@@ -42,10 +42,9 @@ export default async function Home() {
 
   return (
     <>
-      <NavBar session={session} authToken={false}/>
+      <NavBar session={session} />
       <div className='py-12'>
-        <div>Welcome to the maps page!</div>
-        <div>Explore other pet owners in your area, as well as pet-centered locations like parks, pet groomers, and more!</div>
+        <div>Welcome to the maps page! Explore other pet owners in your area, as well as pet-centered locations like parks, pet groomers, and more!</div>
         <div>
           <MapboxMap coords={await getCenter()}/>
         </div>
