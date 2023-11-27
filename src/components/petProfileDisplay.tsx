@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast'; 
 import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
-import {X, Upload, FilePlus2} from 'lucide-react'
+import {X, Upload, FilePlus2, Pencil} from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';  
 import MedicalDocCard from './medicalDocuments/medicalDocCard';
 import ImageComponent from './ImageComonent';
@@ -28,7 +28,10 @@ const PetProfileDisplay: React.FC = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const documentInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const [grabbing, setGrabbing] = useState<boolean>(false)
+  const [grabbingPhotos, setGrabbingPhotos] = useState<boolean>(false);
+  const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
+  const petAvatarRef = useRef<HTMLInputElement>(null);
+  const [avatar, setAvatar] = useState<string>("")
   
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -77,20 +80,20 @@ const PetProfileDisplay: React.FC = () => {
     const handlePhotos = async () => {
       try {
         if(!petData || !petData.id) return
-        if(grabbing) return
-        setGrabbing(true)
+        if(grabbingPhotos) return
+        setGrabbingPhotos(true)
 
         const response = await fetch(`/api/getPetPhotos?petId=${petData?.id}`);
   
         if (!response.ok) {
-          console.error('Failed to fetch pet photos:', response.statusText);
+          console.error('Failed to fetch pet avatar:', response.statusText);
           return;
         }
   
         const images = await response.json();
   
         if (!images || !Array.isArray(images)) {
-          console.error('Invalid response format for pet photos:', images);
+          console.error('Invalid response format for pet avatar:', images);
           return;
         }
         
@@ -98,10 +101,8 @@ const PetProfileDisplay: React.FC = () => {
         const imageUrls = images.map(image => 
           `${baseUrl}/${encodeURIComponent(petData.id)}/${encodeURIComponent(image.basename)}&x=1280&y=720&a=true`
         );
-
-        console.log(imageUrls)
         setUploadedImages(imageUrls);
-        setGrabbing(false)
+        setGrabbingPhotos(false)
       } catch (error) {
         console.error('Error fetching pet photos:', error);
       }
@@ -109,6 +110,39 @@ const PetProfileDisplay: React.FC = () => {
   
     handlePhotos();
   }, [petData]);
+
+  useEffect(() => {
+    const handleAvatar = async() => {
+      try{
+        if(!petData || !petData.id) return;
+        if(grabbingAvatar)return;
+        setGrabbingAvatar(true)
+
+        const response = await fetch(`/api/getPetAvatar?petId=${petData?.id}`);
+
+        if (!response.ok) {
+          console.error('Failed to fetch pet photos:', response.statusText);
+          return;
+        }
+  
+        const images = await response.json();
+
+        if (!images || !images.at(0)) {
+          console.error('Invalid response format for pet photos:', images);
+          return;
+        }
+
+        const baseUrl = process.env.NEXTCLOUD_PETAVATAR_URL
+        const imageUrl = `${baseUrl}/${encodeURIComponent(petData.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
+
+        setAvatar(imageUrl)
+        setGrabbingAvatar(false)
+      }catch(error){
+        console.log(error)
+      }
+    }
+    handleAvatar()
+  }, [petData])
 
 
   const handleClick = async() => {
@@ -176,7 +210,7 @@ const handleFileUpload = async (event: any, folder: string) => {
     toast({
       title: "Uploading...",
       description: "File attempting to upload",
-      variant: "default"
+      variant: "default",
     })
     const response = await fetch(`/api/uploadDocuments`, {
         method: 'POST',
@@ -197,6 +231,32 @@ const handleFileUpload = async (event: any, folder: string) => {
     console.error("Error:", error);
   }
 };
+
+const avatarUpload = async (event: any, folder: string) => {
+  const file = event?.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  if(!petData || !petData.id) return;
+  formData.append('id', petData.id.toString())
+  formData.append('folder', folder)
+
+  try{
+    toast({
+      title: "Uploading...",
+      description: "File attempting to upload",
+      variant: "default"
+    })
+
+    const response = await fetch(`/api/uploadAvatar`, {
+      method: 'POST',
+      body: formData
+    });    
+  }catch(error){
+    console.log("ERROR IN AVATAR UPLOAD")
+  }
+}
 
 const handleSaveChanges = async () => {
   try {
@@ -252,12 +312,25 @@ const handleSaveChanges = async () => {
         <div className="flex-shrink-0 mr-10">
           <img
             className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1"
-            src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500"
+            src={avatar}
             alt="Dog Image"
             width={160}
             height={160}
           />
         </div>
+        <button
+          onClick={() => petAvatarRef.current?.click()}
+          className="w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+        >
+          <Pencil />
+        </button>
+        <input
+          ref={petAvatarRef}
+          type="file"
+          multiple
+          hidden
+          onChange={(e) => avatarUpload(e, 'PetAvatar')}
+        />
         <div>
           <h2 className="text-2xl font-light mb-3">
             <a

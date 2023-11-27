@@ -6,6 +6,8 @@ const nextConfig = {
     },
     env: {
         NEXTCLOUD_PETALBUM_URL: process.env.NEXTCLOUD_PETALBUM_URL,
+        NEXTCLOUD_USERAVATAR_URL: process.env.NEXTCLOUD_USERAVATAR_URL,
+        NEXTCLOUD_PETAVATAR_URL: process.env.NEXTCLOUD_PETAVATAR_URL,
     },
 }
 
