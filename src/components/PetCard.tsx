@@ -42,7 +42,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [areFriends, setAreFriends] = useState(false);
   const [fetchingCompleted, setFetchingCompleted] = useState(false);
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false)
-  const [avatar, setAvatar] = useState<string>("https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500")
+  const [avatar, setAvatar] = useState<string>("/sad-pet.jpg")
   
 
   useEffect(() => {

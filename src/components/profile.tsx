@@ -29,7 +29,7 @@ const Profile: React.FC = () => {
   const userAvatarRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("/sad-pet.jpg");
   // TODO: State for profilePicture if needed
 
   const supabase = createClientComponentClient<Database>();
