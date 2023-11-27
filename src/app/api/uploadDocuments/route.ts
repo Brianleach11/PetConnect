@@ -1,16 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import {createClient, AuthType } from "webdav"
-/*
-export const config = {
-    api: {
-        bodyParser: false
-    }
-};*/
 
 export async function POST(req: NextApiRequest, res: NextApiResponse) {
     let createFolder = false;
     const data = await (req as any).formData()
     const petId = data.get('petId') as string | number | boolean;
+    const folder = data.get('folder') as string | number | boolean;
 
     const username = process.env.NEXTCLOUD_USERNAME
     const password = process.env.NEXTCLOUD_PASSWORD
@@ -30,7 +25,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     })
     
     try{
-        const exists = await client.exists(`/MedicalDocuments/${petId}`);
+        const exists = await client.exists(`/${folder}/${petId}`);
         if(!exists) createFolder = true; 
     }catch(error)
     {
@@ -41,7 +36,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
         //create the folder before trying to upload
         try{
             console.log("Creating medical documents user folder")
-            const response = await client.createDirectory(`/MedicalDocuments/${petId}`)
+            const response = await client.createDirectory(`/${folder}/${petId}`)
         }
         catch(error)
         {
@@ -59,7 +54,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        const response = await fetch(`${url}/MedicalDocuments/${petId}/${file.name}`, {
+        const response = await fetch(`${url}/${folder}/${petId}/${file.name}`, {
             method: 'PUT',
             headers: {
                 'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),

@@ -1,15 +1,5 @@
-import { AuthType, createClient, WebDAVClient } from "webdav";
+import { AuthType, createClient, FileStat } from "webdav";
 import { NextApiRequest } from 'next';
-
-interface documents {
-    filename:string;
-    basename: string,
-    lastmod: string,
-    size: string,
-    type: string,
-    etag: string,
-    mime: string
-}
 
 export async function GET(req: NextApiRequest) {
     const username = process.env.NEXTCLOUD_USERNAME;
@@ -18,6 +8,7 @@ export async function GET(req: NextApiRequest) {
 
     const passedUrl = req.url?.split('=');
     const petId = passedUrl?.at(1);
+
     if(!petId) return new Response(JSON.stringify("No petID"), {status: 400})
 
     if (!username || !password || !url) {
@@ -30,22 +21,19 @@ export async function GET(req: NextApiRequest) {
             password: password,
             authType: AuthType.Password
         })
-        const directoryContents = await client.getDirectoryContents(`/MedicalDocuments/${petId}`);
-
-        const stringified = JSON.stringify(directoryContents);
-
-        const formatted = JSON.parse(stringified) as documents[];
-
-        const downloadLinks = await Promise.all(
-            formatted.map(async (element) => {
-              const link = await client.getFileDownloadLink(element.filename);
-              return { ...element, downloadLink: link };
-            })
-        );
-
-        return new Response(JSON.stringify(downloadLinks), {status: 200});
-    }
-    catch(error){
+        const directoryContents = await client.getDirectoryContents(`/PetAlbum/${petId}`) as FileStat[];
+        
+        const fileDetails = directoryContents.map((file) => ({
+            basename: file.basename,
+        }));
+    
+        const stringified = JSON.stringify(fileDetails);
+    
+        const formatted = JSON.parse(stringified) as { basename: string }[];
+    
+        return new Response(JSON.stringify(formatted), { status: 200 });
+    }catch(error){
         return new Response(JSON.stringify('Failed to fetch medical documents'), {status: 500});
     }
+
 }

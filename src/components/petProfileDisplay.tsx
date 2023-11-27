@@ -9,28 +9,26 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast'; 
 import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
-import {X} from 'lucide-react'
+import {X, Upload} from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';  
 import MedicalDocCard from './medicalDocuments/medicalDocCard';
-
-interface Document {
-  filename: string;
-  url: string;
-}
+import ImageComponent from './ImageComonent';
+import Image from 'next/image';
 
 const PetProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [editedName, setEditedName] = useState<string | null>(null);
-    const [editedType, setEditedType] = useState<string | null>(null);
-    const [editedBreed, setEditedBreed] = useState<string | null>(null);
-    const [editedBio, setEditedBio] = useState<string | null>(null);
-    const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-    const documentInputRef = useRef<HTMLInputElement>(null);
-    const imageInputRef = useRef<HTMLInputElement>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [editedName, setEditedName] = useState<string | null>(null);
+  const [editedType, setEditedType] = useState<string | null>(null);
+  const [editedBreed, setEditedBreed] = useState<string | null>(null);
+  const [editedBio, setEditedBio] = useState<string | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const documentInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [grabbing, setGrabbing] = useState<boolean>(false)
   
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -73,9 +71,44 @@ const PetProfileDisplay: React.FC = () => {
 
   const handleEditProfileClick = () => {
     console.log("Edit Profile button clicked");
-    // Redirect or open the edit profile page/modal
   }
 
+  useEffect(() => {
+    const handlePhotos = async () => {
+      try {
+        if(!petData || !petData.id) return
+        if(grabbing) return
+        setGrabbing(true)
+
+        const response = await fetch(`/api/getPetPhotos?petId=${petData?.id}`);
+  
+        if (!response.ok) {
+          console.error('Failed to fetch pet photos:', response.statusText);
+          return;
+        }
+  
+        const images = await response.json();
+  
+        if (!images || !Array.isArray(images)) {
+          console.error('Invalid response format for pet photos:', images);
+          return;
+        }
+        
+        const baseUrl = process.env.NEXTCLOUD_PETALBUM_URL
+        const imageUrls = images.map(image => 
+          `${baseUrl}/${encodeURIComponent(petData.id)}/${encodeURIComponent(image.basename)}&x=1280&y=720&a=true`
+        );
+
+        console.log(imageUrls)
+        setUploadedImages(imageUrls);
+        setGrabbing(false)
+      } catch (error) {
+        console.error('Error fetching pet photos:', error);
+      }
+    };
+  
+    handlePhotos();
+  }, [petData]);
 
 
   const handleClick = async() => {
@@ -129,7 +162,7 @@ const PetProfileDisplay: React.FC = () => {
 }
 
 
-const handleFileUpload = async (event: any) => {
+const handleFileUpload = async (event: any, folder: string) => {
   const file = event?.target.files[0];
   if (!file) return;
 
@@ -137,9 +170,10 @@ const handleFileUpload = async (event: any) => {
   formData.append('file', file);
   if(!petData || !petData.id) return;
   formData.append('petId', petData.id.toString())
+  formData.append('folder', folder)
 
   try {
-    const response = await fetch(`/api/uploadMedicalDocuments`, {
+    const response = await fetch(`/api/uploadDocuments`, {
         method: 'POST',
         body: formData
     });
@@ -223,7 +257,7 @@ const handleSaveChanges = async () => {
           <h2 className="text-2xl font-light mb-3">
             <a 
               onClick={handleClick} 
-              className="text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"  // Styling changes added here
+              className="text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"  
             >
               {userData?.username || 'Loading.........'}
             </a>
@@ -358,49 +392,46 @@ const handleSaveChanges = async () => {
         onClick={() => documentInputRef.current?.click()}
         className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
       >
-        Upload Documents
+        + New
       </button>
       <input
         ref={documentInputRef}
         type="file"
         multiple
         hidden
-        onChange={handleFileUpload}
+        onChange={(e)=>handleFileUpload(e, 'MedicalDocuments')}
       />
     </CardContent>
   </Card>
 </div>
 
-      <hr className="my-4"/> {/* Horizontal line */}
+      <hr className="my-2"/> {/* Horizontal line */}
 
       {/* Image Upload Section */}
-      <div className="mb-4">
+      <div className="relative mb-4">
         <button
           onClick={() => imageInputRef.current?.click()}
-          className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          className="absolute top-0 right-0 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
         >
-          Upload Image
+          <Upload/>
         </button>
         <input
                 ref={imageInputRef}
                 type="file"
                 multiple
                 hidden
-                onChange={handleFileUpload}
+                onChange={(e)=>handleFileUpload(e, 'PetAlbum')}
             />
         {/* Displaying Uploaded Images */}
         <div className="flex justify-center">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {uploadedImages.map((imageUrl, index) => (
+          <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-2">
+          {
+            uploadedImages.map((imageUrl, index) => (
               <div key={index}>
-                <img 
-                  style={{ maxWidth: "300px", maxHeight: "300px" }}
-                  className="w-full h-full object-cover border-2 border-pink-600 p-1" 
-                  src={imageUrl}
-                  alt={`Uploaded Image ${index}`}
-                />
+                <ImageComponent imageUrl={imageUrl} />
               </div>
-            ))}
+            ))
+          }
           </div>
         </div>
       </div>
