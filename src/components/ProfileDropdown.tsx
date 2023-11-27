@@ -27,7 +27,7 @@ export default function ProfileDropdown(){
         try {
           console.log("logging out")
           await supabase.auth.signOut();
-          await router.refresh();
+          await router.push('/');
         } catch (error) {
           console.error(error);
           alert("Error logging out. Check console for details.");
