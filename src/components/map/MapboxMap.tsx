@@ -76,6 +76,11 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
 
   }, []);
 
+  useEffect(() => {
+    mapboxMap?.on('render', () => {
+      getDetails();
+    })
+  }, [mapboxMap]);
   
   function getDetails() {
     const features = mapboxMap?.queryRenderedFeatures({layers: ['veterinarians', 'groomers', 'dog_park']})
@@ -199,7 +204,6 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
     <div>
       <div className="sidebar 'flex  flex-1 flex-col-reverse pb-1 scrollbar-thumb-rounded scrollbar-w-2 scrolling-touch'" style={{width: "20vw", height: "80vh"}}>
         <div id="heading" style={{padding: "20px 2px"}}>
-          <p>Move map to populate sidebar</p>
         </div>
         <ScrollArea className='h-4/5 overflow-auto'>
           <div id="listings" className="listing"></div>
