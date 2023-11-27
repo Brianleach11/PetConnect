@@ -3,18 +3,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "./ui/button";
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import {useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef, RefObject } from 'react';
 import ProfileDropdown from "./ProfileDropdown";
-import { Check,X } from "lucide-react"
+import { Check, X } from "lucide-react"
 import { Bell } from 'lucide-react';
 import ChatDropDownMenu from "./chat/ChatDropDownMenu";
 import { MessagesSquare } from 'lucide-react';
+import { Map } from 'lucide-react';
 
 
 //initial session, null. Until manual refresh when session isnt null
 type FriendRequestNotification = {
-  sending_user: string; 
+  sending_user: string;
   created_at: string;
   username?: string; // New field to store the username
 };
@@ -24,45 +25,45 @@ function timeSince(date: string | Date): string {
   let interval = Math.floor(seconds / 31536000);
 
   if (interval > 1) {
-      return interval + " years ago";
+    return interval + " years ago";
   }
   interval = Math.floor(seconds / 2592000);
   if (interval > 1) {
-      return interval + " months ago";
+    return interval + " months ago";
   }
   interval = Math.floor(seconds / 86400);
   if (interval > 1) {
-      return interval + " days ago";
+    return interval + " days ago";
   }
   interval = Math.floor(seconds / 3600);
   if (interval > 1) {
-      return interval + " hours ago";
+    return interval + " hours ago";
   }
   interval = Math.floor(seconds / 60);
   if (interval > 1) {
-      return interval + " minutes ago";
+    return interval + " minutes ago";
   }
   return "just now";
 }
 
 export const useOutsideClick = (ref: RefObject<HTMLElement | null>, callback: () => void, ignoreRef?: RefObject<HTMLElement | null>) => {
   const handleClickOutside = (event: MouseEvent) => {
-      if (ignoreRef?.current && ignoreRef.current.contains(event.target as Node)) {
-          return;
-      }
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-          callback();
-      }
+    if (ignoreRef?.current && ignoreRef.current.contains(event.target as Node)) {
+      return;
+    }
+    if (ref.current && !ref.current.contains(event.target as Node)) {
+      callback();
+    }
   };
 
   useEffect(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-          document.removeEventListener('mousedown', handleClickOutside);
-      };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [ref, callback]);
 };
-export default function NavBar({session, authToken}: {session: Session | null, authToken: boolean}) {
+export default function NavBar({ session, authToken }: { session: Session | null, authToken: boolean }) {
 
   const supabase = createClientComponentClient()
   const router = useRouter()
@@ -78,54 +79,54 @@ export default function NavBar({session, authToken}: {session: Session | null, a
 
 
 
-  useEffect(()=>{
-    if(authToken){
+  useEffect(() => {
+    if (authToken) {
       router.refresh()
     }
   })
 
   const fetchFriendRequests = async () => {
     const { data, error } = await supabase
-        .from('friend_requests')
-        .select('sending_user, created_at')
-        .eq('receiving_user', session?.user?.id);
+      .from('friend_requests')
+      .select('sending_user, created_at')
+      .eq('receiving_user', session?.user?.id);
 
     if (error) {
-        console.error("Error fetching friend requests:", error);
-        return;
+      console.error("Error fetching friend requests:", error);
+      return;
     }
 
     // Iterate over each notification and fetch the username for the sending_user
     const notificationsWithUsernames = await Promise.all(data.map(async (notification) => {
-        const userData = await supabase
-            .from('user')
-            .select('username')
-            .eq('id', notification.sending_user)
-            .single();
+      const userData = await supabase
+        .from('user')
+        .select('username')
+        .eq('id', notification.sending_user)
+        .single();
 
-        return {
-            ...notification,
-            username: userData.data?.username || 'Unknown User'
-        };
+      return {
+        ...notification,
+        username: userData.data?.username || 'Unknown User'
+      };
     }));
 
     setNotifications(notificationsWithUsernames);
-};
-
-
-useEffect(() => {
-  const friendRequestChannel = supabase.channel('notification_friend_requests').on('postgres_changes', {
-    event: '*',
-    schema: 'public',
-    table: 'friend_requests'
-  }, (payload) => {
-    fetchFriendRequests();
-  }).subscribe();
-
-  return () => {
-    supabase.removeChannel(friendRequestChannel);
   };
-}, [session]);
+
+
+  useEffect(() => {
+    const friendRequestChannel = supabase.channel('notification_friend_requests').on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'friend_requests'
+    }, (payload) => {
+      fetchFriendRequests();
+    }).subscribe();
+
+    return () => {
+      supabase.removeChannel(friendRequestChannel);
+    };
+  }, [session]);
 
   const acceptRequest = async (sending_user: string, receiving_user: string) => {
     const { error: insertError } = await supabase
@@ -164,12 +165,12 @@ useEffect(() => {
 
   useEffect(() => {
     const channel = supabase.channel('realtime notifications').on('postgres_changes', {
-        event: '*', 
-        schema: 'public', 
-        table: 'notifications'
+      event: '*',
+      schema: 'public',
+      table: 'notifications'
     }, (payload) => {
       console.log("NEW EVENT PAYLOAD: " + payload)
-        
+
     }).subscribe()
 
     return () => {
@@ -180,24 +181,24 @@ useEffect(() => {
 
   const fetchUnreadMessagesCount = async () => {
     if (!session) return;
-  
+
     // Fetch unread messages from the notifications table where seen is false
     const { data, error } = await supabase
       .from('notifications')
       .select('*')  // Fetch all the rows
       .eq('receiving_user', session.user.id)
       .eq('seen', false); // Check where seen is false
-    
+
     if (error) {
       console.error("Error fetching unread notifications:", error);
       return;
     }
-  
+
     // Update the unread messages count using the length of the data array
     setUnreadMessagesCount(data?.length);
   };
-  
-  
+
+
 
   const markAllChatMessagesAsRead = async () => {
     if (!session) return;
@@ -208,7 +209,7 @@ useEffect(() => {
       .update({ seen: true }) // Set seen to true
       .eq('receiving_user', session?.user?.id)
       .eq('seen', false)
-  
+
     if (error) {
       console.error("Error updating unread messages:", error);
     }
@@ -220,16 +221,16 @@ useEffect(() => {
   const toggleChatDropDownMenu = () => {
     // Toggle the chat menu
     setIsChatMenuOpen(prevState => {
-        // If the chat menu is currently closed
-        if (!prevState) {
-            markAllChatMessagesAsRead(); // Mark all messages as read when opening
-        }
+      // If the chat menu is currently closed
+      if (!prevState) {
+        markAllChatMessagesAsRead(); // Mark all messages as read when opening
+      }
 
-        return !prevState; // Toggle the state
+      return !prevState; // Toggle the state
     });
-};
+  };
 
-  
+
 
 
   useEffect(() => {
@@ -242,37 +243,37 @@ useEffect(() => {
   // Call the custom hook for the notification dropdown
   useOutsideClick(notificationDropdownRef, () => {
     if (showDropdown) setShowDropdown(false);
-}, notificationBtnRef);
+  }, notificationBtnRef);
 
 
-return (
+  return (
     <>
       <div className='fixed top-0 inset-x-0 h-fit bg-softGreen z-[10] py-2'>
         <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
           <Link href='/' className='flex gap-2 items-center'>
-            <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo"/>
+            <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo" />
             <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
           </Link>
-          <Link href={session ? "/pets": {}} className={buttonVariants({variant: "ghost"})}>Posts</Link>
-          <Link href={session ? "/maps": {}} className={buttonVariants({variant: "ghost"})}>Maps</Link>
-          <div className="relative">
-            <button 
-              onClick={toggleChatDropDownMenu} 
-              className={buttonVariants({variant: "ghost"})} 
+          <Link href={session ? "/maps" : {}} className={buttonVariants({ variant: "ghost" })}>
+            <Map size={24} className="text-zinc-700" /> {/* Adjust size and color as needed */}
+          </Link>          <div className="relative">
+            <button
+              onClick={toggleChatDropDownMenu}
+              className={buttonVariants({ variant: "ghost" })}
               style={{ position: 'relative' }}
-                >
-                <MessagesSquare className="w-full h-6 text-gray-600" />
-                {unreadMessagesCount > 0 && (
-                  <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
-                    {unreadMessagesCount}
-                  </span>
-                )}
-              </button>
-              <ChatDropDownMenu 
+            >
+              <MessagesSquare className="w-full h-6 text-gray-600" />
+              {unreadMessagesCount > 0 && (
+                <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">
+                  {unreadMessagesCount}
+                </span>
+              )}
+            </button>
+            <ChatDropDownMenu
               session={session}
-                isOpen={isChatMenuOpen}
-                onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
-              />
+              isOpen={isChatMenuOpen}
+              onClose={() => setIsChatMenuOpen(false)} // directly close the chat menu
+            />
           </div>
 
           {session && (
@@ -321,7 +322,7 @@ return (
             </div>
           )}
 
-          {session ? <ProfileDropdown/> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
+          {session ? <ProfileDropdown /> : <Link href="/login" className={buttonVariants()}>Sign In</Link>}
         </div>
       </div>
     </>

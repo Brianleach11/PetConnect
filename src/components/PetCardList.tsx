@@ -138,13 +138,13 @@ const PetCardsList: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen relative">
-    <div className="fixed top-[100px] right-150 z-10">
+    <div>
         <button 
           onClick={() => setFilterOpen(true)} 
           className="flex items-center justify-center p-2 bg-lightblue text-white rounded hover:bg-midnight"
         >
           <SlidersHorizontal className="w-5 h-5" />
-          <span className="ml-2">Filter</span>
+          <span className="">Filter</span>
         </button>
       </div>
     

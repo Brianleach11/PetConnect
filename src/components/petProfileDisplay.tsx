@@ -31,7 +31,7 @@ const PetProfileDisplay: React.FC = () => {
   const [grabbingPhotos, setGrabbingPhotos] = useState<boolean>(false);
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
   const petAvatarRef = useRef<HTMLInputElement>(null);
-  const [avatar, setAvatar] = useState<string>("")
+  const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
 
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
