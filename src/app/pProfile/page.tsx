@@ -5,6 +5,7 @@ import NavBar from '@/components/NavBar'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import ProfileDisplay from '@/components/profileDisplay';
+import { redirect } from 'next/navigation';
 
 const PProfilePage: FC = async () => {
   const userId = typeof window !== 'undefined' ? localStorage.getItem('clickedUserId') : null;
@@ -12,6 +13,8 @@ const PProfilePage: FC = async () => {
   const {
     data: { session },
   } = await supabase.auth.getSession();
+
+  if(!session) redirect('/')
 
   return (
     <div className="flex flex-col min-h-screen bg-whiteGreen">

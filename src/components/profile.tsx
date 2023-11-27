@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import moment from 'moment';
@@ -10,6 +10,9 @@ import OwnerPetCardList from '@/components/OwnerPetCardList';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation'; 
 import * as Dialog from '@radix-ui/react-dialog';
+import { Pencil } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'; 
+
 const Profile: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
@@ -23,6 +26,10 @@ const Profile: React.FC = () => {
   const [breed, setBreed] = useState("");
   const [birthday, setBirthday] = useState("");
   const [bio, setBio] = useState("");
+  const userAvatarRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
+  const [avatar, setAvatar] = useState<string>("");
   // TODO: State for profilePicture if needed
 
   const supabase = createClientComponentClient<Database>();
@@ -85,7 +92,64 @@ const handleSavePet = async () => {
   }
 };
 
+const avatarUpload = async (event: any, folder: string) => {
+  const file = event?.target.files[0];
+  if (!file) return;
 
+  const formData = new FormData();
+  formData.append('file', file);
+  if(!userData || !userData.id) return;
+  formData.append('id', userData.id.toString())
+  formData.append('folder', folder)
+
+  try{
+    toast({
+      title: "Uploading...",
+      description: "File attempting to upload",
+      variant: "default"
+    })
+
+    const response = await fetch(`/api/uploadAvatar`, {
+      method: 'POST',
+      body: formData
+    });    
+  }catch(error){
+    console.log("ERROR IN AVATAR UPLOAD")
+  }
+}
+
+useEffect(() => {
+  const handleAvatar = async() => {
+    try{
+      if(!userData || !userData.id) return;
+      if(grabbingAvatar)return;
+      setGrabbingAvatar(true)
+
+      const response = await fetch(`/api/getUserAvatar?userId=${userData?.id}`);
+
+      if (!response.ok) {
+        console.error('Failed to fetch user avatar:', response.statusText);
+        return;
+      }
+
+      const images = await response.json();
+
+      if (!images || !images.at(0)) {
+        console.error('Invalid response format for user avatar:', images);
+        return;
+      }
+
+      const baseUrl = process.env.NEXTCLOUD_USERAVATAR_URL
+      const imageUrl = `${baseUrl}/${encodeURIComponent(userData.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
+
+      setAvatar(imageUrl)
+      setGrabbingAvatar(false)
+    }catch(error){
+      console.log(error)
+    }
+  }
+  handleAvatar()
+}, [userData])
 
 
 return (
@@ -94,12 +158,25 @@ return (
       <div className="flex-shrink-0= mr-10">
         <img 
           className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1" 
-          src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500" 
+          src={avatar} 
           alt="Dog Image" 
           width={160} 
           height={160} 
         />
       </div>
+      <button
+          onClick={() => userAvatarRef.current?.click()}
+          className="w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+        >
+          <Pencil />
+        </button>
+        <input
+          ref={userAvatarRef}
+          type="file"
+          multiple
+          hidden
+          onChange={(e) => avatarUpload(e, 'UserAvatar')}
+        />
       <div>
         <h2 className="text-2xl font-semibold mb-1">
           {userData?.username || 'Username'}
