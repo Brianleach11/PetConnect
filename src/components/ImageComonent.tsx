@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, { useState, FC } from "react";
+import {Spinner} from 'flowbite-react'
 
 type ImageComponentProps = {
   imageUrl: string;
@@ -15,12 +16,16 @@ const ImageComponent: FC<ImageComponentProps> = ({ imageUrl }) => {
 
   return (
     <div>
-      {isLoading && <p>Loading image...</p>}
+      {isLoading && (
+        <div className="flex justify-center items-center border-2 w-72 h-96 transition-all duration-500 bg-gradient-to-br to-white via-softGreen from-white animate-pulse">
+          <Spinner color='info' size='lg'/>
+        </div>
+      )}
       <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
         <Image
           src={imageUrl}
           alt="Uploaded Pet"
-          loading="eager"
+          //loading="eager"
           onLoad={() => setIsLoading(false)}
           onError={() => console.error('Failed to load image at:', imageUrl)}
           style={{ display: isLoading ? 'none' : 'block' }}

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast'; 
 import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
-import {X, Upload} from 'lucide-react'
+import {X, Upload, FilePlus2} from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';  
 import MedicalDocCard from './medicalDocuments/medicalDocCard';
 import ImageComponent from './ImageComonent';
@@ -173,6 +173,11 @@ const handleFileUpload = async (event: any, folder: string) => {
   formData.append('folder', folder)
 
   try {
+    toast({
+      title: "Uploading...",
+      description: "File attempting to upload",
+      variant: "default"
+    })
     const response = await fetch(`/api/uploadDocuments`, {
         method: 'POST',
         body: formData
@@ -245,193 +250,193 @@ const handleSaveChanges = async () => {
     <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
         <div className="flex-shrink-0 mr-10">
-          <img 
-            className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1" 
-            src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500" 
-            alt="Dog Image" 
-            width={160} 
-            height={160} 
+          <img
+            className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1"
+            src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500"
+            alt="Dog Image"
+            width={160}
+            height={160}
           />
-           </div>
-           <div>
+        </div>
+        <div>
           <h2 className="text-2xl font-light mb-3">
-            <a 
-              onClick={handleClick} 
-              className="text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"  
+            <a
+              onClick={handleClick}
+              className="text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
             >
               {userData?.username || 'Loading.........'}
             </a>
           </h2>
-        <h1 className="text-2xl font-semibold mb-1">
-    My name is {petData?.name || 'Pet Name'} :)
-    </h1>
-<span className="text-l">I am a {petData?.pet_type ||'Loading.........'} , My breed is {petData?.breed || 'Loading.........'}</span>
-<p className="text-l">I was born on {`${petData?.birthday || 'Loading.........'}`}</p>
-<p className="text-l">{userData?.city || 'Loading.........'}, {userData?.state || 'Loading.........'}</p>
-<div>
-        {currentUserId !== userData?.id ? (
-          <div className="flex mt-4  md:ml-4 gap-2.5">
-            <Button 
-              onClick={handleConnectClick} 
-              className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-            >
-              Connect
-            </Button>
-            <Button 
-              onClick={handleMessageClick} 
-              className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-            >
-              Message
-            </Button>
+          <h1 className="text-2xl font-semibold mb-1">
+            My name is {petData?.name || 'Pet Name'} :)
+          </h1>
+          <span className="text-l">I am a {petData?.pet_type || 'Loading.........'} , My breed is {petData?.breed || 'Loading.........'}</span>
+          <p className="text-l">I was born on {`${petData?.birthday || 'Loading.........'}`}</p>
+          <p className="text-l">{userData?.city || 'Loading.........'}, {userData?.state || 'Loading.........'}</p>
+          <div>
+            {currentUserId !== userData?.id ? (
+              <div className="flex mt-4  md:ml-4 gap-2.5">
+                <Button
+                  onClick={handleConnectClick}
+                  className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+                >
+                  Connect
+                </Button>
+                <Button
+                  onClick={handleMessageClick}
+                  className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+                >
+                  Message
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-4 md:ml-10">
+                <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                  <Dialog.Trigger asChild>
+                    <Button className="px-5 py-2.5 rounded-md border border-softBlue hover:bg-softPink transition-colors duration-300">
+                      Edit Profile 🐾
+                    </Button>
+                  </Dialog.Trigger>
+
+                  <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-darkGreen" />
+                    <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[90vh] w-[90vw] max-w-[500px] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-[30px] shadow-xl border-t-8 border-softGreen">
+
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-xl font-semibold text-softGreen"> Edit Pet Profile 🐾</h3>
+                        <Dialog.Close asChild>
+                          <button className="focus:outline-none">
+                            <X size={20} />
+                          </button>
+                        </Dialog.Close>
+                      </div>
+
+                      <div className="mt-8 space-y-4">
+
+                        {/* Pet Name */}
+                        <label htmlFor="editedName" className="block text-softBlue text-lg font-semibold mb-1">Name:</label>
+                        <input
+                          id="editedName"
+                          type="text"
+                          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                          defaultValue={petData?.name || 'Pet Name'}
+                          onChange={(e) => setEditedName(e.target.value)}
+                        />
+
+                        {/* Pet Type */}
+                        <label htmlFor="editedType" className="block text-softBlue text-lg font-semibold mb-1">Type (e.g., Dog, Cat):</label>
+                        <input
+                          id="editedType"
+                          type="text"
+                          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                          defaultValue={petData?.pet_type || 'Pet Type'}
+                          onChange={(e) => setEditedType(e.target.value)}
+                        />
+
+                        {/* Pet Breed */}
+                        <label htmlFor="editedBreed" className="block text-softBlue text-lg font-semibold mb-1">Breed:</label>
+                        <input
+                          id="editedBreed"
+                          type="text"
+                          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
+                          defaultValue={petData?.breed || 'Pet Breed'}
+                          onChange={(e) => setEditedBreed(e.target.value)}
+                        />
+
+                        {/* Pet Bio */}
+                        <label htmlFor="editedBio" className="block text-softBlue text-lg font-semibold mb-1">Short Bio:</label>
+                        <textarea
+                          id="editedBio"
+                          rows={4}
+                          className="border-2 border-softBlue w-full rounded-md text-midnight px-3 py-2"
+                          defaultValue={petData?.bio || 'Pet Bio'}
+                          onChange={(e) => setEditedBio(e.target.value)}
+                        />
+
+                        {/* we can expand the  comments to add additional attributes like profilePicture, microchip number, vaccinations, etc. if needed */}
+
+                      </div>
+
+                      <div className="mt-6 flex justify-end">
+                        <Button className="px-5 py-2 bg-softGreen text-white rounded-md hover:bg-lightblue transition-colors duration-300" onClick={handleSaveChanges}>
+                          Save Changes
+                        </Button>
+                      </div>
+
+                    </Dialog.Content>
+                  </Dialog.Portal>
+                </Dialog.Root>
+
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="mt-4 md:ml-10">
- <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-  <Dialog.Trigger asChild>
-    <Button className="px-5 py-2.5 rounded-md border border-softBlue hover:bg-softPink transition-colors duration-300">
-      Edit Profile 🐾
-    </Button>
-  </Dialog.Trigger>
+        </div>
+      </header>
 
-  <Dialog.Portal>
-    <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-darkGreen" />
-    <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[90vh] w-[90vw] max-w-[500px] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-[30px] shadow-xl border-t-8 border-softGreen">
-      
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-softGreen"> Edit Pet Profile 🐾</h3>
-        <Dialog.Close asChild>
-          <button className="focus:outline-none">
-            <X size={20} />
-          </button>
-        </Dialog.Close>
-      </div>
-
-      <div className="mt-8 space-y-4">
-        
-        {/* Pet Name */}
-        <label htmlFor="editedName" className="block text-softBlue text-lg font-semibold mb-1">Name:</label>
-        <input
-          id="editedName"
-          type="text"
-          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
-          defaultValue ={petData?.name || 'Pet Name' }
-          onChange={(e) => setEditedName(e.target.value)}
-        />
-      
-        {/* Pet Type */}
-        <label htmlFor="editedType" className="block text-softBlue text-lg font-semibold mb-1">Type (e.g., Dog, Cat):</label>
-        <input
-          id="editedType"
-          type="text"
-          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
-          defaultValue ={petData?.pet_type || 'Pet Type'}
-          onChange={(e) => setEditedType(e.target.value)}
-        />
-      
-        {/* Pet Breed */}
-        <label htmlFor="editedBreed" className="block text-softBlue text-lg font-semibold mb-1">Breed:</label>
-        <input
-          id="editedBreed"
-          type="text"
-          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
-          defaultValue ={petData?.breed || 'Pet Breed'}
-          onChange={(e) => setEditedBreed(e.target.value)}
-        />
-      
-        {/* Pet Bio */}
-        <label htmlFor="editedBio" className="block text-softBlue text-lg font-semibold mb-1">Short Bio:</label>
-        <textarea
-          id="editedBio"
-          rows={4}
-          className="border-2 border-softBlue w-full rounded-md text-midnight px-3 py-2"
-          defaultValue ={petData?.bio || 'Pet Bio' }
-          onChange={(e) => setEditedBio(e.target.value)}
-        />
-
-        {/* we can expand the  comments to add additional attributes like profilePicture, microchip number, vaccinations, etc. if needed */}
-      
-      </div>
-
-      <div className="mt-6 flex justify-end">
-        <Button className="px-5 py-2 bg-softGreen text-white rounded-md hover:bg-lightblue transition-colors duration-300" onClick={handleSaveChanges}>
-          Save Changes
-        </Button>
-      </div>
-
-    </Dialog.Content>
-  </Dialog.Portal>
-</Dialog.Root>
-
-</div> 
-        )}
-</div>
-</div>
-</header>
-
- {/* Bio Card */}
-<div className="mb-4">
-    <Card>
-        <CardHeader className="bg-transparent">
+      {/* Bio Card */}
+      <div className="mb-4">
+        <Card>
+          <CardHeader className="bg-transparent">
             <h3 className="text-xl font-semibold">Bio</h3>
-        </CardHeader>
-        <CardContent className="bg-transparent">
+          </CardHeader>
+          <CardContent className="bg-transparent">
             <p className="text-gray-600">{petData?.bio || 'This user has no bio.'}</p>
-        </CardContent>
-    </Card>  
-</div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Medication Documents Section */}
-<div className="mb-4">
-  <Card>
-    <CardHeader>
-      <h3 className="text-xl font-semibold">Medication Documents</h3>
-    </CardHeader>
-    <CardContent>
-      <MedicalDocCard/>
-      <button
-        onClick={() => documentInputRef.current?.click()}
-        className="px-5 py-2.5 rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-      >
-        + New
-      </button>
-      <input
-        ref={documentInputRef}
-        type="file"
-        multiple
-        hidden
-        onChange={(e)=>handleFileUpload(e, 'MedicalDocuments')}
-      />
-    </CardContent>
-  </Card>
-</div>
+      <div className="mb-4 relative">
+        <Card>
+          <CardHeader>
+            <h3 className="text-xl font-semibold">Medication Documents</h3>
+          </CardHeader>
+          <CardContent>
+            <MedicalDocCard />
+            <input
+              ref={documentInputRef}
+              type="file"
+              multiple
+              hidden
+              onChange={(e) => handleFileUpload(e, 'MedicalDocuments')}
+            />
+          </CardContent>
+        </Card>
+        <button
+          onClick={() => documentInputRef.current?.click()}
+          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+        >
+          <FilePlus2/>
+        </button>
+      </div>
 
-      <hr className="my-2"/> {/* Horizontal line */}
+      <hr className="my-2" /> {/* Horizontal line */}
 
       {/* Image Upload Section */}
       <div className="relative mb-4">
         <button
           onClick={() => imageInputRef.current?.click()}
-          className="absolute top-0 right-0 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          className="absolute top-0 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
         >
-          <Upload/>
+          <Upload />
         </button>
         <input
-                ref={imageInputRef}
-                type="file"
-                multiple
-                hidden
-                onChange={(e)=>handleFileUpload(e, 'PetAlbum')}
-            />
+          ref={imageInputRef}
+          type="file"
+          multiple
+          hidden
+          onChange={(e) => handleFileUpload(e, 'PetAlbum')}
+        />
         {/* Displaying Uploaded Images */}
         <div className="flex justify-center">
           <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-2">
-          {
-            uploadedImages.map((imageUrl, index) => (
-              <div key={index}>
-                <ImageComponent imageUrl={imageUrl} />
-              </div>
-            ))
-          }
+            {
+              uploadedImages.map((imageUrl, index) => (
+                <div key={index}>
+                  <ImageComponent imageUrl={imageUrl} />
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>
