@@ -25,7 +25,7 @@ const ImageComponent: FC<ImageComponentProps> = ({ imageUrl }) => {
         <Image
           src={imageUrl}
           alt="Uploaded Pet"
-          //loading="eager"
+          loading="eager"
           onLoad={() => setIsLoading(false)}
           onError={() => console.error('Failed to load image at:', imageUrl)}
           style={{ display: isLoading ? 'none' : 'block' }}
