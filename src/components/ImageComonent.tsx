@@ -21,17 +21,15 @@ const ImageComponent: FC<ImageComponentProps> = ({ imageUrl }) => {
           <Spinner color='info' size='lg'/>
         </div>
       )}
-      <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
-        <Image
-          src={imageUrl}
-          alt="Uploaded Pet"
-          loading="eager"
-          onLoad={() => setIsLoading(false)}
-          onError={() => console.error('Failed to load image at:', imageUrl)}
-          style={{ display: isLoading ? 'none' : 'block' }}
-          width='300'
-          height='300'
-        />
+       <div onClick={handleImageClick} style={{ cursor: 'pointer' }} className="w-72 h-96">
+              <img 
+                src={imageUrl} 
+                alt="Uploaded Image"
+                className="w-full h-full object-cover" 
+                style={{ display: isLoading ? 'none' : 'block' }}
+                onLoad={() => setIsLoading(false)}
+                onError={() => console.error('Failed to load image at:', imageUrl)}
+              />
       </div>
 
       {isFullscreen && (

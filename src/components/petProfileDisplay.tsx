@@ -1,16 +1,16 @@
 'use client'
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import moment from 'moment';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { useRouter } from 'next/navigation'; 
-import { useToast } from '@/components/ui/use-toast'; 
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
-import {X, Upload, FilePlus2, Pencil} from 'lucide-react'
-import { Textarea } from '@/components/ui/textarea';  
+import { X, Upload, FilePlus2, Pencil } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea';
 import MedicalDocCard from './medicalDocuments/medicalDocCard';
 import ImageComponent from './ImageComonent';
 import Image from 'next/image';
@@ -32,7 +32,7 @@ const PetProfileDisplay: React.FC = () => {
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
   const petAvatarRef = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<string>("")
-  
+
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
   const { toast } = useToast();
@@ -65,11 +65,11 @@ const PetProfileDisplay: React.FC = () => {
   }, []);
 
   const handleConnectClick = () => {
-    console.log("Connect button clicked"); 
+    console.log("Connect button clicked");
   }
 
   const handleMessageClick = () => {
-    console.log("Message button clicked");  
+    console.log("Message button clicked");
   }
 
   const handleEditProfileClick = () => {
@@ -79,26 +79,26 @@ const PetProfileDisplay: React.FC = () => {
   useEffect(() => {
     const handlePhotos = async () => {
       try {
-        if(!petData || !petData.id) return
-        if(grabbingPhotos) return
+        if (!petData || !petData.id) return
+        if (grabbingPhotos) return
         setGrabbingPhotos(true)
 
         const response = await fetch(`/api/getPetPhotos?petId=${petData?.id}`);
-  
+
         if (!response.ok) {
           console.error('Failed to fetch pet avatar:', response.statusText);
           return;
         }
-  
+
         const images = await response.json();
-  
+
         if (!images || !Array.isArray(images)) {
           console.error('Invalid response format for pet avatar:', images);
           return;
         }
-        
+
         const baseUrl = process.env.NEXTCLOUD_PETALBUM_URL
-        const imageUrls = images.map(image => 
+        const imageUrls = images.map(image =>
           `${baseUrl}/${encodeURIComponent(petData.id)}/${encodeURIComponent(image.basename)}&x=1280&y=720&a=true`
         );
         setUploadedImages(imageUrls);
@@ -107,15 +107,15 @@ const PetProfileDisplay: React.FC = () => {
         console.error('Error fetching pet photos:', error);
       }
     };
-  
+
     handlePhotos();
   }, [petData]);
 
   useEffect(() => {
-    const handleAvatar = async() => {
-      try{
-        if(!petData || !petData.id) return;
-        if(grabbingAvatar)return;
+    const handleAvatar = async () => {
+      try {
+        if (!petData || !petData.id) return;
+        if (grabbingAvatar) return;
         setGrabbingAvatar(true)
 
         const response = await fetch(`/api/getPetAvatar?petId=${petData?.id}`);
@@ -124,7 +124,7 @@ const PetProfileDisplay: React.FC = () => {
           console.error('Failed to fetch pet photos:', response.statusText);
           return;
         }
-  
+
         const images = await response.json();
 
         if (!images || !images.at(0)) {
@@ -137,7 +137,7 @@ const PetProfileDisplay: React.FC = () => {
 
         setAvatar(imageUrl)
         setGrabbingAvatar(false)
-      }catch(error){
+      } catch (error) {
         console.log(error)
       }
     }
@@ -145,46 +145,46 @@ const PetProfileDisplay: React.FC = () => {
   }, [petData])
 
 
-  const handleClick = async() => {
+  const handleClick = async () => {
     if (userData?.id && petData?.owner_id && currentUserId) {
       sessionStorage.setItem('clickedUserId', userData.id.toString());
       sessionStorage.setItem('clickedOwnerId', petData.owner_id.toString());
 
-      if(userData?.id != currentUserId){
-      const { data, error } = await supabase
-        .from('user')
-        .select('username')
-        .eq('id', petData.owner_id)
-        .single();
+      if (userData?.id != currentUserId) {
+        const { data, error } = await supabase
+          .from('user')
+          .select('username')
+          .eq('id', petData.owner_id)
+          .single();
 
-      if (data && data.username) {
-        router.push(`/profile/public/${userData.username}`);
-      } else if (error) {
-        toast({
-          title: 'Error',
-          description: error.message || 'Unable to fetch username.',
-          variant: 'destructive',
-        });
+        if (data && data.username) {
+          router.push(`/profile/public/${userData.username}`);
+        } else if (error) {
+          toast({
+            title: 'Error',
+            description: error.message || 'Unable to fetch username.',
+            variant: 'destructive',
+          });
+        }
       }
-    }
 
-    else{
-      const { data, error } = await supabase
-        .from('user')
-        .select('username')
-        .eq('id', currentUserId)
-        .single();
+      else {
+        const { data, error } = await supabase
+          .from('user')
+          .select('username')
+          .eq('id', currentUserId)
+          .single();
 
-      if (data && data.username) {
-        router.push(`/profile`);
-      } else if (error) {
-        toast({
-          title: 'Error',
-          description: error.message || 'Unable to fetch username.',
-          variant: 'destructive',
-        });
+        if (data && data.username) {
+          router.push(`/profile`);
+        } else if (error) {
+          toast({
+            title: 'Error',
+            description: error.message || 'Unable to fetch username.',
+            variant: 'destructive',
+          });
+        }
       }
-    }
     } else {
       toast({
         title: 'Error',
@@ -193,119 +193,119 @@ const PetProfileDisplay: React.FC = () => {
       });
     }
 
-}
+  }
 
 
-const handleFileUpload = async (event: any, folder: string) => {
-  const file = event?.target.files[0];
-  if (!file) return;
+  const handleFileUpload = async (event: any, folder: string) => {
+    const file = event?.target.files[0];
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append('file', file);
-  if(!petData || !petData.id) return;
-  formData.append('petId', petData.id.toString())
-  formData.append('folder', folder)
+    const formData = new FormData();
+    formData.append('file', file);
+    if (!petData || !petData.id) return;
+    formData.append('petId', petData.id.toString())
+    formData.append('folder', folder)
 
-  try {
-    toast({
-      title: "Uploading...",
-      description: "File attempting to upload",
-      variant: "default",
-    })
-    const response = await fetch(`/api/uploadDocuments`, {
+    try {
+      toast({
+        title: "Uploading...",
+        description: "File attempting to upload",
+        variant: "default",
+      })
+      const response = await fetch(`/api/uploadDocuments`, {
         method: 'POST',
         body: formData
-    });
+      });
 
-    if (response.ok) {
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "File upload success",
+          variant: "default"
+        })
+        router.refresh()
+      } else {
+        throw new Error('File upload failed');
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const avatarUpload = async (event: any, folder: string) => {
+    const file = event?.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    if (!petData || !petData.id) return;
+    formData.append('id', petData.id.toString())
+    formData.append('folder', folder)
+
+    try {
       toast({
-        title: "Success",
-        description: "File upload success",
+        title: "Uploading...",
+        description: "File attempting to upload",
         variant: "default"
       })
-      router.refresh()
-    } else {
-      throw new Error('File upload failed');
+
+      const response = await fetch(`/api/uploadAvatar`, {
+        method: 'POST',
+        body: formData
+      });
+    } catch (error) {
+      console.log("ERROR IN AVATAR UPLOAD")
     }
-  } catch (error) {
-    console.error("Error:", error);
   }
-};
 
-const avatarUpload = async (event: any, folder: string) => {
-  const file = event?.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('file', file);
-  if(!petData || !petData.id) return;
-  formData.append('id', petData.id.toString())
-  formData.append('folder', folder)
-
-  try{
-    toast({
-      title: "Uploading...",
-      description: "File attempting to upload",
-      variant: "default"
-    })
-
-    const response = await fetch(`/api/uploadAvatar`, {
-      method: 'POST',
-      body: formData
-    });    
-  }catch(error){
-    console.log("ERROR IN AVATAR UPLOAD")
-  }
-}
-
-const handleSaveChanges = async () => {
-  try {
+  const handleSaveChanges = async () => {
+    try {
       if (!petData || !petData.id) {
-          toast({
-              title: 'Error',
-              description: 'Missing pet data.',
-              variant: 'destructive',
-          });
-          return;
+        toast({
+          title: 'Error',
+          description: 'Missing pet data.',
+          variant: 'destructive',
+        });
+        return;
       }
 
       // Update the pet data in the database
       const { data, error } = await supabase
-          .from('pet')
-          .update({
-            name: editedName ?? petData.name,
-            pet_type: editedType ?? petData.pet_type,
-            breed: editedBreed ?? petData.breed,
-            bio: editedBio ?? petData.bio,
-        })      
-          .eq('id', petData.id) 
-          .select();
+        .from('pet')
+        .update({
+          name: editedName ?? petData.name,
+          pet_type: editedType ?? petData.pet_type,
+          breed: editedBreed ?? petData.breed,
+          bio: editedBio ?? petData.bio,
+        })
+        .eq('id', petData.id)
+        .select();
 
       // Check if there's an error
       if (error) {
-          throw error;
+        throw error;
       }
 
       // Update local state with new pet data
       setPetData(data[0]);
 
       toast({
-          title: 'Success',
-          description: 'Pet profile updated successfully.',
-          variant: 'default',
+        title: 'Success',
+        description: 'Pet profile updated successfully.',
+        variant: 'default',
       });
 
       setIsEditDialogOpen(false); // Close the dialog after saving
 
-  } catch (error) {
+    } catch (error) {
       console.error('Error updating pet data:', error);
       toast({
-          title: 'Error',
-          description:'An error occurred while updating pet data.',
-          variant: 'destructive',
+        title: 'Error',
+        description: 'An error occurred while updating pet data.',
+        variant: 'destructive',
       });
-  }
-};
+    }
+  };
   return (
     <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
@@ -320,7 +320,8 @@ const handleSaveChanges = async () => {
         </div>
         <button
           onClick={() => petAvatarRef.current?.click()}
-          className="w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          className="absolute flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          style={{ transform: 'translate(500%, 200%)' }}
         >
           <Pencil />
         </button>
@@ -366,55 +367,19 @@ const handleSaveChanges = async () => {
               <div className="mt-4 md:ml-10">
                 <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                   <Dialog.Trigger asChild>
-                    <Button className="px-5 py-2.5 rounded-md border border-softBlue hover:bg-softPink transition-colors duration-300">
-                      Edit Profile 🐾
-                    </Button>
                   </Dialog.Trigger>
-
                   <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-darkGreen" />
                     <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[90vh] w-[90vw] max-w-[500px] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-[30px] shadow-xl border-t-8 border-softGreen">
-
                       <div className="flex justify-between items-center">
-                        <h3 className="text-xl font-semibold text-softGreen"> Edit Pet Profile 🐾</h3>
+                        <h3 className="text-xl font-semibold text-softGreen">  Edit Bio </h3>
                         <Dialog.Close asChild>
                           <button className="focus:outline-none">
                             <X size={20} />
                           </button>
                         </Dialog.Close>
                       </div>
-
                       <div className="mt-8 space-y-4">
-
-                        {/* Pet Name */}
-                        <label htmlFor="editedName" className="block text-softBlue text-lg font-semibold mb-1">Name:</label>
-                        <input
-                          id="editedName"
-                          type="text"
-                          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
-                          defaultValue={petData?.name || 'Pet Name'}
-                          onChange={(e) => setEditedName(e.target.value)}
-                        />
-
-                        {/* Pet Type */}
-                        <label htmlFor="editedType" className="block text-softBlue text-lg font-semibold mb-1">Type (e.g., Dog, Cat):</label>
-                        <input
-                          id="editedType"
-                          type="text"
-                          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
-                          defaultValue={petData?.pet_type || 'Pet Type'}
-                          onChange={(e) => setEditedType(e.target.value)}
-                        />
-
-                        {/* Pet Breed */}
-                        <label htmlFor="editedBreed" className="block text-softBlue text-lg font-semibold mb-1">Breed:</label>
-                        <input
-                          id="editedBreed"
-                          type="text"
-                          className="border-2 border-softBlue w-full rounded-md h-10 text-midnight px-3 py-2"
-                          defaultValue={petData?.breed || 'Pet Breed'}
-                          onChange={(e) => setEditedBreed(e.target.value)}
-                        />
 
                         {/* Pet Bio */}
                         <label htmlFor="editedBio" className="block text-softBlue text-lg font-semibold mb-1">Short Bio:</label>
@@ -447,16 +412,30 @@ const handleSaveChanges = async () => {
       </header>
 
       {/* Bio Card */}
-      <div className="mb-4">
+      <div className="mb-4 relative">
         <Card>
-          <CardHeader className="bg-transparent">
+          <CardHeader>
             <h3 className="text-xl font-semibold">Bio</h3>
+            {currentUserId === userData?.id && (
+              <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <Dialog.Trigger asChild>
+                  <button
+                    onClick={handleEditProfileClick}
+                    className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                </Dialog.Trigger>
+                {/* ...Dialog Portal and Content... */}
+              </Dialog.Root>
+            )}
           </CardHeader>
           <CardContent className="bg-transparent">
             <p className="text-gray-600">{petData?.bio || 'This user has no bio.'}</p>
           </CardContent>
         </Card>
       </div>
+
 
       {/* Medication Documents Section */}
       <div className="mb-4 relative">
@@ -473,26 +452,35 @@ const handleSaveChanges = async () => {
               hidden
               onChange={(e) => handleFileUpload(e, 'MedicalDocuments')}
             />
+
           </CardContent>
         </Card>
-        <button
-          onClick={() => documentInputRef.current?.click()}
-          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-        >
-          <FilePlus2/>
-        </button>
+        {currentUserId === userData?.id && (
+
+          <button
+            onClick={() => documentInputRef.current?.click()}
+            className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          >
+            <FilePlus2 />
+          </button>
+        )}
+
       </div>
 
       <hr className="my-2" /> {/* Horizontal line */}
 
       {/* Image Upload Section */}
       <div className="relative mb-4">
-        <button
-          onClick={() => imageInputRef.current?.click()}
-          className="absolute top-0 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-        >
-          <Upload />
-        </button>
+        {currentUserId === userData?.id && (
+
+          <button
+            onClick={() => imageInputRef.current?.click()}
+            className="absolute top-0 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+          >
+            <Upload />
+          </button>
+        )}
+
         <input
           ref={imageInputRef}
           type="file"
@@ -505,13 +493,14 @@ const handleSaveChanges = async () => {
           <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-2">
             {
               uploadedImages.map((imageUrl, index) => (
-                <div key={index}>
+                <div key={index} className="w-72 h-96">
                   <ImageComponent imageUrl={imageUrl} />
                 </div>
               ))
             }
           </div>
         </div>
+
       </div>
     </div>
   );

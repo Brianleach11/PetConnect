@@ -42,7 +42,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [areFriends, setAreFriends] = useState(false);
   const [fetchingCompleted, setFetchingCompleted] = useState(false);
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false)
-  const [avatar, setAvatar] = useState<string>("https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500")
+  const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
   
 
   useEffect(() => {
@@ -428,13 +428,15 @@ useEffect(() => {
         onMouseEnter={() => setIsCardHovered(true)}
         onMouseLeave={() => setIsCardHovered(false)}
       >
-        <CardHeader className="absolute top-[-38px] left-1/2 transform -translate-x-1/2 z-10">
+        <CardHeader className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 z-10">
           <img
             src={avatar}
             alt="Pet Image"
-            className="rounded-full w-100 h-100 object-cover"
+            className="w-40 h-40 object-cover rounded-full"
+            style={{ width: '100px', height: '100px' }} 
           />
         </CardHeader>
+
 
         <CardContent className="pt-20 text-center font-sans">
           <CardTitle className="text-4xl text-gray-500 mb-2.5">
