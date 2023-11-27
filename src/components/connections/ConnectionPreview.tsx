@@ -67,7 +67,7 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
         if (!item.sending_user || !item.receiving_user) return;
 
         let chatId;
-        const { data: query, error: chatIdError } = await supabase
+        const { data: query, error: chatIdError } = await supabas
             .from('chats')
             .select('chat_id, sender_id, recipient_id');
 
