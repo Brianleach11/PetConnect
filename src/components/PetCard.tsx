@@ -41,6 +41,8 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [sentConnections, setSentConnections] = useState(new Set<string>());
   const [areFriends, setAreFriends] = useState(false);
   const [fetchingCompleted, setFetchingCompleted] = useState(false);
+  const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false)
+  const [avatar, setAvatar] = useState<string>("https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500")
   
 
   useEffect(() => {
@@ -82,6 +84,36 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
 
   };
+
+  useEffect(() => {
+    const getAvatar = async() => {
+      if(!pet || !pet.id) return
+      if(grabbingAvatar) return
+      setGrabbingAvatar(true)
+
+      const response = await fetch(`/api/getPetAvatar?id=${pet.id}`)
+
+      if (!response.ok) {
+        console.error('Failed to fetch pet photos:', response.statusText);
+        return;
+      }
+
+      const images = await response.json();
+
+      if (!images || !images.at(0)) {
+        console.error('Invalid response format for pet photos:', images);
+        return;
+      }
+
+      const baseUrl = process.env.NEXTCLOUD_PETAVATAR_URL
+      const imageUrl = `${baseUrl}/${encodeURIComponent(pet.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
+
+      setAvatar(imageUrl)
+
+      setGrabbingAvatar(false)
+    }
+    getAvatar()
+  }, [pet])
 
   useEffect(() => {
 
@@ -398,9 +430,9 @@ useEffect(() => {
       >
         <CardHeader className="absolute top-[-38px] left-1/2 transform -translate-x-1/2 z-10">
           <img
-            src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500"
+            src={avatar}
             alt="Pet Image"
-            className="w-38 mx-auto rounded-full"
+            className="rounded-full w-100 h-100 object-cover"
           />
         </CardHeader>
 
