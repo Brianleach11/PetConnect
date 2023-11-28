@@ -437,10 +437,9 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
   return (
     <div>
-
       <Card
         onClick={handleCardClick}
-        className={`relative w-72 m-10 bg-half-gradient transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'scale-105 shadow-2xl' : 'shadow-lg'} rounded-lg border border-gray-200`}
+        className={`relative w-72 m-14 bg-half-gradient transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'scale-105 shadow-lg cursor-pointer' : 'shadow-md'} rounded-lg border border-gray-200`}
         style={{ backgroundColor: pet.color || selectedColor }}
         onMouseEnter={() => setIsCardHovered(true)}
         onMouseLeave={() => setIsCardHovered(false)}

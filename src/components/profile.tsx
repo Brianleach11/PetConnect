@@ -210,7 +210,7 @@ const renderAvatarSelectionDialog = () => {
 
 
   return (
-    <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
+    <div className="bg-whiteGreen bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8 border-r-2 border-r-grey border-l-2 border-l-grey">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
         <div className="relative mr-10"> {/* Parent container with relative positioning */}
           <img

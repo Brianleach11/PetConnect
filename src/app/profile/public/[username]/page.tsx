@@ -14,7 +14,7 @@ const ProfilePage: FC = async () => {
   if(!session) redirect('/')
 
   return (
-    <div className="flex flex-col min-h-screen bg-whiteGreen">
+    <div className="flex flex-col min-h-screen bg-white">
       <NavBar session={session} authToken={false} />
       <div className="mt-8"> 
         <UserProfileDisplay />
