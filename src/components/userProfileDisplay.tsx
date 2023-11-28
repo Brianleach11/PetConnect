@@ -49,14 +49,14 @@ const UserProfileDisplay: React.FC = () => {
     }
     handleAvatar()
   }, [userData])
-  
+
 
   useEffect(() => {
     const userIdFromStorage = sessionStorage.getItem('clickedUserId') || '';
     const ownerIdFromStorage = sessionStorage.getItem('clickedOwnerId') || '';
 
     setUserId(userIdFromStorage);
-    
+
     const fetchData = async () => {
       if (userIdFromStorage && ownerIdFromStorage) {
         const { data: userData, error: userError } = await supabase.from('user').select('*').eq('id', userIdFromStorage).single();
@@ -70,54 +70,54 @@ const UserProfileDisplay: React.FC = () => {
     };
 
     fetchData();
-}, []);
-  
+  }, []);
 
 
-return (
-  <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
-    <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
-      <div className="flex-shrink-0= mr-10">
-        <img 
-          className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1" 
-          src={avatar}
-          alt="Dog Image" 
-          width={160} 
-          height={160} 
-        />
-      </div>
-      <div>
-      <h2 className="text-2xl font-semibold mb-1">
-          {userData?.username || 'Username'}
-        </h2>
 
-    <p className="text-l">{userData?.city}, {userData?.state}</p>
-      </div>
-    </header>
-    
-{/* Bio Card */}
-<div className="mb-4">
-    <Card className="bg-transparent">
-        <CardHeader className="bg-transparent">
+  return (
+    <div className="bg-whiteGreen border-r-2 border-r-grey border-l-2 border-l-grey bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
+      <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
+        <div className="flex-shrink-0= mr-10">
+          <img
+            className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1"
+            src={avatar}
+            alt="Dog Image"
+            width={160}
+            height={160}
+          />
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold mb-1">
+            {userData?.username || 'Username'}
+          </h2>
+
+          <p className="text-l">{userData?.city}, {userData?.state}</p>
+        </div>
+      </header>
+
+      {/* Bio Card */}
+      <div className="mb-4">
+        <Card className="bg-transparent">
+          <CardHeader className="bg-transparent">
             <h3 className="text-xl font-semibold">Bio</h3>
-        </CardHeader>
-        <CardContent className="bg-transparent">
+          </CardHeader>
+          <CardContent className="bg-transparent">
             <p className="text-gray-600">{userData?.bio || 'This user has no bio.'}</p>
-        </CardContent>
-    </Card>  
-</div>
-    
-    <hr className="my-4"/> {/* Horizontal line */}
+          </CardContent>
+        </Card>
+      </div>
 
-    <div className="flex justify-center">
-     <div className="grid grid-cols-1 ">
-    <OwnerPetCardList userId={userId} />
-  </div>
-</div>
+      <hr className="my-4" /> {/* Horizontal line */}
+
+      <div className="flex justify-center">
+        <div className="grid grid-cols-1 ">
+          <OwnerPetCardList userId={userId} />
+        </div>
+      </div>
 
 
-  </div>
-);
+    </div>
+  );
 
 };
 
