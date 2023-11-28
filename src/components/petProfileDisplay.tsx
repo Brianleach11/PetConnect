@@ -362,7 +362,7 @@ const PetProfileDisplay: React.FC = () => {
         <input
           ref={petAvatarRef}
           type="file"
-          multiple
+          accept='image/*'
           hidden
           onChange={(e) => avatarUpload(e, 'PetAvatar')}
         />
@@ -482,7 +482,6 @@ const PetProfileDisplay: React.FC = () => {
               <input
                 ref={documentInputRef}
                 type="file"
-                multiple
                 hidden
                 onChange={(e) => handleFileUpload(e, 'MedicalDocuments')}
               />
@@ -523,7 +522,7 @@ const PetProfileDisplay: React.FC = () => {
         <input
           ref={imageInputRef}
           type="file"
-          multiple
+          accept='image/*'
           hidden
           onChange={(e) => handleFileUpload(e, 'PetAlbum')}
         />

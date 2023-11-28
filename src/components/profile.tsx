@@ -484,7 +484,7 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
             <input
               ref={userAvatarRef}
               type="file"
-              multiple
+              accept='image/*'
               hidden
               onChange={(e) => {
                 avatarUpload(e, 'UserAvatar');
