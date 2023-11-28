@@ -139,6 +139,24 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
     }
   };
 
+  const links = [
+    { name: 'Link 1', code: 'https://i.pinimg.com/564x/cf/35/76/cf35760687430b2228bc55ac2b182227.jpg' },
+    { name: 'Link 2', code: 'https://i.pinimg.com/564x/23/c3/93/23c3933395e6f9d26793f4721ea6ba33.jpg' },
+    { name: 'Link 3', code: 'https://i.pinimg.com/564x/14/d0/8f/14d08fca12469becf0bc440f9108d4a7.jpg' },
+    { name: 'Link 4', code: 'https://i.pinimg.com/564x/6c/9f/da/6c9fdaddf59feae4af29b21baf304ff9.jpg' },
+    { name: 'Link 5', code: 'https://i.pinimg.com/564x/78/3c/86/783c86d06c043f70387fe8fb690f4254.jpg' },
+    { name: 'Link 6', code: 'https://i.pinimg.com/564x/65/d2/e8/65d2e8ffb050cb0f3518a86db099dac4.jpg' },
+    { name: 'Link 7', code: 'https://i.pinimg.com/564x/d5/20/1c/d5201cde366f8bc10836d42711562cf4.jpg' },
+    { name: 'Link 8', code: 'https://i.pinimg.com/564x/d6/85/30/d6853029f3c237d76d1e302867040fdc.jpg' },
+    { name: 'Link 9', code: 'https://i.pinimg.com/564x/5d/71/56/5d71568b524bd058e365d7bbd5694a11.jpg' },
+    { name: 'Link 10', code: 'https://i.pinimg.com/564x/a3/8a/fe/a38afe0d08fc264160ea914bf3b16f07.jpg' },
+    { name: 'Link 11', code: 'https://i.pinimg.com/564x/45/11/c5/4511c5871ff8011385b023be70878d81.jpg' },
+    { name: 'Link 12', code: 'https://i.pinimg.com/564x/9f/47/1b/9f471b53affd4161f77163055681c782.jpg' },
+    { name: 'Link 13', code: 'https://i.pinimg.com/564x/f7/b6/38/f7b6380375447e7e0e619c0553f9ca4a.jpg' },
+    { name: 'Link 14', code: 'https://i.pinimg.com/564x/cc/89/78/cc8978c545117faa09841dd301cc150a.jpg' },
+    { name: 'Link 15', code: 'https://i.pinimg.com/564x/88/5e/9f/885e9f80cfa4274ad8a2b229b3869897.jpg' }
+  ];
+  
   const avatarUpload = async (event: any, folder: string) => {
     const file = event?.target.files[0];
     if (!file) {
@@ -269,7 +287,6 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
     }
   };
 
-
   return (
     <div className="bg-whiteGreen bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8 border-r-2 border-r-grey border-l-2 border-l-grey">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
@@ -277,7 +294,7 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
           <img
             className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink p-1"
             src={avatar}
-            alt="Dog Image"
+            alt="User Image"
             width={160}
             height={160}
           />

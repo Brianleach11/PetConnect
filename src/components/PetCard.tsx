@@ -119,11 +119,35 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     if (birthday) {
       const birthdate = moment(birthday);
       const today = moment();
-      const age = today.diff(birthdate, 'years');
-      return `${age} years`;
+  
+      const years = today.diff(birthdate, 'years');
+      const months = today.subtract(years, 'years').diff(birthdate, 'months');
+      const days = today.subtract(months, 'months').diff(birthdate, 'days');
+  
+      let ageString = '';
+      if (years > 0) {
+        // If age is more than a year, display years and months
+        ageString += `${years} year${years > 1 ? 's' : ''} `;
+        if (months > 0) {
+          ageString += `and ${months} month${months > 1 ? 's' : ''}`;
+        }
+      } else if (months > 0) {
+        // If age is less than a year but more than a month, display months and days
+        ageString += `${months} month${months > 1 ? 's' : ''} `;
+        if (days > 0) {
+          ageString += `and ${days} day${days > 1 ? 's' : ''}`;
+        }
+      } else {
+        // If age is less than a month, display only days
+        ageString += `${days} day${days === 1 ? '' : 's'}`;
+      }
+  
+      return ageString;
     }
-    return 'Loading....';
+    return 'Loading...';
   };
+  
+  
 
   const handleCardClick = async () => {
     if (isButtonHovered) return;
