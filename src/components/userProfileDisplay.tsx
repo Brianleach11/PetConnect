@@ -24,6 +24,18 @@ const UserProfileDisplay: React.FC = () => {
         if (grabbingAvatar) return;
         setGrabbingAvatar(true)
 
+        const { data } = await supabase
+          .from('user')
+          .select('defaultAvatar')
+          .eq('id', userData.id)
+          .select()
+          .single();
+          
+        if (data?.defaultAvatar) {
+          setAvatar(data?.defaultAvatar)
+          return;
+        }
+
         const response = await fetch(`/api/getUserAvatar?userId=${userData?.id}`);
 
         if (!response.ok) {

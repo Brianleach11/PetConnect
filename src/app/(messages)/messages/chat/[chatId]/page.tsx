@@ -5,6 +5,7 @@ import { Database } from '@/types/supabase'
 import ChatInput from '@/components/chat/ChatInput'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
+import ClickUsername from '@/components/chat/ClickUsername'
 
 interface PageProps {
   params: {
@@ -52,9 +53,7 @@ const page = async ({params}: PageProps) => {
               </div>
               <div className='flex flex-col leading-tight'>
                 <div className='text-l flex items-center'>
-                  <span className='text-gray-700 mr-3 font-medium'>
-                    {chatPartnerUsername}
-                  </span>
+                  <ClickUsername chatPartnerUsername={chatPartnerUsername || ""} chatPartner={chatPartner || ""}/>
                 </div>
               </div>
             </div>

@@ -328,11 +328,10 @@ const PetProfileDisplay: React.FC = () => {
   }
 
   const handleDeletePhotos = async (index: number) => {
-    const pieces = uploadedImages[0].split('/')
+    const pieces = uploadedImages[index].split('/')
     const filename = pieces[pieces.length-1]
-    await fetch(`/api/deletePetPhoto?filename=${filename}`)
+    await fetch(`/api/deletePetPhoto?filename=${filename}&petId=${petData?.id}`)
     router.refresh()
-    //FILENAME: https://cc2.cs.fiu.edu/index.php/apps/files_sharing/publicpreview/ys4dp3iFtLygp49?file
   }
 
   useEffect(() => {
@@ -354,8 +353,8 @@ const PetProfileDisplay: React.FC = () => {
         {currentUserId === userData?.id && (
           <button
             onClick={() => petAvatarRef.current?.click()}
-            className="absolute flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-            style={{ transform: 'translate(500%, 200%)' }}
+            className="absolute flex items-center justify-center rounded-md hover:bg-darkGreen transition-colors duration-300"
+            style={{ transform: 'translate(550%, 285%)' }}
           >
             <Pencil />
           </button>
@@ -538,7 +537,7 @@ const PetProfileDisplay: React.FC = () => {
                     (editPhotos) &&
                       <Dialog.Root key={index}>
                         <Dialog.Trigger>
-                          <Trash2 key={index} className="absolute top-6 right-0 m-2 bg-red rounded-sm"/>
+                          <Trash2 key={index} className="absolute top-6 right-0 m-2 bg-whiteGreen hover:bg-red rounded-sm"/>
                         </Dialog.Trigger>
                         <Dialog.Portal>
                           <div

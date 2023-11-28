@@ -8,7 +8,10 @@ export async function GET(req: NextApiRequest) {
     const url = process.env.NEXTCLOUD_URL;
 
     const passedUrl = req.url?.split('=');
-    const filename = passedUrl?.at(1);
+    console.log(passedUrl)
+    const filename = passedUrl?.at(1)?.split('&').at(0);
+    const petId = passedUrl?.at(passedUrl.length-1)
+
     if(!filename) return new Response(JSON.stringify("No filename"), {status: 400})
 
     if (!username || !password || !url) {
@@ -22,7 +25,8 @@ export async function GET(req: NextApiRequest) {
             authType: AuthType.Password
         })
         console.log("FILENAME: " + filename)
-        await client.deleteFile(`/PetAlbum/${filename}`)
+        console.log("PETID: " + petId)
+        await client.deleteFile(`/PetAlbum/${petId}/${filename}`)
 
     }catch(error)
     {
