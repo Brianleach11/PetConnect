@@ -51,6 +51,7 @@ const ImageComponent: FC<ImageComponentProps> = ({ imageUrl }) => {
           <Image
             src={imageUrl}
             alt="Fullscreen Uploaded Pet"
+            loading = "eager"
             layout="fill"
             objectFit="contain"
           />

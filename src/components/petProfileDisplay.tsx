@@ -343,10 +343,25 @@ const PetProfileDisplay: React.FC = () => {
               {userData?.username || 'Loading.........'}
             </a>
           </h2>
-          <h1 className="text-2xl font-semibold mb-1">
-            My name is {petData?.name || 'Pet Name'} :)
+          <h1 className="text-2xl font-semibold mb-2">
+            My name is{' '}
+            <span className="font-bold text-3xl text-primary-color">
+              {petData?.name || 'Loading....'}
+            </span>
           </h1>
-          <span className="text-l">I am a {petData?.pet_type || 'Loading.........'} , My breed is {petData?.breed || 'Loading.........'}</span>
+
+          <h1 className="text-l  mb-2">
+            Iam a {' '}
+            <span className="font-semibold text-2xl text-primary-color">
+              {petData?.pet_type || 'Loading....'}
+            </span>
+          </h1> 
+          <h1 className="text-l font-semibold mb-2">
+           Iam a(an) {' '}
+            <span className="font-bold text-2xl text-primary-color">
+              {petData?.breed || 'Loading....'}
+            </span>
+          </h1> 
           <p className="text-l">I was born on {`${petData?.birthday || 'Loading.........'}`}</p>
           <p className="text-l">{userData?.city || 'Loading.........'}, {userData?.state || 'Loading.........'}</p>
           <div>

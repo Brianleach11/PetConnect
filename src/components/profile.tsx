@@ -33,8 +33,9 @@ const Profile: React.FC<ProfileProps> = ({userId}) => {
   const userAvatarRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>("/sad-pet.jpg");
-  // TODO: State for profilePicture if needed
+  const [avatar, setAvatar] = useState<string>("https://i.pinimg.com/564x/79/bf/3c/79bf3ce1e8d44ed832fd2803c53e1f76.jpg");
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState(avatar);
 
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
@@ -90,6 +91,33 @@ const Profile: React.FC<ProfileProps> = ({userId}) => {
     }
   };
 
+  const links = [
+    { name: 'Link 1', code: 'https://i.pinimg.com/564x/cf/35/76/cf35760687430b2228bc55ac2b182227.jpg' },
+    { name: 'Link 2', code: 'https://i.pinimg.com/564x/23/c3/93/23c3933395e6f9d26793f4721ea6ba33.jpg' },
+    { name: 'Link 3', code: 'https://i.pinimg.com/564x/14/d0/8f/14d08fca12469becf0bc440f9108d4a7.jpg' },
+    { name: 'Link 4', code: 'https://i.pinimg.com/564x/6c/9f/da/6c9fdaddf59feae4af29b21baf304ff9.jpg' },
+    { name: 'Link 5', code: 'https://i.pinimg.com/564x/78/3c/86/783c86d06c043f70387fe8fb690f4254.jpg' },
+    { name: 'Link 6', code: 'https://i.pinimg.com/564x/65/d2/e8/65d2e8ffb050cb0f3518a86db099dac4.jpg' },
+    { name: 'Link 7', code: 'https://i.pinimg.com/564x/d5/20/1c/d5201cde366f8bc10836d42711562cf4.jpg' },
+    { name: 'Link 8', code: 'https://i.pinimg.com/564x/d6/85/30/d6853029f3c237d76d1e302867040fdc.jpg' },
+    { name: 'Link 9', code: 'https://i.pinimg.com/564x/5d/71/56/5d71568b524bd058e365d7bbd5694a11.jpg' },
+    { name: 'Link 10', code: 'https://i.pinimg.com/564x/a3/8a/fe/a38afe0d08fc264160ea914bf3b16f07.jpg' },
+    { name: 'Link 11', code: 'https://i.pinimg.com/564x/45/11/c5/4511c5871ff8011385b023be70878d81.jpg' },
+    { name: 'Link 12', code: 'https://i.pinimg.com/564x/9f/47/1b/9f471b53affd4161f77163055681c782.jpg' },
+    { name: 'Link 13', code: 'https://i.pinimg.com/564x/f7/b6/38/f7b6380375447e7e0e619c0553f9ca4a.jpg' },
+    { name: 'Link 14', code: 'https://i.pinimg.com/564x/cc/89/78/cc8978c545117faa09841dd301cc150a.jpg' },
+    { name: 'Link 15', code: 'https://i.pinimg.com/564x/88/5e/9f/885e9f80cfa4274ad8a2b229b3869897.jpg' }
+  ];
+  
+
+
+  const handleAvatarChange = (newAvatarUrl: string) => {
+    setSelectedAvatarUrl(newAvatarUrl);
+    setAvatar(newAvatarUrl); // Update the avatar in state
+    setIsAvatarDialogOpen(false); // Close the dialog
+  };
+
+  
   const avatarUpload = async (event: any, folder: string) => {
     const file = event?.target.files[0];
     if (!file) return;
@@ -150,6 +178,37 @@ const Profile: React.FC<ProfileProps> = ({userId}) => {
   }, [userData])
 
 
+// Render the avatar selection dialog
+const renderAvatarSelectionDialog = () => {
+  return (
+    <Dialog.Root open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+      <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-darkGreen" />
+      <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90vw] max-w-[500px] rounded-lg bg-white p-[30px] shadow-xl overflow-y-auto">
+        <Dialog.Close asChild>
+          <button className="focus:outline-none">✖️</button>
+        </Dialog.Close>
+        <div className="grid grid-cols-3 gap-4">
+          {links.map((link) => (
+            <button key={link.code} onClick={() => handleAvatarChange(link.code)} className="flex flex-col items-center">
+              <img src={link.code} alt={link.name} className="w-16 h-16 rounded-full mb-2" />
+              <span className="text-sm">{link.name}</span>
+            </button>
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <button
+            className="px-5 py-2 bg-softGreen text-black rounded-md hover:bg-lightblue transition-colors duration-300"
+            onClick={() => userAvatarRef.current?.click()}
+          >
+            Upload Profile Picture
+          </button>
+        </div>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+};
+
+
   return (
     <div className="bg-gray-100 bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
@@ -161,13 +220,10 @@ const Profile: React.FC<ProfileProps> = ({userId}) => {
             width={160}
             height={160}
           />
-          <button
-            onClick={() => userAvatarRef.current?.click()}
-            className="absolute bottom-0 right-0 ml-3 mb-3  flex items-center justify-center rounded-md hover:bg-darkGreen transition-colors duration-300"
-            style={{ transform: 'translate(-15%, 50%)' }} // Adjusts the position for precise alignment
-          >
+           <button onClick={() => setIsAvatarDialogOpen(true)}>
             <Pencil />
           </button>
+          {renderAvatarSelectionDialog()}
         </div>
 
         <input
