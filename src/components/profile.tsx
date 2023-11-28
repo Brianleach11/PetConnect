@@ -13,7 +13,11 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Pencil } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast';
 
-const Profile: React.FC = () => {
+interface ProfileProps {
+  userId: string
+}
+
+const Profile: React.FC<ProfileProps> = ({userId}) => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
   const [isModalOpen, setModalOpen] = useState(false); // state to handle modal open/close
@@ -38,11 +42,6 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await supabase.auth.getSession();
-
-      if (response.data.session) {
-        const userId = response.data.session.user.id;
-
         const { data: userData, error: userError } = await supabase.from('user').select('*').eq('id', userId).single();
         if (userError) console.error('Error fetching user data:', userError);
         else setUserData(userData);
@@ -50,7 +49,6 @@ const Profile: React.FC = () => {
         const { data: petData, error: petError } = await supabase.from('pet').select('*').eq('owner_id', userId).single();
         if (petError) console.error('Error fetching pet data:', petError);
         else setPetData(petData);
-      }
     };
 
     fetchData();

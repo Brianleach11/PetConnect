@@ -1,8 +1,16 @@
 import React, { FC } from 'react';
 import Image from 'next/image';
 import PetProfileForm from '@/components/petProfileForm';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-const PetProfilePage: FC = () => {
+const PetProfilePage = async() => {
+  const supabase = createServerComponentClient({cookies})
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+  if(!session) redirect('/')
+  
   return (
     <>
       {/* Header */}

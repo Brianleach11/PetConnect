@@ -12,8 +12,43 @@ const UserProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
   const [petData, setPetData] = useState<Database['public']['Tables']['pet']['Row'] | null>(null);
   const [userId, setUserId] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
+  const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false)
 
   const supabase = createClientComponentClient<Database>();
+
+  useEffect(() => {
+    const handleAvatar = async () => {
+      try {
+        if (!userData || !userData.id) return;
+        if (grabbingAvatar) return;
+        setGrabbingAvatar(true)
+
+        const response = await fetch(`/api/getUserAvatar?userId=${userData?.id}`);
+
+        if (!response.ok) {
+          console.error('Failed to fetch user avatar:', response.statusText);
+          return;
+        }
+
+        const images = await response.json();
+
+        if (!images || !images.at(0)) {
+          console.error('Invalid response format for user avatar:', images);
+          return;
+        }
+
+        const baseUrl = process.env.NEXTCLOUD_USERAVATAR_URL
+        const imageUrl = `${baseUrl}/${encodeURIComponent(userData.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
+
+        setAvatar(imageUrl)
+        setGrabbingAvatar(false)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    handleAvatar()
+  }, [userData])
   
 
   useEffect(() => {
@@ -45,7 +80,7 @@ return (
       <div className="flex-shrink-0= mr-10">
         <img 
           className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full border-2 border-pink-600 p-1" 
-          src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500" 
+          src={avatar}
           alt="Dog Image" 
           width={160} 
           height={160} 

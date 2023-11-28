@@ -318,13 +318,15 @@ const PetProfileDisplay: React.FC = () => {
             height={160}
           />
         </div>
-        <button
-          onClick={() => petAvatarRef.current?.click()}
-          className="absolute flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-          style={{ transform: 'translate(500%, 200%)' }}
-        >
-          <Pencil />
-        </button>
+        {currentUserId === userData?.id && (
+          <button
+            onClick={() => petAvatarRef.current?.click()}
+            className="absolute flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+            style={{ transform: 'translate(500%, 200%)' }}
+          >
+            <Pencil />
+          </button>
+        )}
         <input
           ref={petAvatarRef}
           type="file"
