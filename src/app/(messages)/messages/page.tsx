@@ -36,7 +36,7 @@ const MessagesPage = async () => {
 // Always show the message "No chat has been selected"
 return (
     <div className="flex items-center justify-center h-screen">
-        <div className="p-5 text-center text-xl font-bold text-blue ml-32 ">
+        <div className="p-5 text-center text-xl font-bold text-white ml-32 ">
             No chat has been selected.
         </div>
     </div>

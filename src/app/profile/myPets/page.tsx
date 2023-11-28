@@ -1,6 +1,4 @@
 import React, { FC } from 'react';
-import Image from 'next/image';
-import Profile from '@/components/profile';
 import NavBar from '@/components/NavBar'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'

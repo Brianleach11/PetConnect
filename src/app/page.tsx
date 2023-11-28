@@ -20,7 +20,7 @@ export default async function Home() {
       <div className="flex flex-col min-h-screen bg-whiteGreen">
         <NavBar session={session} authToken={authToken} />
         <div className="flex-grow mt-20"> 
-          <PetCardList />
+          <PetCardList currentUserId={session.user.id}/>
         </div>
       </div>
     )
