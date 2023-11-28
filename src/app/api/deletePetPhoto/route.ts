@@ -8,9 +8,9 @@ export async function GET(req: NextApiRequest) {
     const url = process.env.NEXTCLOUD_URL;
 
     const passedUrl = req.url?.split('=');
-    console.log(passedUrl)
     const filename = passedUrl?.at(1)?.split('&').at(0);
     const petId = passedUrl?.at(passedUrl.length-1)
+    const folder = passedUrl?.at(passedUrl.length-2)?.split('&').at(0)
 
     if(!filename) return new Response(JSON.stringify("No filename"), {status: 400})
 
@@ -19,14 +19,16 @@ export async function GET(req: NextApiRequest) {
     }
 
     try{
-        const client = createClient(url, {
-            username: username,
-            password: password,
-            authType: AuthType.Password
-        })
-        console.log("FILENAME: " + filename)
-        console.log("PETID: " + petId)
-        await client.deleteFile(`/PetAlbum/${petId}/${filename}`)
+        const response = await fetch(`${url}/${folder}/${petId}/${filename}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to upload file to Nextcloud');
+        }
 
     }catch(error)
     {

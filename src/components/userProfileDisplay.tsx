@@ -121,7 +121,8 @@ const UserProfileDisplay: React.FC = () => {
 
       <hr className="my-4" /> {/* Horizontal line */}
 
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center">
+        <h3 className="mb-2 text-xl font-semibold"> Pets</h3>
         <div className="grid grid-cols-1 ">
           <OwnerPetCardList userId={userId} />
         </div>

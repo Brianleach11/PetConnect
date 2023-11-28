@@ -34,6 +34,7 @@ const PetProfileDisplay: React.FC = () => {
   const petAvatarRef = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
   const [editPhotos, setEditPhotos] = useState<boolean>(false)
+  const [newPhotos, setNewPhotos] = useState<boolean>(false)
 
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -105,13 +106,14 @@ const PetProfileDisplay: React.FC = () => {
         );
         setUploadedImages(imageUrls);
         setGrabbingPhotos(false)
+        router.refresh()
       } catch (error) {
         console.error('Error fetching pet photos:', error);
       }
     };
 
     handlePhotos();
-  }, [petData]);
+  }, [petData, newPhotos, setNewPhotos]);
 
   useEffect(() => {
     const handleAvatar = async () => {
@@ -330,8 +332,15 @@ const PetProfileDisplay: React.FC = () => {
   const handleDeletePhotos = async (index: number) => {
     const pieces = uploadedImages[index].split('/')
     const filename = pieces[pieces.length-1]
-    await fetch(`/api/deletePetPhoto?filename=${filename}&petId=${petData?.id}`)
-    router.refresh()
+    if(!filename || !petData?.id) return;
+    const response = await fetch(`/api/deletePetPhoto?filename=${filename}&folder=PetAlbum&petId=${petData?.id}`)
+    
+    if (!response.ok) {
+      console.log('Failed to delete pet photo:', response.statusText);
+      return;
+    }
+    //insead of refresh call the getAgain
+    setNewPhotos(!newPhotos)
   }
 
   useEffect(() => {
@@ -457,14 +466,14 @@ const PetProfileDisplay: React.FC = () => {
                     onClick={handleEditProfileClick}
                     className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
                   >
-                    <Pencil size={20} />
+                    <Pencil />
                   </button>
                 </Dialog.Trigger>
               </Dialog.Root>
             )}
           </CardHeader>
           <CardContent className="bg-transparent">
-            <p className="text-gray-600">{petData?.bio || 'This user has no bio.'}</p>
+            <p className="text-gray-600">{petData?.bio || 'This pet has no bio.'}</p>
           </CardContent>
         </Card>
       </div>
@@ -475,7 +484,7 @@ const PetProfileDisplay: React.FC = () => {
         <div className="mb-4 relative">
           <Card>
             <CardHeader>
-              <h3 className="text-xl font-semibold">Medication Documents</h3>
+              <h3 className="text-xl font-semibold">Medical Documents</h3>
             </CardHeader>
             <CardContent>
               <MedicalDocCard />
@@ -491,7 +500,7 @@ const PetProfileDisplay: React.FC = () => {
 
           <button
             onClick={() => documentInputRef.current?.click()}
-            className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+            className="absolute top-2 right-16 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
           >
             <FilePlus2 />
           </button>
@@ -502,6 +511,7 @@ const PetProfileDisplay: React.FC = () => {
 
       {/* Image Upload Section */}
       <div className="relative mb-4">
+        <h3 className="text-xl font-semibold ml-6 mt-6"> Photos</h3>
         {currentUserId === userData?.id && (
           <>
             <button
@@ -547,9 +557,7 @@ const PetProfileDisplay: React.FC = () => {
                             <Dialog.Content className="bg-white border-4 border-midnight rounded-lg p-4 drop-shadow-2xl shadow-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                               <Dialog.Title className=" font-semibold">Confirm Delete</Dialog.Title>
                               <Dialog.Description className="DialogDescription">
-                                <p>
                                   Once a photo is deleted, it is unrecoverable.
-                                </p>
                               </Dialog.Description>
                               <div style={{ display: 'flex', marginTop: 25, justifyContent: 'space-between' }}>
                                 <Dialog.Close asChild>

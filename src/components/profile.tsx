@@ -314,18 +314,18 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
         </div>
       </header>
 
-      <div className="mb-4">
-        <Card className="bg-transparent">
-          <CardHeader className="bg-transparent">
+      <div className="mb-4 relative">
+        <Card>
+          <CardHeader>
             <h3 className="text-xl font-semibold">Bio</h3>
             {userId === userData?.id && (
               <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <Dialog.Trigger asChild>
                   <button
                     onClick={handleProfileClick}
-                    className="absolute right-72 top-80 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+                    className="absolute right-2 top-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
                   >
-                    <Pencil size={20} />
+                    <Pencil />
                   </button>
                 </Dialog.Trigger>
               </Dialog.Root>
