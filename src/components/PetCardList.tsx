@@ -7,6 +7,7 @@ import PetCard from './PetCard';
 import { PostgrestError } from '@supabase/supabase-js';
 import * as Dialog from '@radix-ui/react-dialog';
 import { SlidersHorizontal } from 'lucide-react';
+import {Spinner} from 'flowbite-react'
 
 const PetCardsList: React.FC = () => {
   const [pets, setPets] = useState<Database['public']['Tables']['pet']['Row'][]>([]);
@@ -178,7 +179,19 @@ const PetCardsList: React.FC = () => {
       </Dialog.Root>
   
       {errorMessage}
-  
+      
+      {loading && (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-8">
+        {Array.from({ length: pets.map.length }, (_, index) => (
+          <div key={index} className="text-center mt-10">
+            <div className="flex justify-center items-center border-2 w-72 h-96 transition-all duration-500 bg-gradient-to-br to-white via-softGreen from-white animate-pulse">
+              <Spinner color='info' size='lg'/>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+      
       {pets.length === 0 && !loading && (
       <div className="text-center mt-10">
       <img src="/sad-pet.jpg" alt="Sad Pet" className="mx-auto" style={{ maxWidth: '300px' }} />
