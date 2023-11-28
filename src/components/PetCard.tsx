@@ -43,7 +43,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false)
   const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
 
-
   useEffect(() => {
     const fetchCurrentUserId = async () => {
       const response = await supabase.auth.getSession();
@@ -80,8 +79,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         variant: 'destructive',
       });
     }
-
-
   };
 
   useEffect(() => {

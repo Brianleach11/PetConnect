@@ -243,6 +243,7 @@ export interface Database {
           bio: string | null
           birthday: string | null
           city: string | null
+          defaultAvatar: string | null
           filter_city: string | null
           filter_state: string
           gender: string | null
@@ -255,6 +256,7 @@ export interface Database {
           bio?: string | null
           birthday?: string | null
           city?: string | null
+          defaultAvatar?: string | null
           filter_city?: string | null
           filter_state?: string
           gender?: string | null
@@ -267,6 +269,7 @@ export interface Database {
           bio?: string | null
           birthday?: string | null
           city?: string | null
+          defaultAvatar?: string | null
           filter_city?: string | null
           filter_state?: string
           gender?: string | null

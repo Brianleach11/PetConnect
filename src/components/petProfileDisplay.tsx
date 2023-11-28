@@ -306,6 +306,29 @@ const PetProfileDisplay: React.FC = () => {
       });
     }
   };
+
+  const formatBirthday = () => {
+    const rawBirthday = petData?.birthday;
+
+    if (rawBirthday) {
+      // Assuming rawBirthday is in the format "YYYY-MM-DD"
+      const parsedDate = new Date(rawBirthday);
+
+      // Format the date into a more readable format
+      const formattedDate = parsedDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      petData.birthday = formattedDate;
+    }
+  }
+
+  useEffect(() => {
+    if (petData) formatBirthday()
+  }, [petData])
+
   return (
     <div className="bg-whiteGreen border-r-2 border-r-grey border-l-2 border-l-grey bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
@@ -340,15 +363,15 @@ const PetProfileDisplay: React.FC = () => {
               onClick={handleClick}
               className="text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
             >
-              {userData?.username || 'Loading.........'}
+              {userData?.username || 'Loading...'}
             </a>
           </h2>
           <h1 className="text-2xl font-semibold mb-1">
-            My name is {petData?.name || 'Pet Name'} :)
+            My name is {petData?.name || 'Pet Name'}
           </h1>
-          <span className="text-l">I am a {petData?.pet_type || 'Loading.........'} , My breed is {petData?.breed || 'Loading.........'}</span>
-          <p className="text-l">I was born on {`${petData?.birthday || 'Loading.........'}`}</p>
-          <p className="text-l">{userData?.city || 'Loading.........'}, {userData?.state || 'Loading.........'}</p>
+          <span className="text-l font-bold">I am a(n) {petData?.breed || ''}</span>
+          <p className="text-l">I was born on {`${petData?.birthday || ''}`}</p>
+          <p className="text-l">{userData?.city || ''}, {userData?.state || ''}</p>
           <div>
             {currentUserId !== userData?.id ? (
               <div className="flex mt-4  md:ml-4 gap-2.5">
@@ -425,10 +448,9 @@ const PetProfileDisplay: React.FC = () => {
                     onClick={handleEditProfileClick}
                     className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
                   >
-                    <Pencil size={16} />
+                    <Pencil size={20} />
                   </button>
                 </Dialog.Trigger>
-                {/* ...Dialog Portal and Content... */}
               </Dialog.Root>
             )}
           </CardHeader>
@@ -440,24 +462,24 @@ const PetProfileDisplay: React.FC = () => {
 
 
       {/* Medication Documents Section */}
-      <div className="mb-4 relative">
-        <Card>
-          <CardHeader>
-            <h3 className="text-xl font-semibold">Medication Documents</h3>
-          </CardHeader>
-          <CardContent>
-            <MedicalDocCard />
-            <input
-              ref={documentInputRef}
-              type="file"
-              multiple
-              hidden
-              onChange={(e) => handleFileUpload(e, 'MedicalDocuments')}
-            />
+      {currentUserId === userData?.id && (
+        <div className="mb-4 relative">
+          <Card>
+            <CardHeader>
+              <h3 className="text-xl font-semibold">Medication Documents</h3>
+            </CardHeader>
+            <CardContent>
+              <MedicalDocCard />
+              <input
+                ref={documentInputRef}
+                type="file"
+                multiple
+                hidden
+                onChange={(e) => handleFileUpload(e, 'MedicalDocuments')}
+              />
 
-          </CardContent>
-        </Card>
-        {currentUserId === userData?.id && (
+            </CardContent>
+          </Card>
 
           <button
             onClick={() => documentInputRef.current?.click()}
@@ -465,9 +487,8 @@ const PetProfileDisplay: React.FC = () => {
           >
             <FilePlus2 />
           </button>
-        )}
-
-      </div>
+        </div>
+      )}
 
       <hr className="my-2" /> {/* Horizontal line */}
 
