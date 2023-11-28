@@ -62,6 +62,17 @@ const MessagePreview: FC<MessagePreviewProps> = ({ item, session }) => {
     // Function to fetch avatar URL
     const fetchAvatar = async (userId: string) => {
         try {
+            const { data } = await supabase
+                .from('user')
+                .select('defaultAvatar')
+                .eq('id', userId)
+                .select()
+                .single();
+            if (data?.defaultAvatar) {
+                setAvatarUrl(data?.defaultAvatar)
+                return;
+            }
+
             const response = await fetch(`/api/getUserAvatar?userId=${userId}`);
             if (!response.ok) throw new Error('Failed to fetch avatar');
 
