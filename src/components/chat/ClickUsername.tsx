@@ -16,6 +16,7 @@ const ClickUsername: FC<ClickUsernameProps> =({chatPartnerUsername, chatPartner}
     const supabase = createClientComponentClient<Database>()
 
     const handleRedirect = () => {
+        sessionStorage.setItem('clickedUserId', chatPartner)
         router.push(`/profile/public/${chatPartnerUsername}`)
     }
 
