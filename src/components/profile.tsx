@@ -339,11 +339,14 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
 
       <hr className="my-4" />
 
-      <div className="flex items-center justify-center mb-4">
+      <div className="flex items-center justify-center mb-4 relative">
         <h2 className="text-2xl font-semibold">My Pets</h2>
         <span className="text-3xl ml-4">🐾</span>
-        <button onClick={handleAddMorePets} className="ml-4 underline cursor-pointer relative right-2">
-          <PlusSquare className='hover:bg-softGreen hover:text-white rounded-sm' />
+        <button 
+          onClick={handleAddMorePets} 
+          className="absolute right-2 top-0 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+        >
+          <Plus />
         </button>
       </div>
 
