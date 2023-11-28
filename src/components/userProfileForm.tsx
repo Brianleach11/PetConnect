@@ -8,7 +8,7 @@ import {
   CardFooter,
   CardTitle,
   CardDescription,
-} from '@/components/ui/card'; 
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation'; 
-import { useToast } from '@/components/ui/use-toast'; 
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/types/supabase';
 
 const UserProfileForm = () => {
@@ -33,7 +33,14 @@ const UserProfileForm = () => {
   const [gender, setGender] = useState<string>('');
   const [birthday, setBirthday] = useState<string>('');
   const [lookingFor, setLookingFor] = useState<string>('');
-
+  const statesList = [
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+    'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
+    'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+    'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+    'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
+    'Wisconsin', 'Wyoming'
+  ];
   useEffect(() => {
     const savedFormData = JSON.parse(localStorage.getItem('userProfileForm') || '{}');
     setUsername(savedFormData.username || '');
@@ -44,8 +51,8 @@ const UserProfileForm = () => {
     setLookingFor(savedFormData.lookingFor || '');
   }, []);
 
-  const handleSubmit = async() => {
-    
+  const handleSubmit = async () => {
+
     if (!username) {
       toast({
         title: "Error",
@@ -90,33 +97,33 @@ const UserProfileForm = () => {
       lookingFor,
     }));
 
-    const {data: {user}, error} = await supabase.auth.getUser()
+    const { data: { user }, error } = await supabase.auth.getUser()
     console.log(user)
 
-    if(user?.id && !error){
-      const {data, error} = await supabase
+    if (user?.id && !error) {
+      const { data, error } = await supabase
         .from("user")
         .upsert(
           {
-            id: user?.id, 
-            username: username, 
-            birthday: birthday, 
+            id: user?.id,
+            username: username,
+            birthday: birthday,
             gender: gender,
-            city: city, 
-            state: state, 
+            city: city,
+            state: state,
             looking_for: lookingFor
           }
         )
         .select()
-      
-    if(error) throw error
-        
-    if(username && birthday && city && state) {
-          console.log('/petProfile');  // This will log the message to the console
-          router.push('/petProfile');
-        }
 
-    }else{
+      if (error) throw error
+
+      if (username && birthday && city && state) {
+        console.log('/petProfile');  // This will log the message to the console
+        router.push('/petProfile');
+      }
+
+    } else {
       toast({
         title: "Error",
         description: "An error happend upon user login",
@@ -151,11 +158,11 @@ const UserProfileForm = () => {
 
           <Label htmlFor="gender">Gender</Label>
           <Select
-          
-          onValueChange={(value) => setGender(value)}  
-        >
-          
-        
+
+            onValueChange={(value) => setGender(value)}
+          >
+
+
             <SelectTrigger id="gender">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
@@ -174,16 +181,23 @@ const UserProfileForm = () => {
           />
 
           <Label htmlFor="state">State</Label>
-          <Input
-            id="state"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-          />
+          <Select
+            onValueChange={(value) => setState(value)}
+          >
+            <SelectTrigger id="state">
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              {statesList.map((state) => (
+                <SelectItem key={state} value={state}>{state}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <Label htmlFor="lookingFor">Looking For</Label>
           <Select
-            onValueChange={(value) => setLookingFor(value)} 
-            >
+            onValueChange={(value) => setLookingFor(value)}
+          >
             <SelectTrigger id="lookingFor">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
@@ -204,7 +218,7 @@ const UserProfileForm = () => {
         >
           Cancel
         </Button>
-        <Button 
+        <Button
           onClick={handleSubmit}>
           Next
         </Button>
