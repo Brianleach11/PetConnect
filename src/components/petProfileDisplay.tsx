@@ -328,8 +328,11 @@ const PetProfileDisplay: React.FC = () => {
   }
 
   const handleDeletePhotos = async (index: number) => {
-    await fetch(`/api/deletePetPhoto?filename=${uploadedImages[index]}`)
+    const pieces = uploadedImages[0].split('/')
+    const filename = pieces[pieces.length-1]
+    await fetch(`/api/deletePetPhoto?filename=${filename}`)
     router.refresh()
+    //FILENAME: https://cc2.cs.fiu.edu/index.php/apps/files_sharing/publicpreview/ys4dp3iFtLygp49?file
   }
 
   useEffect(() => {

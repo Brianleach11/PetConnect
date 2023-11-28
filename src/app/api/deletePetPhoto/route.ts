@@ -21,7 +21,7 @@ export async function GET(req: NextApiRequest) {
             password: password,
             authType: AuthType.Password
         })
-
+        console.log("FILENAME: " + filename)
         await client.deleteFile(`/PetAlbum/${filename}`)
 
     }catch(error)
