@@ -49,20 +49,10 @@ export default function ProfileDropdown(){
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
             <DropdownMenuItem onClick={navigateToProfile}>
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <PawPrint className="mr-2 h-4 w-4" />
-              <span>Pets</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={navigateTouserProfile}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Account Settings</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />

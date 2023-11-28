@@ -9,11 +9,12 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Upload, FilePlus2, Pencil } from 'lucide-react'
+import { X, Upload, FilePlus2, Pencil, Delete, Trash2 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea';
 import MedicalDocCard from './medicalDocuments/medicalDocCard';
 import ImageComponent from './ImageComonent';
 import Image from 'next/image';
+import { createClient } from 'webdav';
 
 const PetProfileDisplay: React.FC = () => {
   const [userData, setUserData] = useState<Database['public']['Tables']['user']['Row'] | null>(null);
@@ -32,6 +33,7 @@ const PetProfileDisplay: React.FC = () => {
   const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false);
   const petAvatarRef = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
+  const [editPhotos, setEditPhotos] = useState<boolean>(false)
 
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -325,6 +327,11 @@ const PetProfileDisplay: React.FC = () => {
     }
   }
 
+  const handleDeletePhotos = async (index: number) => {
+    await fetch(`/api/deletePetPhoto?filename=${uploadedImages[index]}`)
+    router.refresh()
+  }
+
   useEffect(() => {
     if (petData) formatBirthday()
   }, [petData])
@@ -495,13 +502,20 @@ const PetProfileDisplay: React.FC = () => {
       {/* Image Upload Section */}
       <div className="relative mb-4">
         {currentUserId === userData?.id && (
-
-          <button
-            onClick={() => imageInputRef.current?.click()}
-            className="absolute top-0 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
-          >
-            <Upload />
-          </button>
+          <>
+            <button
+              onClick={() => imageInputRef.current?.click()}
+              className="absolute top-0 right-16 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+            >
+              <Upload />
+            </button>
+            <button
+              className="absolute top-0 right-2 w-12 h-12 flex items-center justify-center rounded-md border border-midnight hover:bg-darkGreen transition-colors duration-300"
+              onClick={() => setEditPhotos(!editPhotos)}
+            >
+              <Pencil />
+            </button>
+          </>
         )}
 
         <input
@@ -516,14 +530,53 @@ const PetProfileDisplay: React.FC = () => {
           <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-2">
             {
               uploadedImages.map((imageUrl, index) => (
-                <div key={index} className="w-72 h-96">
+                <div key={index} className="w-72 h-96 relative">
+                  {
+                    (editPhotos) &&
+                      <Dialog.Root key={index}>
+                        <Dialog.Trigger>
+                          <Trash2 key={index} className="absolute top-6 right-0 m-2 bg-red rounded-sm"/>
+                        </Dialog.Trigger>
+                        <Dialog.Portal>
+                          <div
+                            style={{ zIndex: 2147483647, position: 'absolute' }}
+                            className=' left-8 top-40'
+                          >
+                            <Dialog.Overlay className="fixed inset-0 bg-darkGreen bg-opacity-50" />
+                            <Dialog.Content className="bg-white border-4 border-midnight rounded-lg p-4 drop-shadow-2xl shadow-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                              <Dialog.Title className=" font-semibold">Confirm Delete</Dialog.Title>
+                              <Dialog.Description className="DialogDescription">
+                                <p>
+                                  Once a photo is deleted, it is unrecoverable.
+                                </p>
+                              </Dialog.Description>
+                              <div style={{ display: 'flex', marginTop: 25, justifyContent: 'space-between' }}>
+                                <Dialog.Close asChild>
+                                  <Button
+                                    className="bg-softGreen text-midnight hover:text-white"
+                                    onClick={() => handleDeletePhotos(index)}
+                                  >
+                                    Yes
+                                  </Button>
+                                </Dialog.Close>
+
+                                <Dialog.Close asChild>
+                                  <Button aria-label="Close" className='bg-red text-midnight hover:text-white'>
+                                    Cancel
+                                  </Button>
+                                </Dialog.Close>
+                              </div>
+                            </Dialog.Content>
+                          </div>
+                        </Dialog.Portal>
+                      </Dialog.Root>
+                  }
                   <ImageComponent imageUrl={imageUrl} />
                 </div>
               ))
             }
           </div>
         </div>
-
       </div>
     </div>
   );
