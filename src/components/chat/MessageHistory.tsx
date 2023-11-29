@@ -198,10 +198,10 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                     />
                 </div>
             </div>
-            <div className={`w-full ${showSearchBar ? '' : 'hidden'}`}>
+            <div className={`${showSearchBar ? '' : 'hidden'}`}>
                 <hr className=" border-b-2 border-gray-300 my-4" />
                 <X
-                    className='absolute top-14 text-midnight right-0 hover:bg-midnight rounded-sm hover:text-white'
+                    className='absolute -mt-2 mr-2 text-midnight right-0 hover:bg-midnight rounded-sm hover:text-white'
                     onClick={() => {
                         showSearchBar ? 
                         setSearchBar(false) :
@@ -211,7 +211,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                 <p className="text-midnight text-sm p-2">
                     Add a new message by the user's username:
                 </p>
-                <div className="h-4 mb-8">
+                <div className="h-4 mb-8 pl-2">
                     <SearchAddMessage session={session}/>
                 </div>
                 <hr className=" border-b-2 border-gray-300 my-4" />
