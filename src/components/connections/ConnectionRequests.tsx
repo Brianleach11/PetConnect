@@ -54,7 +54,7 @@ const ConnectionRequests: FC<ConnectionRequestsProps> = ({ unseenConnections, un
                         </ScrollArea>
                     </section>
 
-                    <section className="w-full h-3/4 -mt-10 overflow-hidden">
+                    <section className="w-full -mt-10 h-3/4">
                         <CardTitle className="my-2 text-lg">
                             Pending Connections Sent [{requestsSent}]
                         </CardTitle>

@@ -283,6 +283,8 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       return;
     }
 
+    console.log(currentUserId + " PET: " + pet.owner_id)
+
     const { error } = await supabase
       .from('friend_requests')
       .insert({
