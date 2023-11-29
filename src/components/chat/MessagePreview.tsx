@@ -37,7 +37,7 @@ function formatDate(dateString: string) {
     }
 }
 
-const MessagePreview: FC<MessagePreviewProps> = ({ item, session }) => {
+const MessagePreview: FC<MessagePreviewProps> = ({ item, session, isActive }) => {
     const [hasUnseenNotification, setHasUnseenNotification] = useState(false);
     const supabase = createClientComponentClient<Database>();
     const [avatarUrl, setAvatarUrl] = useState<string>(""); // State to store avatar URL
@@ -109,7 +109,9 @@ const MessagePreview: FC<MessagePreviewProps> = ({ item, session }) => {
 
 
     return (
-        <Card className="max-w-1/3 hover:shadow-lg transition-transform transform hover:-translate-y-1 hover:border-midnight p-4 rounded-lg" onClick={handleCardClick}>
+        <Card className={`max-w-1/3 hover:shadow-lg transition-transform transform hover:-translate-y-1 p-4 rounded-lg ${
+            isActive ? 'border border-midnight' : ''
+          }`} onClick={handleCardClick}>
             <CardContent className="py-2 relative">
                 <div className="flex items-start space-x-3">
                     {/* Avatar */}

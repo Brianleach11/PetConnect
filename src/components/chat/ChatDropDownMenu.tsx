@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Session, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import MessagePreview from "./MessagePreview";
 import { chatHrefConstructor } from "@/lib/utils";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 interface RecentMessages {
     chat_id: string | null;
@@ -23,7 +24,7 @@ interface RecentMessages {
 interface ChatDropDownMenuProps {
     session: Session | null;
     isOpen: boolean;
-    onClose: () => void; 
+    onClose: () => void;
 }
 
 
@@ -32,7 +33,7 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
     const supabase = createClientComponentClient();
     const [messages, setMessages] = useState<RecentMessages[]>([]);
     const dropdownRef = useRef<HTMLDivElement>(null); // Explicitly setting the ref type
-    
+
 
     const fetchAllChats = async () => {
         if (!session) return;
@@ -41,7 +42,7 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
             .from('recent_messages')
             .select('*')
             .or(`recipient_id.eq.${session.user.id},sender_id.eq.${session.user.id}`)
-            .order('created_at', {ascending: false})
+            .order('created_at', { ascending: false })
             .limit(5);
 
         if (error) {
@@ -57,7 +58,7 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
             onClose(); // Inform the parent to close the dropdown
         }
     };
-    
+
 
     useEffect(() => {
         fetchAllChats();
@@ -74,10 +75,10 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
     }, [session, isOpen]);
 
     const handleChatClick = (message: RecentMessages) => {
-        if(message.sender_id && message.recipient_id && message.chat_id){
+        if (message.sender_id && message.recipient_id && message.chat_id) {
             const href = `/messages/chat/${chatHrefConstructor(
-                message.sender_id, 
-                message.recipient_id, 
+                message.sender_id,
+                message.recipient_id,
                 message.chat_id
             )}`;
             router.push(href);
@@ -88,36 +89,38 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
         <div className="relative">
             {/* Dropdown Content */}
             {isOpen && (
-                <div ref={dropdownRef} className="absolute top-full mt-2 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white overflow">  
+                <div ref={dropdownRef} className="absolute top-full mt-2 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white overflow bg-opacity-100">
                     <div className="flex justify-between items-center borer-b border-gray p-5 ">
                         <span className="font-semibold text-xl">Chat</span>
                         <button onClick={() => router.push("/messages")} className="p-2 rounded-md">
                             <Expand className="w-6 h-6 cursor-pointer" />
                         </button>
                     </div>
-                    {messages.length > 0 ? (
-                        messages.map((message) => (
-                            <div key={message.created_at} 
-                                 className="hover:bg-whiteGreen cursor-pointer p-3 border-b border-whiteGreen last:border-b-0"
-                                 onClick={() => handleChatClick(message)}>
-                                <div className="w-full py-1/2">  
-                                    {message && session && <MessagePreview item={message} session={session}/>}
+                    <ScrollArea className=" h-96 overflow-y-auto">
+                        {messages.length > 0 ? (
+                            messages.map((message) => (
+                                <div key={message.created_at}
+                                    className="hover:bg-whiteGreen cursor-pointer p-3 border-b border-whiteGreen last:border-b-0"
+                                    onClick={() => handleChatClick(message)}>
+                                    <div className="w-full py-1/2">
+                                        {message && session && <MessagePreview item={message} session={session} isActive={false} />}
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="p-5 text-center text-gray-500 text-lg">
+                                No chats available.
                             </div>
-                        ))
-                    ) : (
-                        <div className="p-5 text-center text-gray-500 text-lg">
-                            No chats available.
-                        </div>
-                    )}
+                        )}
+                    </ScrollArea>
                 </div>
             )}
         </div>
     );
-    
-    
-    
-    
+
+
+
+
 }
 
 export default ChatDropDownMenu;

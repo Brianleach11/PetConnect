@@ -248,7 +248,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
 
   return (
     <>
-      <div className='fixed top-0 inset-x-0 h-fit bg-softGreen z-[10] py-2'>
+      <div className='fixed top-0 inset-x-0 h-fit bg-whiteGreen z-[10] py-2'>
         <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
           <Link href='/' className='flex gap-2 items-center'>
             <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo" />
@@ -256,7 +256,8 @@ export default function NavBar({ session, authToken }: { session: Session | null
           </Link>
           <Link href={session ? "/maps" : {}} className={buttonVariants({ variant: "ghost" })}>
             <Map size={24} className="text-zinc-700" /> {/* Adjust size and color as needed */}
-          </Link>          <div className="relative">
+          </Link>          
+          <div className="relative">
             <button
               onClick={toggleChatDropDownMenu}
               className={buttonVariants({ variant: "ghost" })}
