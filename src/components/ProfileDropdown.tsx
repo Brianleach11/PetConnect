@@ -38,8 +38,8 @@ export default function ProfileDropdown(){
       const navigateToProfile = () => {
         router.push('/profile'); 
     };
-    const navigateTouserProfile = () => {
-      router.push('/userProfile'); 
+    const nagivateToSettings = () => {
+      router.push('/profile/accountSettings'); 
     };
     return (
       <DropdownMenu>
@@ -49,10 +49,16 @@ export default function ProfileDropdown(){
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={navigateToProfile}>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={navigateToProfile}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={nagivateToSettings}>
+                <Settings className="mr-2 h-4 w-4"/>
+                <span>Account Settings</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
