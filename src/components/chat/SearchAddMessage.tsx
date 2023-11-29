@@ -142,11 +142,11 @@ const SearchAddMessage: FC<SearchAddMessageProps> = ({session}) => {
     }, [route])
 
     return (
-        <div className='flex w-full p-4 bg-gray-100 rounded-lg shadow-md'>
+        <div className='flex w-full bg-gray-100 rounded-lg shadow-md'>
             <input
                 type="text"
                 placeholder="Search by username..."
-                className="flex-grow border-2 border-gray-300 bg-white rounded-l-sm px-3 py-2 text-gray-700 focus:outline-none focus:border-midnight"
+                className="flex-grow border-2 border-gray-300 bg-white rounded-l-sm px-3 py-2 text-midnight focus:outline-none focus:border-midnight"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
             />
