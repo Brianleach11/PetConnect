@@ -131,7 +131,6 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                 setRealtimePreviews(realtimePreviews.filter((item) => item !== realtimePreviews[index]))
             }
         }
-        router.refresh()
         router.push('/messages')
     }
 

@@ -6,7 +6,7 @@ import { Session, createClientComponentClient } from "@supabase/auth-helpers-nex
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef, RefObject } from 'react';
 import ProfileDropdown from "./ProfileDropdown";
-import { Check, X } from "lucide-react"
+import { Check, Expand, X } from "lucide-react"
 import { Bell } from 'lucide-react';
 import ChatDropDownMenu from "./chat/ChatDropDownMenu";
 import { MessagesSquare } from 'lucide-react';
@@ -291,6 +291,13 @@ export default function NavBar({ session, authToken }: { session: Session | null
                 <div className="absolute top-full mt-2 right-0 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 overflow-hidden" ref={notificationDropdownRef}>
                   <div className="flex justify-between items-center border-b border-gray-200 p-5 bg-gray-50">
                     <span className="font-semibold text-xl">Notifications</span>
+                    <button onClick={() => {
+                      router.push("/messages/requests")
+                      setShowDropdown(!showDropdown)
+                    }}
+                       className="p-2 rounded-md">
+                      <Expand className="w-6 h-6 cursor-pointer" />
+                    </button>
                   </div>
                   {notifications.length > 0 ? (
                     notifications.map(notification => (

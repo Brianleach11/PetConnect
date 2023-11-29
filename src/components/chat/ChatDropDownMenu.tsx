@@ -92,7 +92,10 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
                 <div ref={dropdownRef} className="absolute top-full mt-2 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white overflow bg-opacity-100">
                     <div className="flex justify-between items-center borer-b border-gray p-5 ">
                         <span className="font-semibold text-xl">Chat</span>
-                        <button onClick={() => router.push("/messages")} className="p-2 rounded-md">
+                        <button onClick={() => {
+                            router.push("/messages")
+                            onClose()
+                        }} className="p-2 rounded-md">
                             <Expand className="w-6 h-6 cursor-pointer" />
                         </button>
                     </div>
