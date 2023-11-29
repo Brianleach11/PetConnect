@@ -41,6 +41,7 @@
     "lucide-react": "^0.270.0",
     "mapbox-gl": "^2.15.0",
     "mapbox-gl-geocoder": "^2.0.1",
+    "mapboxgl-legend": "^1.13.0",
     "mdb-react-ui-kit": "^6.3.0",
     "moment": "^2.29.4",
     "next": "13.4.16",
