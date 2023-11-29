@@ -42,7 +42,7 @@ export default async function Home() {
                       Finds a Friend!
                     </span>
                     <span className='ml-10 text-lg pt-10 opacity-75'>
-                      Join Petconnect to meet new friends, share moments with pets, and be a part of a vibrant pet-loving community.
+                      Join PetConnect to meet new friends, share moments with pets, and be a part of a vibrant pet-loving community.
                     </span>
                   </CardHeader>
                   <div className='flex flex-auto items-center justify-center mr-12 drop-shadow-lg'>
