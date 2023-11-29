@@ -12,11 +12,13 @@ import {
 } from '@/components/ui/card';
 import { Database } from '@/types/supabase';
 import moment from 'moment';
-import { useRouter } from 'next/navigation'; 
-import { useToast } from '@/components/ui/use-toast'; 
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Trash2, Pencil } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { v4 as uuidv4 } from 'uuid';
+import { chatHrefConstructor } from "@/lib/utils"
 
 const supabase = createClientComponentClient<Database>();
 
@@ -34,6 +36,12 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [colorDialogOpen, setColorDialogOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>(''); // default color, or get it from 'pet' prop
+  const [newChatId, setNewChatId] = useState<string>("")
+  const [connectionSent, setConnectionSent] = useState(false);
+  const [sentConnections, setSentConnections] = useState(new Set<string>());
+  const [areFriends, setAreFriends] = useState(false);
+  const [grabbingAvatar, setGrabbingAvatar] = useState<boolean>(false)
+  const [avatar, setAvatar] = useState<string>("https://mylostpetalert.com/wp-content/themes/mlpa-child/images/nophoto.gif")
 
   useEffect(() => {
     const fetchCurrentUserId = async () => {
@@ -51,7 +59,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         .from('pet')
         .update({ color: selectedColor })
         .eq('id', pet.id).select().single();
-        pet = data??pet;
+      pet = data ?? pet;
 
       if (error) throw error;
 
@@ -71,40 +79,90 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         variant: 'destructive',
       });
     }
-
-
   };
+
+  useEffect(() => {
+    const getAvatar = async () => {
+      if (!pet || !pet.id) return
+      if (grabbingAvatar) return
+      setGrabbingAvatar(true)
+
+      const response = await fetch(`/api/getPetAvatar?id=${pet.id}`)
+
+      if (!response.ok) {
+        return;
+      }
+
+      const images = await response.json();
+
+      if (!images || !images.at(0)) {
+        console.log('Invalid response format for pet photos:', images);
+        return;
+      }
+
+      const baseUrl = process.env.NEXTCLOUD_PETAVATAR_URL
+      const imageUrl = `${baseUrl}/${encodeURIComponent(pet.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
+
+      setAvatar(imageUrl)
+      setGrabbingAvatar(false)
+    }
+    getAvatar()
+  }, [pet])
 
   useEffect(() => {
 
     router.refresh();
 
-  },[colorDialogOpen, router]);
+  }, [colorDialogOpen, router]);
 
   const calculateAge = (birthday: string | null): string => {
     if (birthday) {
       const birthdate = moment(birthday);
       const today = moment();
-      const age = today.diff(birthdate, 'years');
-      return `${age} years`;
+  
+      const years = today.diff(birthdate, 'years');
+      const months = today.subtract(years, 'years').diff(birthdate, 'months');
+      const days = today.subtract(months, 'months').diff(birthdate, 'days');
+  
+      let ageString = '';
+      if (years > 0) {
+        // If age is more than a year, display years and months
+        ageString += `${years} year${years > 1 ? 's' : ''} `;
+        if (months > 0) {
+          ageString += `and ${months} month${months > 1 ? 's' : ''}`;
+        }
+      } else if (months > 0) {
+        // If age is less than a year but more than a month, display months and days
+        ageString += `${months} month${months > 1 ? 's' : ''} `;
+        if (days > 0) {
+          ageString += `and ${days} day${days > 1 ? 's' : ''}`;
+        }
+      } else {
+        // If age is less than a month, display only days
+        ageString += `${days} day${days === 1 ? '' : 's'}`;
+      }
+  
+      return ageString;
     }
-    return 'Loading....';
+    return 'Loading...';
   };
+  
+  
 
   const handleCardClick = async () => {
     if (isButtonHovered) return;
 
     if (pet.id && pet.owner_id) {
-      sessionStorage.setItem('clickedUserId', pet.id.toString());
+      sessionStorage.setItem('clickedPetId', pet.id.toString());
       sessionStorage.setItem('clickedOwnerId', pet.owner_id.toString());
-      
+
       if (pet.owner_id != currentUserId) {
         const { data, error } = await supabase
           .from('user')
           .select('username')
           .eq('id', pet.owner_id)
           .single();
-  
+
         if (data && data.username) {
           router.push(`/profile/public/${data.username}/myPets`);
         } else if (error) {
@@ -120,7 +178,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
           .select('username')
           .eq('id', pet.owner_id)
           .single();
-  
+
         if (data && data.username) {
           router.push(`/profile/myPets`);
         } else if (error) {
@@ -199,24 +257,199 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     { name: 'ten', code: '#b9fbc0' },
   ];
 
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (currentUserId) {  // Ensure currentUserId is not null
+        const { data } = await supabase
+          .from('friend_requests')
+          .select('receiving_user')
+          .eq('sending_user', currentUserId);
 
+        if (data && Array.isArray(data)) {
+          const updatedConnections = new Set(data.map(entry => entry.receiving_user));
+          setSentConnections(updatedConnections);
+        }
+      }
+    };
+
+    checkConnection();
+  }, [currentUserId]);
+
+
+
+  const sendConnection = async () => {
+    if (!currentUserId || !pet.owner_id) {
+      console.error("User ID or pet owner ID is null or undefined");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('friend_requests')
+      .insert({
+        sending_user: currentUserId,
+        receiving_user: pet.owner_id
+      });
+
+    if (error) {
+      console.error("Error sending connection: ", error);
+    } else {
+      const updatedSet = new Set(sentConnections);
+      updatedSet.add(pet.owner_id);
+      setSentConnections(updatedSet);
+      setConnectionSent(true);
+      router.refresh();
+    }
+
+
+  };
+
+
+  const removeConnection = async () => {
+    if (!currentUserId || !pet.owner_id) {
+      console.error("User ID or pet owner ID is null or undefined");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('friend_requests')
+      .delete()
+      .eq('sending_user', currentUserId)
+      .eq('receiving_user', pet.owner_id);
+
+    if (error) {
+      console.error("Error removing connection: ", error);
+    } else {
+      const updatedSet = new Set(sentConnections);
+      updatedSet.delete(pet.owner_id);
+      setSentConnections(updatedSet);
+      setConnectionSent(false);
+      router.refresh();
+    }
+  };
+
+
+  const redirectUser = async () => {
+    console.log("REDIRECT TRIGGERED")
+    if (!currentUserId || !pet.owner_id) return null
+    let chatId
+    let { data: query, error: chatIdError } = await supabase
+      .from('chats')
+      .select('chat_id, sender_id, recipient_id')
+    if (query && Array.isArray(query)) {
+      for (const chatInfo of query) {
+        if ((chatInfo.sender_id == pet.owner_id && chatInfo.recipient_id == currentUserId) ||
+          (chatInfo.sender_id == currentUserId && chatInfo.recipient_id == pet.owner_id)) {
+          chatId = chatInfo.chat_id
+        }
+      }
+    }
+
+    if (chatIdError) console.log(chatIdError)
+    console.log("RETURNED CHAT ID" + chatId)
+
+    if (!chatId) {
+      const { data: enteredChat, error: newChatError } = await supabase
+        .from('messages')
+        .insert(
+          {
+            sender_id: currentUserId,
+            recipient_id: pet.owner_id,
+            message_content: "",
+            chat_id: uuidv4()
+          }
+        )
+        .select()
+        .single()
+      console.log(enteredChat)
+      if (enteredChat && enteredChat.chat_id) {
+        console.log("Im setting it!" + enteredChat.chat_id)
+        setNewChatId(enteredChat.chat_id)
+      }
+    }
+    else {
+      setNewChatId(chatId)
+      console.log("Chat ID already exists: " + chatId)
+    }
+    //new line to test
+    router.refresh()
+  }
+
+  useEffect(() => {
+    if (newChatId) {
+      const href = `/messages/chat/${chatHrefConstructor(
+        currentUserId,
+        pet.owner_id,
+        newChatId
+      )}`
+      setNewChatId('')
+      router.push(href)
+    }
+  }, [newChatId])
+
+
+  const checkFriendship = async () => {
+    if (!pet.owner_id || !currentUserId) {
+      console.error("Invalid IDs for checking friendship status");
+      return;
+    }
+
+    const { data: sentFriendship, error: sentError } = await supabase
+      .from('friends')
+      .select('*')
+      .eq('sending_user', currentUserId)
+      .eq('receiving_user', pet.owner_id);
+
+    if (sentError) {
+      console.error("Error fetching friendship status for sent request:", sentError);
+      return;
+    }
+
+    if (sentFriendship && sentFriendship.length > 0) {
+      setAreFriends(true);
+      return;
+    }
+
+    const { data: receivedFriendship, error: receivedError } = await supabase
+      .from('friends')
+      .select('*')
+      .eq('sending_user', pet.owner_id)
+      .eq('receiving_user', currentUserId);
+
+    if (receivedError) {
+      console.error("Error fetching friendship status for received request:", receivedError);
+      return;
+    }
+
+    if (receivedFriendship && receivedFriendship.length > 0) {
+      setAreFriends(true);
+    }
+  }
+
+
+
+
+  useEffect(() => {
+    checkFriendship();
+  }, [currentUserId, pet.owner_id]);
 
   return (
     <div>
       <Card
         onClick={handleCardClick}
-        className={`relative w-72 m-10 bg-half-gradient transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'scale-105 shadow-2xl' : 'shadow-lg'} rounded-lg border border-gray-200`}
-        style={{ backgroundColor: pet.color || selectedColor }} 
+        className={`relative w-72 m-14 border-2 border-midnight bg-half-gradient transform transition-transform duration-300 ease-in-out ${isCardHovered ? 'scale-105 shadow-lg cursor-pointer' : 'shadow-md'} rounded-lg border border-gray-200`}
+        style={{ backgroundColor: pet.color || selectedColor }}
         onMouseEnter={() => setIsCardHovered(true)}
         onMouseLeave={() => setIsCardHovered(false)}
       >
-        <CardHeader className="absolute top-[-38px] left-1/2 transform -translate-x-1/2 z-10">
+        <CardHeader className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 z-10">
           <img
-            src="https://images.unsplash.com/photo-1561948955-570b270e7c36?fit=crop&w=500&h=500"
+            src={avatar}
             alt="Pet Image"
-            className="w-38 mx-auto rounded-full"
+            className="w-40 h-40 object-cover rounded-full"
+            style={{ width: '100px', height: '100px' }}
           />
         </CardHeader>
+
 
         <CardContent className="pt-20 text-center font-sans">
           <CardTitle className="text-4xl text-gray-500 mb-2.5">
@@ -242,18 +475,33 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         <CardFooter className="flex justify-center gap-2.5 my-2">
           {currentUserId !== pet.owner_id && (
             <>
-              <Button
-                className="px-5 py-2.5 rounded-md transform hover:scale-105"
-                onClick={() => console.log(`Connected with ${pet.name}`)}
-                onMouseEnter={() => setIsButtonHovered(true)}
-                onMouseLeave={() => setIsButtonHovered(false)}
-              >
-                Connect
-              </Button>
+              {
+                areFriends || !pet.owner_id ? null : (
+                  sentConnections.has(pet.owner_id) ? (
+                    <Button
+                      className="px-5 py-2.5 rounded-md transform hover:scale-105"
+                      onClick={removeConnection}
+                      onMouseEnter={() => setIsButtonHovered(true)}
+                      onMouseLeave={() => setIsButtonHovered(false)}
+                    >
+                      Connection Sent
+                    </Button>
+                  ) : (
+                    <Button
+                      className="px-5 py-2.5 rounded-md transform hover:scale-105"
+                      onClick={sendConnection}
+                      onMouseEnter={() => setIsButtonHovered(true)}
+                      onMouseLeave={() => setIsButtonHovered(false)}
+                    >
+                      Connect
+                    </Button>
+                  )
+                )
+              }
 
               <Button
                 className="px-5 py-2.5 rounded-md transform hover:scale-105 "
-                onClick={() => console.log(`Message sent to ${pet.name}`)}
+                onClick={redirectUser}
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
               >
@@ -264,19 +512,19 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
           {currentUserId == pet.owner_id && (
             <div className="absolute top-2 right-2 flex items-center space-x-4">
-              <Pencil 
-                className="w-6 h-6 cursor-pointer hover:text-gray-600 inline-block" 
+              <Pencil
+                className="w-6 h-6 cursor-pointer hover:text-gray-600 inline-block"
                 onClick={(event) => {
-                  event.stopPropagation(); 
+                  event.stopPropagation();
                   setColorDialogOpen(true);
-                }} 
+                }}
               />
-              <Trash2 
-                className="w-6 h-6 cursor-pointer hover:text-red-600 inline-block" 
+              <Trash2
+                className="w-6 h-6 cursor-pointer hover:text-red-600 inline-block"
                 onClick={(event) => {
-                  event.stopPropagation(); 
+                  event.stopPropagation();
                   setOpenDialog(true);
-                }}     
+                }}
               />
             </div>
           )}
@@ -288,16 +536,16 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-lg z-50 max-w-xs w-full">
           <p className="mb-4 text-lg font-bold">Choose a color for your  pet card:</p>
           <div className="grid grid-cols-4 gap-2 mb-4">
-          {colors.map((color) => (
-         <button
-          key={color.code}
-          onClick={() => setSelectedColor(color.code)}
-          className={`w-12 h-12 rounded-md shadow-inner border-2 ${selectedColor === color.code ? 'border-blue-500' : 'border-transparent'}`}
-          style={{ backgroundColor: color.code }}
-          aria-label={color.name}
-         />
-        ))}
-</div>
+            {colors.map((color) => (
+              <button
+                key={color.code}
+                onClick={() => setSelectedColor(color.code)}
+                className={`w-12 h-12 rounded-md shadow-inner border-2 ${selectedColor === color.code ? 'border-blue-500' : 'border-transparent'}`}
+                style={{ backgroundColor: color.code }}
+                aria-label={color.name}
+              />
+            ))}
+          </div>
 
 
           <div className="flex justify-end space-x-4">

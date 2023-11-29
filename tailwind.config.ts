@@ -72,7 +72,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       backgroundImage: (theme: any) => ({
-        'half-gradient': `linear-gradient(to bottom, ${theme('colors.softGreen')}, transparent)`,
+        'half-gradient': `linear-gradient(to bottom, ${theme('colors.whiteGreen')}, transparent)`,
       }),
     },
     colors: {
@@ -101,6 +101,7 @@ module.exports = {
       merleBlue: '#777788',
       merleRed: '#AA7766',
       brindle: '#733d1a',
+      whiteBlue: '#f0f8ff',
     },
   plugins: [require("tailwindcss-animate")],
   }

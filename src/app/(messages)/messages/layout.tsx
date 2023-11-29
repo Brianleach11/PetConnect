@@ -54,9 +54,9 @@ const Layout = async({children}: LayoutProps) => {
   }
 
   return(
-    <div className='h-screen bg-whiteGreen w-full fixed'>
+    <div className='h-screen -mt-12 bg-midnight w-full fixed'>
         <NavBar session={session} authToken={false}/>
-        <div className='h-screen bg-midnight'>
+        <div className='h-screen bg-midnight mt-10'>
           <div className='py-2 pt-14 fixed left-0 w-1/3 h-screen'>
             <div className="container px-2 bg-white rounded-tl-xl h-full">
               <Tabs defaultValue="messages" className="py-2 rounded-xl text-transparent">

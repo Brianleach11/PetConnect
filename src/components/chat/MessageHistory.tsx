@@ -255,8 +255,6 @@ const MessageHistory: FC<MessageHistoryProps> = ({session, recentMessages, recen
                                                         <p>
                                                             Once a chat is deleted from both users, it is unrecoverable.
                                                         </p>
-                                                        
-                                                        That's because we respect privacy.
                                                     </Dialog.Description>
                                                     <div style={{ display: 'flex', marginTop: 25, justifyContent: 'space-between' }}>
                                                         <Dialog.Close asChild>

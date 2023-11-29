@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
-import Image from 'next/image';
-import Profile from '@/components/profile';
 import NavBar from '@/components/NavBar'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import PetProfileDisplay from '@/components/petProfileDisplay';
+import { redirect } from 'next/navigation';
 
 const PProfilePage: FC = async () => {
     const supabase = createServerComponentClient({ cookies });
@@ -12,8 +11,10 @@ const PProfilePage: FC = async () => {
     data: { session },
   } = await supabase.auth.getSession();
 
+  if(!session) redirect('/')
+
   return (
-    <div className="flex flex-col min-h-screen bg-whiteGreen">
+    <div className="flex flex-col min-h-screen bg-white">
       <NavBar session={session} authToken={false} />
       <div className="mt-8"> 
         {<PetProfileDisplay />}

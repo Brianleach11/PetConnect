@@ -24,8 +24,10 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
     const sendMessage = async() => {
         if(!input || input === '') return
         setIsLoading(true)
+        setInput('')
+        textareaRef.current?.focus()
         try{
-            const {error} = await supabase
+            const {data: newMessage,error: messagesError} = await supabase
             .from('messages')
             .insert(
                 {
@@ -35,9 +37,63 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                     recipient_id: chatPartner
                 }
             )
-            if(error) console.log(error.message + '\n' + error.hint + '\n' + error.code + '\n' + error.details)
-            setInput('')
-            textareaRef.current?.focus()
+            .select()
+            .single()
+
+            if(messagesError)
+            {
+                console.log(messagesError.message + '\n' + messagesError.hint + '\n' + messagesError.code + '\n' + messagesError.details);
+                return;
+            }
+
+            //this need to:
+            //either update an existing notification if one exists from sender to receiver
+            //or create one
+            const {data: notificationExists, error: failedToExist} = await supabase
+                .from('notifications')
+                .select("*")
+                .eq('receiving_user', chatPartner)
+                .eq('sending_user', session.user.id)
+                .single()
+
+            if(notificationExists && notificationExists.sending_user == session.user.id)
+            {
+                const {error: notificationsError} = await supabase
+                    .from("notifications")
+                    .update(
+                        {
+                            message_content: input,
+                            message_id: newMessage.id,
+                        }
+                    )
+                    .eq("receiving_user", chatPartner)
+                    .eq('sending_user', session.user.id)
+
+                if(notificationsError)
+                {
+                    console.log(notificationsError.message + '\n' + notificationsError.hint + '\n' + notificationsError.code + '\n' + notificationsError.details)
+                    return;
+                } 
+            }
+            else
+            {
+                const {error: notificationsError} = await supabase
+                    .from("notifications")
+                    .insert(
+                        {
+                            message_content: input,
+                            message_id: newMessage.id,
+                            receiving_user: chatPartner,
+                            sending_user: session.user.id
+                        }
+                    )
+
+                if(notificationsError)
+                {
+                    console.log(notificationsError.message + '\n' + notificationsError.hint + '\n' + notificationsError.code + '\n' + notificationsError.details)
+                    return;
+                } 
+            }
         } catch(error){
             toast({
                 title: "Error",
@@ -49,13 +105,13 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
         }
     }
 
-    return(
-        <div className='border-t border-gray-200 px-4 pt-4 mb-1 sm:mb-0'>
-            <div className='relative flex-1 overflow-hidden rounded-lg shadow-lg ring-1 ring-midnight focus-within:ring-2'>
+    return (
+        <div className='border-t border-gray-300 px-4 pt-4 mb-2 sm:mb-0'>
+            <div className='relative flex-1 overflow-hidden rounded-lg shadow-lg ring-1 ring-lightblue-400 focus-within:ring-2'>
                 <TextAreaAutosize
                     ref={textareaRef}
-                    onKeyDown={(e)=>{
-                        if(e.key === 'Enter' && !e.shiftKey){
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
                             sendMessage()
                         }
@@ -64,7 +120,7 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your message..."
-                    className='w-full outline-none resize-none border-0 bg-transparent ring-muted text-gray-900 placeholder:text-gray-400 px-2 sm:py-1.5 sm:text-sm sm:leading-6'
+                    className='w-full outline-none resize-none border-0 bg-transparent ring-lightblue-400 text-gray-700 placeholder:text-gray-400 px-3 sm:py-2 sm:text-sm sm:leading-6'
                 />
                 <div
                     onClick={() => textareaRef.current?.focus()}
@@ -75,15 +131,14 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId, session}) =>{
                     </div>
                 </div>
 
-                <div className='absolute right-0 bottom-0 flex justify-between py-2 pl-3 pr-2'>
-                    <div className='flex-shrin-0'>
-                        <Button isLoading={isLoading} onClick={sendMessage}>
-                            Send
-                        </Button>
-                    </div>
+                <div className='absolute right-0 bottom-0 flex justify-end py-2 pl-3 pr-2 space-x-2'>
+                    <Button isLoading={isLoading} onClick={sendMessage}>
+                        Send
+                    </Button>
                 </div>
             </div>
         </div>
     )
 }
-export default ChatInput
+
+export default ChatInput;

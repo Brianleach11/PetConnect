@@ -35,6 +35,8 @@
     "clsx": "^2.0.0",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.16",
+    "flowbite-react": "^0.7.0",
+    "formidable": "^3.5.1",
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.270.0",
     "mapbox-gl": "^2.15.0",
@@ -58,9 +60,11 @@
     "tailwindcss-animate": "^1.0.6",
     "typescript": "5.1.6",
     "uuid": "^9.0.1",
+    "webdav": "^5.3.0",
     "workbox-webpack-plugin": "^7.0.0"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/mapbox__mapbox-gl-geocoder": "^4.7.4",
     "@types/mapbox__mapbox-sdk": "^0.13.6",
     "@types/mapbox-gl": "^2.7.14",
