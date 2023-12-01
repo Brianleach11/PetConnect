@@ -271,7 +271,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
       <div className='fixed top-0 inset-x-0 h-20 bg-whiteGreen z-[10] py-2'>
         <div className='container max-w-7xl h-full mx-auto flex items-center justify-between'>
           <Link href='/' className='flex left-1 items-center'>
-            <Image src="/assets/logo.png" priority width={70} height={70} alt="Logo" className="mr-4 md:h-20 md:w-20 lg:h-20 lg:w-20"/>
+            <Image src="/assets/logo.png" priority width={90} height={90} alt="Logo" className="mr-8 md:h-20 md:w-20 lg:h-20 lg:w-20"/>
             <p className='hidden sm:hidden md:block text-zinc-700 text-xl font-large font-bold'>Pet Connect</p>
           </Link>
           <Link href={session ? "/maps" : {}} className={buttonVariants({ variant: "ghost" })}>
