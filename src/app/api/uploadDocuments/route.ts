@@ -1,7 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 import {createClient, AuthType } from "webdav"
+import { NextRequest } from "next/server";
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest, res: NextApiResponse) {
     let createFolder = false;
     const data = await (req as any).formData()
     const petId = data.get('petId') as string | number | boolean;

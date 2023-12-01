@@ -1,33 +1,20 @@
-// External and Third-Party Imports
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { FC } from 'react';
-
-// Internal Imports
-import { Database } from '@/types/supabase';
+import supabaseServer from '@/components/supabaseServer';
 import ConnectionRequests from '@/components/connections/ConnectionRequests';
 
 const ConnectionRequestsPage: FC = async () => {
-    // Initialize the Supabase client
-    const supabase = createServerComponentClient<Database>({ cookies });
+    const { data: { session }, error: sessionError } = await supabaseServer().auth.getSession();
 
-    // Fetch session details
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    // Redirect if there's no session or if there's an error
     if (!session || sessionError) {
         redirect('/');
-        return <div />;
     }
 
-    // Fetch unseen connection requests
-    const { data: unseenConnections, count: unseenConnectionsCount } = await supabase
+    const { data: unseenConnections, count: unseenConnectionsCount } = await supabaseServer()
         .from('friend_requests')
         .select("*", { count: "exact" })
         .order('created_at', { ascending: false });
 
-    // Ensure count is never undefined
     const finalCount = unseenConnectionsCount ?? 0;
 
     return (

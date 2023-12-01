@@ -77,7 +77,7 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
     };
 
     fetchData();
-  }, [supabase]);
+  }, [supabase, userId]);
 
 
   const handleAddMorePets = () => {
@@ -238,7 +238,7 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
       }
     }
     handleAvatar()
-  }, [userData, triggerAvatar, setTriggerAvatar])
+  }, [userData, triggerAvatar, setTriggerAvatar, grabbingAvatar, router, supabase, userId])
 
   const handleSaveChanges = async () => {
     try {

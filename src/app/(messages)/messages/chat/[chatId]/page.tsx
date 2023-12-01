@@ -1,11 +1,9 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import React from 'react'
 import ChatWindow from "@/components/chat/ChatWindow"
-import { Database } from '@/types/supabase'
 import ChatInput from '@/components/chat/ChatInput'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import ClickUsername from '@/components/chat/ClickUsername'
+import supabaseServer from '@/components/supabaseServer';
 
 interface PageProps {
   params: {
@@ -14,8 +12,7 @@ interface PageProps {
 }
 
 const page = async ({params}: PageProps) => {
-  const supabase = createServerComponentClient<Database>({cookies})
-  const {data: {session}, error: sessionError} = await supabase.auth.getSession()
+  const {data: {session}, error: sessionError} = await supabaseServer().auth.getSession()
 
   if(!session || sessionError) {
     console.log("Chat Page.tsx redirecting to home")
@@ -29,7 +26,7 @@ const page = async ({params}: PageProps) => {
 
   let chatPartner = (session.user.id === user1) ? user2: user1;
 
-  const {data} = await supabase
+  const {data} = await supabaseServer()
     .from('recent_messages')
     .select('*')
     .eq('chat_id', chatId)
@@ -38,7 +35,7 @@ const page = async ({params}: PageProps) => {
   if(data && data.deleted_by === session.user.id) redirect('/messages')
   
   const chatPartnerUsername = (data?.recipient_id === chatPartner) ? data.recipient_username : data?.sender_username
-  let {data: chats} = await supabase.from('chats').select("*").eq('chat_id', chatId)
+  let {data: chats} = await supabaseServer().from('chats').select("*").eq('chat_id', chatId)
   chats?.reverse()
 
   return (

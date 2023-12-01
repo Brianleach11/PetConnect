@@ -47,21 +47,20 @@ function timeSince(date: string | Date): string {
 }
 
 export const useOutsideClick = (ref: RefObject<HTMLElement | null>, callback: () => void, ignoreRef?: RefObject<HTMLElement | null>) => {
-  const handleClickOutside = (event: MouseEvent) => {
-    if (ignoreRef?.current && ignoreRef.current.contains(event.target as Node)) {
-      return;
-    }
-    if (ref.current && !ref.current.contains(event.target as Node)) {
-      callback();
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ignoreRef?.current && ignoreRef.current.contains(event.target as Node)) {
+        return;
+      }
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
+    };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [ref, callback]);
+  }, [ref, callback, ignoreRef]);
 };
 export default function NavBar({ session, authToken }: { session: Session | null, authToken: boolean }) {
 
@@ -126,7 +125,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
     return () => {
       supabase.removeChannel(friendRequestChannel);
     };
-  }, [session]);
+  }, [session, fetchFriendRequests, supabase]);
 
   const acceptRequest = async (sending_user: string, receiving_user: string) => {
     const { error: insertError } = await supabase
@@ -245,7 +244,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
   }, []);
 
   const handleButtonClick = () => {
-    if(!windowWidth) return
+    if (!windowWidth) return
     if (windowWidth <= 768) { // Assuming 768px as the breakpoint for 'small' screens
       router.push('/messages'); // Redirects to '/messages' on small screens
     } else {
@@ -259,7 +258,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
       fetchFriendRequests();  // fetch friend requests when component mounts
       fetchUnreadMessagesCount(); // fetch unread messages when component mounts
     }
-  }, [session]);
+  }, [session, fetchFriendRequests, fetchUnreadMessagesCount]);
 
   // Call the custom hook for the notification dropdown
   useOutsideClick(notificationDropdownRef, () => {
@@ -277,7 +276,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
           </Link>
           <Link href={session ? "/maps" : {}} className={buttonVariants({ variant: "ghost" })}>
             <Map size={24} className="text-zinc-700" /> {/* Adjust size and color as needed */}
-          </Link>          
+          </Link>
           <div className="relative">
             <button
               onClick={handleButtonClick}
@@ -316,7 +315,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
                       router.push("/messages/requests")
                       setShowDropdown(!showDropdown)
                     }}
-                       className="p-2 rounded-md">
+                      className="p-2 rounded-md">
                       <Expand className="w-6 h-6 cursor-pointer" />
                     </button>
                   </div>

@@ -1,13 +1,11 @@
 import React, { FC } from 'react'; 
 import UserProfileForm from '@/components/userProfileForm';
 import Image from 'next/image';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import supabaseServer from '@/components/supabaseServer';
 
 const UserProfilePage = async() => {
-  const supabase = createServerComponentClient({cookies});
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  const { data: { session }, error: sessionError } = await supabaseServer().auth.getSession();
 
   if(!session) redirect('/')
   return (

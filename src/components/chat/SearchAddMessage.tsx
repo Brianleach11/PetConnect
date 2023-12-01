@@ -139,7 +139,7 @@ const SearchAddMessage: FC<SearchAddMessageProps> = ({session}) => {
             router.refresh()
             router.push(href)
         }
-    }, [route, setRoute])
+    }, [route, setRoute, otherUser, router, session.user.id])
 
     return (
         <div className='flex flex-row w-full'>

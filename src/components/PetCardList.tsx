@@ -137,7 +137,7 @@ const PetCardsList: React.FC<{ currentUserId: string }> = ({currentUserId}) => {
       setIsFetching(true)
       fetchPets();
     }
-  }, []);
+  }, [currentUserId, fetchPets, isFetching]);
 
   const errorMessage = error ? <p>Error loading pets. Please try again later.</p> : null;
 

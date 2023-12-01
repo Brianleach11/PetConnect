@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 import {createClient, AuthType } from "webdav"
+import { NextRequest } from "next/server";
 
 interface documents {
     filename:string;
@@ -11,7 +12,7 @@ interface documents {
     mime: string
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest, res: NextApiResponse) {
     let createFolder = false;
     const newAvatar = false;
     const data = await (req as any).formData()

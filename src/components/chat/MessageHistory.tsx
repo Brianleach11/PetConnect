@@ -113,7 +113,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({ session, recentMessages, rece
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [supabase, setRealtimePreviews, realtimePreviews, session.user.id, currentPathname, setCurrentPathname])
+    }, [supabase, setRealtimePreviews, realtimePreviews, session.user.id, currentPathname, setCurrentPathname, getRecentMessage])
 
     const handleDeleteMessages = async (index: number) => {
         if (realtimePreviews && realtimePreviews[index]) {
@@ -173,7 +173,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({ session, recentMessages, rece
                 router.push(href)
             }
         }
-    }, [toRedirect])
+    }, [toRedirect, realtimePreviews, router])
 
     useEffect(() => {
         setCurrentPathname(window.location.href)
@@ -208,7 +208,7 @@ const MessageHistory: FC<MessageHistoryProps> = ({ session, recentMessages, rece
                     }}
                 />
                 <p className="text-midnight text-sm p-2">
-                    Add a new message by the user's username:
+                    Add a new message by the user&apos;s username:
                 </p>
                 <div className="h-4 mb-8 pl-2">
                     <SearchAddMessage session={session} />
@@ -222,68 +222,68 @@ const MessageHistory: FC<MessageHistoryProps> = ({ session, recentMessages, rece
                         realtimePreviews?.map((item, index) => (
                             <div key={index}>
                                 {(item.deleted_by !== session.user.id) ?
-                                        <div className="hover:drop-shadow-md rounded-lg py-1 w-full" key={index} onClick={() => setToRedirect(index)}>
-                                            <div className="flex items-center">
-                                                {deleteMessages ?
-                                                    <div className="w-5/6">
-                                                        <MessagePreview key={index} item={item} session={session} isActive={activePreview === index} />
+                                    <div className="hover:drop-shadow-md rounded-lg py-1 w-full" key={index} onClick={() => setToRedirect(index)}>
+                                        <div className="flex items-center">
+                                            {deleteMessages ?
+                                                <div className="w-5/6">
+                                                    <MessagePreview key={index} item={item} session={session} isActive={activePreview === index} />
+                                                </div>
+                                                :
+                                                <div className="w-full">
+                                                    <MessagePreview key={index} item={item} session={session} isActive={activePreview === index} />
+                                                </div>
+                                            }
+                                            {
+                                                deleteMessages ?
+                                                    <div
+                                                        className={`ml-2 bg-red rounded-full w-6 h-8 flex items-center justify-center text-midnight ${deleteMessages ? '' : 'hidden'
+                                                            }`}
+                                                    >
+                                                        <Dialog.Root key={index}>
+                                                            <Dialog.Trigger>
+                                                                <Trash2 key={index} />
+                                                            </Dialog.Trigger>
+                                                            <Dialog.Portal>
+                                                                <div
+                                                                    style={{ zIndex: 2147483647, position: 'absolute' }}
+                                                                    className=' left-8 top-40'
+                                                                >
+                                                                    <Dialog.Overlay className="fixed inset-0 bg-darkGreen bg-opacity-50" />
+                                                                    <Dialog.Content className="bg-white border-4 border-midnight rounded-lg p-4 drop-shadow-2xl shadow-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                                        <Dialog.Title className=" font-semibold">Confirm Delete</Dialog.Title>
+                                                                        <Dialog.Description className="DialogDescription">
+                                                                            <p>
+                                                                                Once a chat is deleted from both users, it is unrecoverable.
+                                                                            </p>
+                                                                        </Dialog.Description>
+                                                                        <div style={{ display: 'flex', marginTop: 25, justifyContent: 'space-between' }}>
+                                                                            <Dialog.Close asChild>
+                                                                                <Button
+                                                                                    className="bg-softGreen text-midnight hover:text-white"
+                                                                                    onClick={() => handleDeleteMessages(index)}
+                                                                                >
+                                                                                    Yes
+                                                                                </Button>
+                                                                            </Dialog.Close>
+
+                                                                            <Dialog.Close asChild>
+                                                                                <Button aria-label="Close" className='bg-red text-midnight hover:text-white'>
+                                                                                    Cancel
+                                                                                </Button>
+                                                                            </Dialog.Close>
+                                                                        </div>
+                                                                    </Dialog.Content>
+                                                                </div>
+                                                            </Dialog.Portal>
+                                                        </Dialog.Root>
                                                     </div>
                                                     :
-                                                    <div className="w-full">
-                                                        <MessagePreview key={index} item={item} session={session} isActive={activePreview === index} />
-                                                    </div>
-                                                }
-                                                {
-                                                    deleteMessages ?
-                                                        <div
-                                                            className={`ml-2 bg-red rounded-full w-6 h-8 flex items-center justify-center text-midnight ${deleteMessages ? '' : 'hidden'
-                                                                }`}
-                                                        >
-                                                            <Dialog.Root key={index}>
-                                                                <Dialog.Trigger>
-                                                                    <Trash2 key={index} />
-                                                                </Dialog.Trigger>
-                                                                <Dialog.Portal>
-                                                                    <div
-                                                                        style={{ zIndex: 2147483647, position: 'absolute' }}
-                                                                        className=' left-8 top-40'
-                                                                    >
-                                                                        <Dialog.Overlay className="fixed inset-0 bg-darkGreen bg-opacity-50" />
-                                                                        <Dialog.Content className="bg-white border-4 border-midnight rounded-lg p-4 drop-shadow-2xl shadow-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                                                            <Dialog.Title className=" font-semibold">Confirm Delete</Dialog.Title>
-                                                                            <Dialog.Description className="DialogDescription">
-                                                                                <p>
-                                                                                    Once a chat is deleted from both users, it is unrecoverable.
-                                                                                </p>
-                                                                            </Dialog.Description>
-                                                                            <div style={{ display: 'flex', marginTop: 25, justifyContent: 'space-between' }}>
-                                                                                <Dialog.Close asChild>
-                                                                                    <Button
-                                                                                        className="bg-softGreen text-midnight hover:text-white"
-                                                                                        onClick={() => handleDeleteMessages(index)}
-                                                                                    >
-                                                                                        Yes
-                                                                                    </Button>
-                                                                                </Dialog.Close>
-
-                                                                                <Dialog.Close asChild>
-                                                                                    <Button aria-label="Close" className='bg-red text-midnight hover:text-white'>
-                                                                                        Cancel
-                                                                                    </Button>
-                                                                                </Dialog.Close>
-                                                                            </div>
-                                                                        </Dialog.Content>
-                                                                    </div>
-                                                                </Dialog.Portal>
-                                                            </Dialog.Root>
-                                                        </div>
-                                                        :
-                                                        <div />
-                                                }
-                                            </div>
+                                                    <div />
+                                            }
                                         </div>
-                                        :
-                                     <p className="text-midnight">No recent messages...</p>
+                                    </div>
+                                    :
+                                    <p className="text-midnight">No recent messages...</p>
                                 }
                             </div>
                         ))

@@ -49,7 +49,7 @@ const PetProfileDisplay: React.FC = () => {
       setCurrentUserId(userId);
     };
     fetchCurrentUserId();
-  }, []);
+  }, [supabase.auth]);
 
   useEffect(() => {
     const ownerFromStorage = sessionStorage.getItem('clickedOwnerId')
@@ -71,7 +71,7 @@ const PetProfileDisplay: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [supabase]);
 
   const handleConnectClick = async () => {
     if (!currentUserId || !ownerIdFromStorage) {
@@ -162,7 +162,7 @@ const PetProfileDisplay: React.FC = () => {
 
   useEffect(() => {
     checkFriendship();
-  }, [currentUserId, ownerIdFromStorage]);
+  }, [currentUserId, ownerIdFromStorage, checkFriendship]);
 
   const redirectUser = async () => {
     console.log("REDIRECT TRIGGERED")
@@ -220,7 +220,7 @@ const PetProfileDisplay: React.FC = () => {
       setNewChatId('')
       router.push(href)
     }
-  }, [newChatId])
+  }, [newChatId, currentUserId, ownerIdFromStorage, router])
 
   const handleEditProfileClick = () => {
     console.log("Edit Profile button clicked");
@@ -260,7 +260,7 @@ const PetProfileDisplay: React.FC = () => {
     };
 
     handlePhotos();
-  }, [petData, newPhotos, setNewPhotos]);
+  }, [petData, newPhotos, setNewPhotos, grabbingPhotos, router]);
 
   useEffect(() => {
     const handleAvatar = async () => {
@@ -293,7 +293,7 @@ const PetProfileDisplay: React.FC = () => {
       }
     }
     handleAvatar()
-  }, [petData])
+  }, [petData, grabbingAvatar])
 
 
   const handleClick = async () => {
@@ -492,7 +492,7 @@ const PetProfileDisplay: React.FC = () => {
 
   useEffect(() => {
     if (petData) formatBirthday()
-  }, [petData])
+  }, [petData, formatBirthday])
 
   return (
     <div className="bg-whiteGreen border-r-2 border-r-grey border-l-2 border-l-grey bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">

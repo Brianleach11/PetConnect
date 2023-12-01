@@ -29,7 +29,7 @@ const SimpleNav: FC<SimleNavProps> = ({session, authToken}) =>{
         if(authToken){
             findSession()
         }
-    }, [authToken])
+    }, [authToken, router, supabase])
     
     return(
         <div className='bg-white bg-opacity-50 top-0 h-fit z-[10] py-2 bg-transparent'>

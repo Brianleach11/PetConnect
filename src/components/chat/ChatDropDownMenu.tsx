@@ -72,7 +72,7 @@ const ChatDropDownMenu: FC<ChatDropDownMenuProps> = ({ session, isOpen, onClose 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [session, isOpen]);
+    }, [session, isOpen, fetchAllChats, handleClickOutside]);
 
     const handleChatClick = (message: RecentMessages) => {
         if (message.sender_id && message.recipient_id && message.chat_id) {

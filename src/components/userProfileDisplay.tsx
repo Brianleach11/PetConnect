@@ -60,7 +60,7 @@ const UserProfileDisplay: React.FC = () => {
       }
     }
     handleAvatar()
-  }, [userData])
+  }, [userData, grabbingAvatar, supabase])
 
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const UserProfileDisplay: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [supabase]);
 
 
 

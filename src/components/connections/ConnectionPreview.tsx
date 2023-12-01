@@ -42,15 +42,21 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
     const router = useRouter();
 
     const searchUser = (item.sending_user === session.user.id) ? item.receiving_user : item.sending_user;
-    if (!searchUser) return null;
 
-    // Fetch username from the database
+    useEffect(() => {
+        if (newChatId) {
+            const href = `/messages/chat/${chatHrefConstructor(session.user.id.toString(), searchUser, newChatId)}`;
+            setNewChatId('');
+            router.push(href);
+        }
+    }, [newChatId, router, searchUser, session.user.id]);
+
     useEffect(() => {
         const fetchData = async () => {
             const { data, error } = await supabase
                 .from("user")
                 .select("username")
-                .eq("id", searchUser)
+                .eq("id", searchUser ?? "")
                 .single();
 
             if (error) console.error(error);
@@ -58,9 +64,8 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
         };
 
         fetchData();
-    }, [item]);
+    }, [item, searchUser, supabase]);
 
-    // Handle chat redirection
     const redirectUser = async () => {
         if (!item.sending_user || !item.receiving_user) return;
 
@@ -103,15 +108,6 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
 
         router.refresh();
     };
-
-    // Redirect to the chat page when a new chat ID is set
-    useEffect(() => {
-        if (newChatId) {
-            const href = `/messages/chat/${chatHrefConstructor(session.user.id.toString(), searchUser, newChatId)}`;
-            setNewChatId('');
-            router.push(href);
-        }
-    }, [newChatId]);
 
     return (
         <div className="max-h-12 text-midnight border-2 border-midnight rounded-lg hover:border-4">

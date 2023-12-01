@@ -167,17 +167,16 @@ const MapboxMap: FC<MapboxMapProps> = ({ coords }) => {
     setMap(map);
 
     return () => map.remove();
-  }, []);
+  }, [coords, tilesets]);
 
   useEffect(() => {
     mapboxMap?.on('render', () => {
       getDetails();
     })
-  }, [mapboxMap]);
+  }, [mapboxMap, getDetails]);
 
   function getDetails() {
-    const features = mapboxMap?.queryRenderedFeatures({ layers: ['veterinarians', 'groomers', 'dog_park'] })
-
+    const features = mapboxMap?.queryRenderedFeatures(undefined, { layers: ['veterinarians', 'groomers', 'dog_park'] });
     const popup = new mapboxgl.Popup({
       closeButton: false
     })

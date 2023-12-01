@@ -21,10 +21,6 @@ const ClickUsername: FC<ClickUsernameProps> =({chatPartnerUsername, chatPartner}
         router.push(`/profile/public/${chatPartnerUsername}`)
     }
 
-    useEffect(() => {
-        if (chatPartner) fetchAvatar(chatPartner);
-    }, []);
-
     const fetchAvatar = async (userId: string) => {
         try {
             const { data } = await supabase
@@ -54,6 +50,10 @@ const ClickUsername: FC<ClickUsernameProps> =({chatPartnerUsername, chatPartner}
             setAvatarUrl('https://i.pinimg.com/564x/67/81/e2/6781e2acffe6af95cd30a705714ed653.jpg');
         }
     };
+
+    useEffect(() => {
+        if (chatPartner) fetchAvatar(chatPartner);
+    }, [chatPartner, fetchAvatar]);
     
     return (
         <div className="flex space-x-3 items-center">

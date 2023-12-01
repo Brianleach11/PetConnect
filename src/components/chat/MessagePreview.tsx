@@ -57,7 +57,7 @@ const MessagePreview: FC<MessagePreviewProps> = ({ item, session, isActive }) =>
             }
         }
         fetchNotifications();
-    }, [session.user.id, item.message_content]);
+    }, [session.user.id, item.message_content, supabase]);
 
     // Function to fetch avatar URL
     const fetchAvatar = async (userId: string) => {
@@ -94,7 +94,7 @@ const MessagePreview: FC<MessagePreviewProps> = ({ item, session, isActive }) =>
     useEffect(() => {
         const userId = item.recipient_id === session.user.id ? item.sender_id : item.recipient_id;
         if (userId) fetchAvatar(userId);
-    }, [item, session.user.id]);
+    }, [item, session.user.id, fetchAvatar]);
 
     const handleCardClick = async () => {
         setHasUnseenNotification(false);

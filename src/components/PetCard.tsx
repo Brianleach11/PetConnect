@@ -53,6 +53,64 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     fetchCurrentUserId();
   }, []);
 
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (!currentUserId) {
+        return;
+      }
+  
+      try {
+        const { data } = await supabase
+          .from('friend_requests')
+          .select('receiving_user')
+          .eq('sending_user', currentUserId);
+  
+        if (data && Array.isArray(data)) {
+          const updatedConnections = new Set(data.map(entry => entry.receiving_user));
+          setSentConnections(updatedConnections);
+        }
+      } catch (error) {
+        console.error("Error fetching friend requests:", error);
+      }
+    };
+  
+    checkConnection();
+  }, [currentUserId]);
+
+  useEffect(() => {
+    const getAvatar = async () => {
+      if (!pet || !pet.id) return
+      if (grabbingAvatar) return
+      setGrabbingAvatar(true)
+
+      const response = await fetch(`/api/getPetAvatar?id=${pet.id}`)
+
+      if (!response.ok) {
+        return;
+      }
+
+      const images = await response.json();
+
+      if (!images || !images.at(0)) {
+        console.log('Invalid response format for pet photos:', images);
+        return;
+      }
+
+      const baseUrl = process.env.NEXTCLOUD_PETAVATAR_URL
+      const imageUrl = `${baseUrl}/${encodeURIComponent(pet.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
+
+      setAvatar(imageUrl)
+      setGrabbingAvatar(false)
+    }
+    getAvatar()
+  }, [pet, grabbingAvatar])
+
+  useEffect(() => {
+
+    router.refresh();
+
+  }, [colorDialogOpen, router]);
+
   const handleColorChange = async () => {
     try {
       const { data, error } = await supabase
@@ -82,38 +140,58 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   };
 
   useEffect(() => {
-    const getAvatar = async () => {
-      if (!pet || !pet.id) return
-      if (grabbingAvatar) return
-      setGrabbingAvatar(true)
-
-      const response = await fetch(`/api/getPetAvatar?id=${pet.id}`)
-
-      if (!response.ok) {
-        return;
-      }
-
-      const images = await response.json();
-
-      if (!images || !images.at(0)) {
-        console.log('Invalid response format for pet photos:', images);
-        return;
-      }
-
-      const baseUrl = process.env.NEXTCLOUD_PETAVATAR_URL
-      const imageUrl = `${baseUrl}/${encodeURIComponent(pet.id)}/${encodeURIComponent(images.at(0).basename)}&x=1280&y=720&a=true`;
-
-      setAvatar(imageUrl)
-      setGrabbingAvatar(false)
+    if (newChatId) {
+      const href = `/messages/chat/${chatHrefConstructor(
+        currentUserId,
+        pet.owner_id,
+        newChatId
+      )}`
+      setNewChatId('')
+      router.push(href)
     }
-    getAvatar()
-  }, [pet])
+  }, [newChatId, currentUserId, pet.owner_id, router])
+
+  const checkFriendship = async () => {
+    if (!pet.owner_id || !currentUserId) {
+      console.error("Invalid IDs for checking friendship status");
+      return;
+    }
+
+    const { data: sentFriendship, error: sentError } = await supabase
+      .from('friends')
+      .select('*')
+      .eq('sending_user', currentUserId)
+      .eq('receiving_user', pet.owner_id);
+
+    if (sentError) {
+      console.error("Error fetching friendship status for sent request:", sentError);
+      return;
+    }
+
+    if (sentFriendship && sentFriendship.length > 0) {
+      setAreFriends(true);
+      return;
+    }
+
+    const { data: receivedFriendship, error: receivedError } = await supabase
+      .from('friends')
+      .select('*')
+      .eq('sending_user', pet.owner_id)
+      .eq('receiving_user', currentUserId);
+
+    if (receivedError) {
+      console.error("Error fetching friendship status for received request:", receivedError);
+      return;
+    }
+
+    if (receivedFriendship && receivedFriendship.length > 0) {
+      setAreFriends(true);
+    }
+  }
 
   useEffect(() => {
-
-    router.refresh();
-
-  }, [colorDialogOpen, router]);
+    checkFriendship();
+  }, [currentUserId, pet.owner_id, checkFriendship]);
 
   const calculateAge = (birthday: string | null): string => {
     if (birthday) {
@@ -257,25 +335,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     { name: 'ten', code: '#b9fbc0' },
   ];
 
-  useEffect(() => {
-    const checkConnection = async () => {
-      if (currentUserId) {  // Ensure currentUserId is not null
-        const { data } = await supabase
-          .from('friend_requests')
-          .select('receiving_user')
-          .eq('sending_user', currentUserId);
-
-        if (data && Array.isArray(data)) {
-          const updatedConnections = new Set(data.map(entry => entry.receiving_user));
-          setSentConnections(updatedConnections);
-        }
-      }
-    };
-
-    checkConnection();
-  }, [currentUserId]);
-
-
 
   const sendConnection = async () => {
     if (!currentUserId || !pet.owner_id) {
@@ -375,64 +434,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     //new line to test
     router.refresh()
   }
-
-  useEffect(() => {
-    if (newChatId) {
-      const href = `/messages/chat/${chatHrefConstructor(
-        currentUserId,
-        pet.owner_id,
-        newChatId
-      )}`
-      setNewChatId('')
-      router.push(href)
-    }
-  }, [newChatId])
-
-
-  const checkFriendship = async () => {
-    if (!pet.owner_id || !currentUserId) {
-      console.error("Invalid IDs for checking friendship status");
-      return;
-    }
-
-    const { data: sentFriendship, error: sentError } = await supabase
-      .from('friends')
-      .select('*')
-      .eq('sending_user', currentUserId)
-      .eq('receiving_user', pet.owner_id);
-
-    if (sentError) {
-      console.error("Error fetching friendship status for sent request:", sentError);
-      return;
-    }
-
-    if (sentFriendship && sentFriendship.length > 0) {
-      setAreFriends(true);
-      return;
-    }
-
-    const { data: receivedFriendship, error: receivedError } = await supabase
-      .from('friends')
-      .select('*')
-      .eq('sending_user', pet.owner_id)
-      .eq('receiving_user', currentUserId);
-
-    if (receivedError) {
-      console.error("Error fetching friendship status for received request:", receivedError);
-      return;
-    }
-
-    if (receivedFriendship && receivedFriendship.length > 0) {
-      setAreFriends(true);
-    }
-  }
-
-
-
-
-  useEffect(() => {
-    checkFriendship();
-  }, [currentUserId, pet.owner_id]);
 
   return (
     <div>

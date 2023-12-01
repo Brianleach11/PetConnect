@@ -1,31 +1,23 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { ReactNode } from "react"
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { Database } from "@/types/supabase"
 import NavBar from "@/components/NavBar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import MessageHistory from "@/components/chat/MessageHistory"
 import ConnectionsList from "@/components/connections/ConnectionsList"
 import ConnectionRequestsButton from "@/components/connections/ConnectionRequestsButton"
 import Sidebar from "@/components/chat/Sidebar"
+import supabaseServer from '@/components/supabaseServer';
 
 interface LayoutProps {
   children: ReactNode
 }
 
 const Layout = async ({ children }: LayoutProps) => {
-  const supabase = createServerComponentClient<Database>({ cookies })
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+  const { data: { session }, error: sessionError } = await supabaseServer().auth.getSession()
 
   if (!session || sessionError) redirect('/')
 
-  /*const {data: messages, error: messagesError, count: messagesCount} = await supabase
-        .from('messages')
-        .select('*', {count:"exact"})
-        .order('recipient_id', {ascending: false})
-        */
-  const { data: connections, error: connectionsError } = await supabase
+  const { data: connections, error: connectionsError } = await supabaseServer()
     .from("friends")
     .select(`
           id,
@@ -35,13 +27,13 @@ const Layout = async ({ children }: LayoutProps) => {
     .or(`receiving_user.eq.${session.user.id}, sending_user.eq.${session.user.id}`)
     .order('created_at', { ascending: false })
 
-  let { data: recentMessages, count: recentMessagesCount, error } = await supabase
+  let { data: recentMessages, count: recentMessagesCount, error } = await supabaseServer()
     .from("recent_messages")
     .select("*", { count: "exact" })
     .or(`recipient_id.eq.${session.user.id}, sender_id.eq.${session.user.id}`)
     .order('created_at', { ascending: false })
 
-  let { count: unseenConnectionsCount, error: unseenConnectionsError } = await supabase
+  let { count: unseenConnectionsCount, error: unseenConnectionsError } = await supabaseServer()
     .from('friend_requests')
     .select("", { count: "exact" })
     .eq(`receiving_user`, session.user.id)

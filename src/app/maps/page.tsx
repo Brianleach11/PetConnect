@@ -1,24 +1,20 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
 import NavBar from '@/components/NavBar'
 import MapboxMap from '@/components/map/MapboxMap'
 import { redirect } from 'next/navigation';
-import MapboxMapcopy from '@/components/map/MapboxMap';
-//export const dynamic = 'force-dynamic'
+import supabaseServer from '@/components/supabaseServer';
 
 export default async function Home() {
-  const supabase = createServerComponentClient({ cookies })
   var city: string | null = null;
   var state: string | null = null;
 
   const {
     data: { session },
     error: sessionError
-  } = await supabase.auth.getSession()
+  } = await supabaseServer().auth.getSession()
 
   if (!session || sessionError) redirect('/')
 
-  const { data: userData, error: userError } = await supabase
+  const { data: userData, error: userError } = await supabaseServer()
     .from("user")
     .select("city,state")
     .eq('id', session.user.id)

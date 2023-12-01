@@ -1,20 +1,10 @@
-// External and Third-Party Imports
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
-// Internal Imports
-import { Database } from '@/types/supabase';
-import { chatHrefConstructor } from "@/lib/utils";
+import supabaseServer from '@/components/supabaseServer';
 
 export const dynamic = 'force-dynamic';
 
 const MessagesPage = async () => {
-    // Initialize the Supabase client
-    const supabase = createServerComponentClient<Database>({ cookies });
-
-    // Get session details
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabaseServer().auth.getSession();
 
     // Redirect to login if there's no session or if there's an error
     if (!session || sessionError) {

@@ -40,15 +40,15 @@ const OneRequest: FC<ConnectionPreviewProps> = ({item, session}) => {
     const [hideCancel, setHideCancel] = useState<boolean>(false)
     const [hideAccept, setHideAccept] = useState<boolean>(false)
     const router = useRouter()
+
     const searchUser = (item.sending_user === session.user.id) ? item!.receiving_user : item!.sending_user;
-    if(!searchUser)return null;
 
     useEffect(() => {
         const fetchData = async () => {
             const { data, error } = await supabase
                 .from("user")
                 .select("username")
-                .eq("id", searchUser)
+                .eq("id", searchUser ?? "")
                 .single();
             if(error) console.log(error)
             
@@ -58,11 +58,8 @@ const OneRequest: FC<ConnectionPreviewProps> = ({item, session}) => {
         };
         
         fetchData();
-    }, [item]);
+    }, [item, searchUser, supabase]);
 
-    //The request should be validated upon creation, check if the friendship exists
-    // if item.sending_user = sender or receiver
-    // if item.receiving user id = sender or receiver
     const acceptRequest = async() => {
         if(item.sending_user && item.receiving_user){
             setHideAccept(true)

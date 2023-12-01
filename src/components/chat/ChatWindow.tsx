@@ -48,7 +48,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ session, initialChats }) => {
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [supabase, realtimeChats, setRealtimeChats, session.user.id, router, currentChatId, setCurrentChatId])
+    }, [supabase, realtimeChats, setRealtimeChats, session.user.id, router, currentChatId, setCurrentChatId, initialChats])
 
     const formatTimestamp = (dateString: string | null) => {
         if (dateString) {

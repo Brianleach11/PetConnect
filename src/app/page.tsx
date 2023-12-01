@@ -1,4 +1,3 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import NavBar from '@/components/NavBar';
 import PetCardList from '@/components/PetCardList';
@@ -7,9 +6,9 @@ import { Card, CardHeader } from '@/components/ui/card';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { Database } from '@/types/supabase';
+import supabaseServer from '@/components/supabaseServer';
 
 export default async function Home() {
-  const supabase = createServerComponentClient<Database>({ cookies });
   const cookieStore = cookies().getAll();
   const regex = /.*?(?=auth-token-code-verifier)/;
   const authToken = cookieStore.some(cookie => regex.test(cookie.name));
@@ -17,10 +16,10 @@ export default async function Home() {
   const {
     data: { session },
     error
-  } = await supabase.auth.getSession();
+  } = await supabaseServer().auth.getSession();
 
   if (session) {
-    const { data } = await supabase
+    const { data } = await supabaseServer()
       .from('user')
       .select('*')
       .eq('id', session?.user.id)
@@ -34,9 +33,9 @@ export default async function Home() {
 
   const updateFilterPreferences = async () => {
     if (session) {
-      const { data } = await supabase.from('user').select('*').eq('id', session?.user.id).single()
+      const { data } = await supabaseServer().from('user').select('*').eq('id', session?.user.id).single()
       if (data?.filter_city === '' || data?.filter_state === '') {
-        const { error } = await supabase
+        const { error } = await supabaseServer()
           .from('user')
           .update({ looking_for: 'Default', filter_city: 'Any', filter_state: 'Any' })
           .eq('id', session?.user.id);

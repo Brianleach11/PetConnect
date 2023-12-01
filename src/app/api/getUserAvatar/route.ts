@@ -1,7 +1,7 @@
 import { AuthType, createClient, FileStat } from "webdav";
-import { NextApiRequest } from 'next';
+import { NextRequest } from "next/server";
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
     const username = process.env.NEXTCLOUD_USERNAME;
     const password = process.env.NEXTCLOUD_PASSWORD;
     const url = process.env.NEXTCLOUD_URL;

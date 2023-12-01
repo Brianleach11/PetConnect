@@ -1,15 +1,13 @@
 import React, { FC } from 'react';
 import NavBar from '@/components/NavBar'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
 import PetProfileDisplay from '@/components/petProfileDisplay';
 import { redirect } from 'next/navigation';
+import supabaseServer from '@/components/supabaseServer';
 
 const PProfilePage: FC = async () => {
-    const supabase = createServerComponentClient({ cookies });
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await supabaseServer().auth.getSession();
 
   if(!session) redirect('/')
 
