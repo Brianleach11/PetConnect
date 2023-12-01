@@ -173,7 +173,7 @@ const MapboxMap: FC<MapboxMapProps> = ({ coords }) => {
     mapboxMap?.on('render', () => {
       getDetails();
     })
-  }, [mapboxMap]);
+  }, [mapboxMap, getDetails])
 
   function getDetails() {
     const features = mapboxMap?.queryRenderedFeatures(undefined, { layers: ['veterinarians', 'groomers', 'dog_park'] });

@@ -77,12 +77,12 @@ export default function NavBar({ session, authToken }: { session: Session | null
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
 
 
-
+  /*
   useEffect(() => {
     if (authToken) {
       router.refresh()
     }
-  })
+  })*/
 
   const fetchFriendRequests = async () => {
     const { data, error } = await supabase
