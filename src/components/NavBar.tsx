@@ -269,10 +269,10 @@ export default function NavBar({ session, authToken }: { session: Session | null
   return (
     <>
       <div className='fixed top-0 inset-x-0 h-fit bg-whiteGreen z-[10] py-2'>
-        <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
+        <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2 flex-wrap'>
           <Link href='/' className='flex gap-2 items-center'>
-            <Image src="/assets/logo.png" priority width={75} height={75} alt="Logo" />
-            <p className='hidden text-zinc-700 text-3xl font-large font-bold md:block'>Pet Connect</p>
+            <Image src="/assets/logo.png" priority width={50} height={50} alt="Logo" className='hidden sm:block' />
+            <p className='text-zinc-700 text-xl font-large font-bold sm:text-3xl md:block'>Pet Connect</p>
           </Link>
           <Link href={session ? "/maps" : {}} className={buttonVariants({ variant: "ghost" })}>
             <Map size={24} className="text-zinc-700" /> {/* Adjust size and color as needed */}
