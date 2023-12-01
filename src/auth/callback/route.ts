@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const {data, error} = await supabase.from('user').select('username').single()
 
     if(!error && data?.username){
-      return NextResponse.redirect('/')
+      return NextResponse.redirect('https://petsconnect.vercel.app/')
     }
   }
 
