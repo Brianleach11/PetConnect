@@ -3,20 +3,29 @@ import { useEffect, FC, useState, useRef } from "react";
 import 'mapbox-gl/dist/mapbox-gl.css'
 import mapboxgl, { VectorSource } from "mapbox-gl";
 import { Button } from "@/components/ui/button"
-import { ListIcon } from "lucide-react";
+import { ListIcon, Menu } from "lucide-react";
 import LegendControl from 'mapboxgl-legend';
 import 'mapboxgl-legend/dist/style.css';
 import { ScrollArea } from '../ui/scroll-area';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 
 
-interface MapboxMapProps{
+interface MapboxMapProps {
   coords: number[]
 }
 
-const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
+const MapboxMap: FC<MapboxMapProps> = ({ coords }) => {
   mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_GL_ACCESS_TOKEN ?? '';
   const mapContainer = useRef<any>()
   const [mapboxMap, setMap] = useState<mapboxgl.Map>()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const tilesets = [
     ['dog_park', 'pet-connect.0lqme2o4', 'dog_parks-3rebou', 'rgb(0, 184, 21)'],
     ['veterinarians', 'pet-connect.5d6c9sva', 'vets-7dv97f', 'rgb(255, 0, 0)'],
@@ -25,55 +34,139 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
 
   useEffect(() => {
     const map = new mapboxgl.Map({
-      container: mapContainer.current, 
-      style: 'mapbox://styles/mapbox/streets-v12', 
-      center: [coords[0], coords[1]], 
-      zoom: 10 
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [coords[0], coords[1]],
+      zoom: 10
     });
 
-    map.addControl(new mapboxgl.GeolocateControl, 'top-right')
-    map.addControl(new mapboxgl.NavigationControl, 'top-right')
-    map.addControl(new mapboxgl.FullscreenControl, 'top-right')
+    map.addControl(new mapboxgl.GeolocateControl(), 'top-right')
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right')
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-right')
     map.addControl(new LegendControl({
       collapsed: true,
-      minimized: false, 
+      minimized: false,
       toggler: true
     }), 'bottom-right')
 
-    map.on('load', () => {
+    // Helper function to load an image and return a Promise
+    // Helper function to load an image and return a Promise
+    function loadImage(map: mapboxgl.Map, url: string, id: string) {
+      return new Promise((resolve, reject) => {
+        map.loadImage(url, (error, image) => {
+          if (error || !image) {
+            reject(error);
+          } else {
+            map.addImage(id, image);
+            resolve(true);
+          }
+        });
+      });
+    }
 
-      //add layers forloop
-      for (let i=0; i < tilesets.length; i++) {
-        //if the layer is already here (map.getLayer(layer)) continue
-        if(map.getLayer(tilesets[i][0])) {
-          continue;
-        }        
+    map.on('load', async () => {
+      try {
+        // Load all images first
+        await Promise.all([
+          loadImage(map, '/assets/park.png', 'dog-park-icon'),
+          loadImage(map, '/assets/vet.png', 'vet-icon'),
+          loadImage(map, '/assets/groomer.png', 'groomer-icon')
+        ]);
 
-        map.addSource(tilesets[i][0], {
-          type: 'vector',
-          url: 'mapbox://' + tilesets[i][1]
-        })
+        // Now add the layers
+        tilesets.forEach(tileset => {
+          const [id, source, layer, colorOrImage] = tileset;
+          if (map.getLayer(id)) return;
 
-        map.addLayer({
-          id: tilesets[i][0],
-          type: 'circle',
-          source: tilesets[i][0],
-          layout: {
-            visibility: 'visible'
-          },
-          paint: {
-            'circle-color': tilesets[i][3]
-          },
-          'source-layer': tilesets[i][2]
-        })
+          map.addSource(id, {
+            type: 'vector',
+            url: 'mapbox://' + source
+          });
+
+          const layerConfig = {
+            id: id,
+            source: id,
+            'source-layer': layer
+          };
+
+          if (id === 'dog_park') {
+            map.addLayer({
+              ...layerConfig,
+              type: 'symbol',
+              layout: {
+                'icon-image': 'dog-park-icon',
+                'icon-size': 0.075
+              }
+            });
+          } else if (id === 'veterinarians') {
+            map.addLayer({
+              ...layerConfig,
+              type: 'symbol',
+              layout: {
+                'icon-image': 'vet-icon',
+                'icon-size': 0.075
+              }
+            });
+          } else if (id === 'groomers') {
+            map.addLayer({
+              ...layerConfig,
+              type: 'symbol',
+              layout: {
+                'icon-image': 'groomer-icon',
+                'icon-size': 0.075
+              }
+            });
+          } else {
+            map.addLayer({
+              ...layerConfig,
+              type: 'circle',
+              layout: {
+                visibility: 'visible'
+              },
+              paint: {
+                'circle-color': colorOrImage
+              }
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error loading images:', error);
       }
-    })
-    
-    setMap(map)
+    });
 
-    
-    return () => map.remove()
+    const onIconClick = (e: any) => {
+      if (e.features.length > 0) {
+        const feature = e.features[0];
+        map.flyTo({
+          center: feature.geometry.coordinates,
+          zoom: 15 // Set the zoom level you want after clicking
+        });
+      }
+    };
 
+    // Add click event listeners to the layers
+    ['dog_park', 'veterinarians', 'groomers'].forEach(layerId => {
+      map.on('click', layerId, onIconClick);
+    });
+
+    ['dog_park', 'veterinarians', 'groomers'].forEach(layerId => {
+      // Change the cursor to a pointer when the it enters a feature in the layer
+      map.on('mouseenter', layerId, () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      // Change it back to a pointer when it leaves a feature in the layer
+      map.on('mouseleave', layerId, () => {
+        map.getCanvas().style.cursor = '';
+      });
+
+      // Add other event listeners like 'click' as per your requirement
+    });
+
+
+    setMap(map);
+
+    return () => map.remove();
   }, []);
 
   useEffect(() => {
@@ -81,10 +174,10 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
       getDetails();
     })
   }, [mapboxMap]);
-  
+
   function getDetails() {
-    const features = mapboxMap?.queryRenderedFeatures({layers: ['veterinarians', 'groomers', 'dog_park']})
-    
+    const features = mapboxMap?.queryRenderedFeatures({ layers: ['veterinarians', 'groomers', 'dog_park'] })
+
     const popup = new mapboxgl.Popup({
       closeButton: false
     })
@@ -110,7 +203,7 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
             address += `Address: ${feature.properties["addr:housenumber"]} ${feature.properties["addr:street"]}, ${feature.properties["addr:city"]}, ${feature.properties["addr:state"]} ${feature.properties["addr:postcode"]}\n`
             details = true
           }
-          else if (fetchAddresses){
+          else if (fetchAddresses) {
             //plug it into geocoder and get address
           }
           if (feature.properties["opening_hours"]) {
@@ -125,7 +218,7 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
             phone += `Phone Number: ${feature.properties["phone"]}\n`
             details = true
           }
-          
+
           //if details blank then make feature into <p>
           //else make details element with summary and <p> description
 
@@ -168,19 +261,18 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
           }
 
 
-          
           itemLink.addEventListener('mouseover', () => {
             //highlight corresp. feature on map
             if (mapboxMap) {
               popup.setLngLat(feature.geometry.coordinates)
-              .setText(label)
-              .addTo(mapboxMap);
+                .setText(label)
+                .addTo(mapboxMap);
             }
           })
           if (details) {
             listingElement?.appendChild(itemLink)
           }
-        }        
+        }
       }
     }
     renderListings(features)
@@ -196,22 +288,35 @@ const MapboxMap: FC<MapboxMapProps> = ({coords}) => {
     var heading = document.getElementById("heading")
     if (heading) {
       heading.textContent = ""
-    } 
-    
+    }
+
   })
 
   return (
-    <div>
-      <div className="sidebar 'flex  flex-1 flex-col-reverse pb-1 scrollbar-thumb-rounded scrollbar-w-2 scrolling-touch'" style={{width: "20vw", height: "80vh"}}>
-        <div id="heading" style={{padding: "20px 2px"}}>
-        </div>
-        <ScrollArea className='h-4/5 overflow-auto'>
-          <div id="listings" className="listing"></div>
-        </ScrollArea>
+    <div className="flex h-full">
+      <div className={`transform transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-60 lg:w-96 z-40 h-full bg-white fixed lg:static lg:translate-x-0`}>
+        <Card className="flex flex-col h-full">
+          <CardHeader>
+            <CardTitle>Map Details</CardTitle>
+            <CardDescription>Information about map locations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-96 overflow-auto">
+              <div id='listings' className="flex flex-col gap-2.5 overflow-auto" />
+            </ScrollArea>
+          </CardContent>
+        </Card>
       </div>
-      <div className="map" ref={mapContainer} style={{width: "80vw", height: "80vh", right: 0, position: "absolute"}}></div> 
+      <div className="flex-grow relative">
+        <div className={`absolute top-4 z-10 lg:hidden transform transition-transform ${isSidebarOpen ? 'left-64' : 'left-2'}`}>
+          <Button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <Menu />
+          </Button>
+        </div>
+        <div ref={mapContainer} className="h-full rounded-lg" />
+      </div>
     </div>
-    );
+  );
 }
 
 export default MapboxMap

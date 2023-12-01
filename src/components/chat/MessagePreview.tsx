@@ -109,27 +109,26 @@ const MessagePreview: FC<MessagePreviewProps> = ({ item, session, isActive }) =>
 
 
     return (
-        <Card className={`max-w-1/3 hover:shadow-lg transition-transform transform hover:-translate-y-1 p-4 rounded-lg ${
+        <Card className={`w-full md:max-w-1/2 lg:max-w-1/3 hover:shadow-lg overflow-clip transition-transform transform hover:-translate-y-1 rounded-lg ${
             isActive ? 'border border-midnight' : ''
-          }`} onClick={handleCardClick}>
+        }`} onClick={handleCardClick}>
             <CardContent className="py-2 relative">
                 <div className="flex items-start space-x-3">
                     {/* Avatar */}
                     <img
                         src={avatarUrl}
                         alt="Avatar"
-                        loading = "eager"
-                        className="w-20 h-20 rounded-full object-cover"
-                        style={{ transform: 'translateY(-5px)' }} // Adjust the value as needed
+                        loading="eager"
+                        className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover"
                     />
-
+        
                     {/* Text Content */}
                     <div>
-                        <h3 className="font-bold text-lg">
+                        <h3 className="text-base md:text-lg font-bold">
                             {item.recipient_id === session.user.id ? item.sender_username : item.recipient_username}
                         </h3>
-                        <p className={`text-sm text-gray-700 overflow-ellipsis ${hasUnseenNotification ? 'font-medium' : ''}`}>
-                            {item.message_content?.substring(0, 37)}
+                        <p className={`text-xs sm:text-sm text-gray-700 truncate ${hasUnseenNotification ? 'font-medium' : ''}`}>
+                            {item.message_content?.substring(0, 20)}
                         </p>
                         <p className="text-xs text-gray-400">
                             {item.created_at !== null ? formatDate(item.created_at) : null}

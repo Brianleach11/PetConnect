@@ -288,7 +288,7 @@ const Profile: React.FC<ProfileProps> = ({ userId }) => {
   };
 
   return (
-    <div className="bg-whiteGreen bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8 border-r-2 border-r-grey border-l-2 border-l-grey">
+    <div className="bg-whiteGreen border-r-2 border-r-grey border-l-2 border-l-grey bg-opacity-25 lg:w-8/12 lg:mx-auto mb-8 p-4 md:p-8">
       <header className="flex items-start md:items-center mb-8 ml-8 md:ml-16">
         <div className="relative mr-10"> {/* Parent container with relative positioning */}
           <img

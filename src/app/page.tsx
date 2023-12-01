@@ -5,9 +5,11 @@ import PetCardList from '@/components/PetCardList';
 import SimpleNav from '@/components/SimpleNav';
 import { Card, CardHeader } from '@/components/ui/card';
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
+import { Database } from '@/types/supabase';
 
 export default async function Home() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServerComponentClient<Database>({ cookies });
   const cookieStore = cookies().getAll();
   const regex = /.*?(?=auth-token-code-verifier)/;
   const authToken = cookieStore.some(cookie => regex.test(cookie.name));
@@ -16,6 +18,33 @@ export default async function Home() {
     data: { session },
     error
   } = await supabase.auth.getSession();
+
+  if (session) {
+    const { data } = await supabase
+      .from('user')
+      .select('*')
+      .eq('id', session?.user.id)
+      .single()
+
+    if (!data?.username) {
+      redirect('/userProfile');
+    }
+  }
+
+
+  const updateFilterPreferences = async () => {
+    if (session) {
+      const { data } = await supabase.from('user').select('*').eq('id', session?.user.id).single()
+      if (data?.filter_city === '' || data?.filter_state === '') {
+        const { error } = await supabase
+          .from('user')
+          .update({ looking_for: 'Default', filter_city: 'Any', filter_state: 'Any' })
+          .eq('id', session?.user.id);
+      }
+    }
+  };
+
+  updateFilterPreferences()
 
   return (
     session ? (
@@ -28,26 +57,26 @@ export default async function Home() {
     )
       :
       (
-        <div className=' overflow-y-auto -mt-12' style={{ backgroundImage: 'url(/assets/hero.png)', backgroundSize: 'cover', overflowY: 'auto' }}>
+        <div className='overflow-y-auto -mt-12 sm:bg-cover' style={{ backgroundImage: 'url(/assets/hero.png)', backgroundSize: 'cover', overflowY: 'auto' }}>
           <SimpleNav session={session} authToken={authToken} />
-          <div className=' overflow-y-auto min-h-screen' style={{ backgroundImage: 'url(/assets/hero.png)', backgroundSize: 'cover', overflowY: 'auto' }}>
-            <div className=' mt-48'>
-              <div className='flex items-center justify-center'>
-                <Card className='mx-auto drop-shadow-2xl w-3/4 h-96 text-midnight flex'>
-                  <CardHeader className=' tracking-wider text-4xl w-3/4 font-bold flex flex-col justify-center'>
-                    <span className='mt-6 ml-10'>
+          <div className='overflow-y-auto min-h-screen sm:bg-cover' style={{ backgroundImage: 'url(/assets/hero.png)', backgroundSize: 'cover', overflowY: 'auto' }}>
+            <div className='mt-8 sm:mt-12'>
+              <div className='flex items-center justify-center flex-col sm:flex-row'>
+                <Card className='mx-auto drop-shadow-2xl w-11/12 sm:w-4/5 lg:w-3/4 h-48 sm:h-96 text-midnight flex'>
+                  <CardHeader className='tracking-wider text-2xl sm:text-3xl lg:text-4xl sm:w-3/4 lg:w-4/5 font-bold flex flex-col justify-center text-center sm:text-left'>
+                    <span className='mt-6 sm:mt-0 ml-0 sm:ml-10'>
                       Where Every Tail
                     </span>
-                    <span className='mt-6 ml-10'>
+                    <span className='mt-6 sm:mt-0 ml-0 sm:ml-10'>
                       Finds a Friend!
                     </span>
-                    <span className='ml-10 text-lg pt-10 opacity-75'>
+                    <span className='ml-0 sm:ml-10 text-sm sm:text-base lg:text-lg sm:pt-6 lg:pt-10 opacity-75'>
                       Join PetConnect to meet new friends, share moments with pets, and be a part of a vibrant pet-loving community.
                     </span>
                   </CardHeader>
-                  <div className='flex flex-auto items-center justify-center mr-12 drop-shadow-lg'>
+                  <div className='hidden sm:flex flex-auto items-center justify-center mr-0 sm:mr-12 drop-shadow-lg'>
                     <Image
-                      className='rounded-2xl w-auto h-auto max-w-full max-h-full'
+                      className='rounded-2xl w-full h-auto max-h-full'
                       src='/assets/herodogs.png'
                       alt='Yayy'
                       width={300}
@@ -56,7 +85,7 @@ export default async function Home() {
                   </div>
                 </Card>
               </div>
-              <div className='flex items-center justify-center'>
+              <div className='hidden sm:flex items-center justify-center'>
                 <Image
                   src=''
                   alt='Pets meeting'
@@ -65,23 +94,24 @@ export default async function Home() {
                 />
               </div>
             </div>
-            <div className='mt-64'>
+            <div className='mt-4 sm:mt-8 lg:mt-16'>
               .
             </div>
-            <div className='mt-64'>
+            <div className='mt-4 sm:mt-8 lg:mt-16'>
               .
             </div>
-            <div className='mt-64'>
+            <div className='mt-4 sm:mt-8 lg:mt-16'>
               .
             </div>
-            <div className='mt-64'>
+            <div className='mt-4 sm:mt-8 lg:mt-16'>
               .
             </div>
-            <div className='mt-96'>
+            <div className='mt-4 sm:mt-8 lg:mt-24'>
               .
             </div>
           </div>
         </div>
+
       )
   )
 }

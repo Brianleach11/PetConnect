@@ -18,10 +18,10 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';  
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation'; 
-import { useToast } from '@/components/ui/use-toast'; 
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/types/supabase';
 
 
@@ -39,66 +39,66 @@ const PetProfileForm = () => {
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [bio, setBio] = useState<string>('');
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
 
-        // Validation
-        let newErrors = {};
-        if (!name) newErrors = 'Name is required';
-        if (!petType) newErrors = 'Pet Type is required';
-        if (!sex) newErrors = 'Sex is required';
-        if (!weight) newErrors = 'Weight is required';
-        if (!birthday) newErrors = { ...newErrors, birthday: 'Birthday is required' };
-        if (!breed) newErrors = 'Breed is required';
-        if (!bio) newErrors = 'Bio is required';
-    
-        if (Object.keys(newErrors).length > 0) {
-          // Show errors in toast
-          toast({
-            title: "Validation Error",
-            description: "Please fill in all the required fields",
-            variant: 'destructive',
-          });
-          return;
-        }
+    // Validation
+    let newErrors = {};
+    if (!name) newErrors = 'Name is required';
+    if (!petType) newErrors = 'Pet Type is required';
+    if (!sex) newErrors = 'Sex is required';
+    if (!weight) newErrors = 'Weight is required';
+    if (!birthday) newErrors = { ...newErrors, birthday: 'Birthday is required' };
+    if (!breed) newErrors = 'Breed is required';
+    if (!bio) newErrors = 'Bio is required';
 
-
-  const {data: {user}, error} = await supabase.auth.getUser()
-
-  if(user?.id && !error){
-    
-    const {data, error} = await supabase
-      .from("pet")
-      .insert(
-        {
-          owner_id: user?.id,
-          name: name, 
-          pet_type: petType, 
-          sex: sex, 
-          weight: weight, 
-          breed: breed,
-          birthday: birthday,
-          bio: bio,
-          picture: profilePicture
-        }
-      )
-      .select()
-      console.log('inside The insert')
-    if(error) throw error
-    
-    if(data.length !== 0){
-      console.log('pushPetProfile')
-      router.push('/MedPage')
+    if (Object.keys(newErrors).length > 0) {
+      // Show errors in toast
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all the required fields",
+        variant: 'destructive',
+      });
+      return;
     }
-  }else{
-    toast({
-      title: "Error",
-      description: "An error happend upon user login",
-      variant: 'destructive',
-    })
-  }
+
+
+    const { data: { user }, error } = await supabase.auth.getUser()
+
+    if (user?.id && !error) {
+
+      const { data, error } = await supabase
+        .from("pet")
+        .insert(
+          {
+            owner_id: user?.id,
+            name: name,
+            pet_type: petType,
+            sex: sex,
+            weight: weight,
+            breed: breed,
+            birthday: birthday,
+            bio: bio,
+            picture: profilePicture
+          }
+        )
+        .select()
+      console.log('inside The insert')
+      if (error) throw error
+
+      if (data.length !== 0) {
+        console.log('pushPetProfile')
+        router.push('/')
+      }
+    } else {
+      toast({
+        title: "Error",
+        description: "An error happend upon user login",
+        variant: 'destructive',
+      })
+    }
   }
   return (
-    <Card className="w-full max-w-2xl mx-auto mt-10">
+    <Card className="max-w-2xl w-full mt-10 items-center overflow-auto">
       <CardHeader>
         <CardTitle>Pet Profile Form</CardTitle>
         <CardDescription>Create your pet profile</CardDescription>
@@ -113,35 +113,35 @@ const PetProfileForm = () => {
               setName(e.target.value)
             }
           />
-  
+
           <div className="relative">
             <Label htmlFor="petType">Pet Type</Label>
             <Select onValueChange={(value) => setPetType(value)}>
               <SelectTrigger id="petType">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent>
                 <SelectItem value="dog">Dog</SelectItem>
                 <SelectItem value="cat">Cat</SelectItem>
                 {/* ... other options */}
               </SelectContent>
             </Select>
           </div>
-  
+
           <div className="relative">
             <Label htmlFor="sex">Sex</Label>
             <Select onValueChange={(value) => setSex(value)}>
               <SelectTrigger id="sex">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent>
                 <SelectItem value="male">Male</SelectItem>
                 <SelectItem value="female">Female</SelectItem>
                 {/* ... */}
               </SelectContent>
             </Select>
           </div>
-  
+
           <Label htmlFor="weight">Weight</Label>
           <Input
             id="weight"
@@ -151,7 +151,7 @@ const PetProfileForm = () => {
               setWeight(Number(e.target.value))
             }
           />
-  
+
           <Label htmlFor="breed">Breed</Label>
           <Input
             id="breed"
@@ -160,7 +160,7 @@ const PetProfileForm = () => {
               setBreed(e.target.value)
             }
           />
-  
+
           <Label htmlFor="birthday">Birthday</Label>
           <Input
             id="birthday"
@@ -168,22 +168,13 @@ const PetProfileForm = () => {
             value={birthday || ''}
             onChange={(e) => setBirthday(e.target.value)}
           />
-  
+
           <Label htmlFor="bio">Bio - Know About Me</Label>
           <Textarea
             id="bio"
             value={bio}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setBio(e.target.value)
-            }
-          />
-  
-          <Label htmlFor="profilePicture">Profile Picture</Label>
-          <input
-            type="file"
-            id="profilePicture"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setProfilePicture(e.target.files?.[0] ?? null)
             }
           />
         </form>
@@ -203,7 +194,7 @@ const PetProfileForm = () => {
       </CardFooter>
     </Card>
   );
-  
+
 };
 
 export default PetProfileForm;

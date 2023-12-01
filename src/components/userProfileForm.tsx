@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/types/supabase';
+import { ScrollArea } from './ui/scroll-area';
 
 const UserProfileForm = () => {
   const supabase = createClientComponentClient<Database>();
@@ -188,9 +189,11 @@ const UserProfileForm = () => {
               <SelectValue placeholder="Select State" />
             </SelectTrigger>
             <SelectContent position="popper">
-              {statesList.map((state) => (
-                <SelectItem key={state} value={state}>{state}</SelectItem>
-              ))}
+              <ScrollArea className='h-96'>
+                {statesList.map((state) => (
+                  <SelectItem key={state} value={state}>{state}</SelectItem>
+                ))}
+              </ScrollArea>
             </SelectContent>
           </Select>
 

@@ -74,7 +74,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
   const [showChatDropdown, setShowChatDropdown] = useState(false);
   const notificationBtnRef = useRef(null);
   const notificationDropdownRef = useRef(null);
-
+  const [windowWidth, setWindowWidth] = useState<number>();
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
 
 
@@ -230,7 +230,28 @@ export default function NavBar({ session, authToken }: { session: Session | null
     });
   };
 
+  useEffect(() => {
+    // Function to update the width
+    const updateWidth = () => {
+      setWindowWidth(window.innerWidth);
+    };
 
+    // Set width initially and add resize event listener
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  const handleButtonClick = () => {
+    if(!windowWidth) return
+    if (windowWidth <= 768) { // Assuming 768px as the breakpoint for 'small' screens
+      router.push('/messages'); // Redirects to '/messages' on small screens
+    } else {
+      toggleChatDropDownMenu(); // Opens the dropdown menu on medium/large screens
+    }
+  }
 
 
   useEffect(() => {
@@ -259,7 +280,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
           </Link>          
           <div className="relative">
             <button
-              onClick={toggleChatDropDownMenu}
+              onClick={handleButtonClick}
               className={buttonVariants({ variant: "ghost" })}
               style={{ position: 'relative' }}
             >
@@ -288,7 +309,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
                 )}
               </button>
               {showDropdown && (
-                <div className="absolute top-full mt-2 right-0 w-[1000%] max-w-screen-xl rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 overflow-hidden" ref={notificationDropdownRef}>
+                <div className="absolute top-full mt-2 right-0 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 overflow-hidden" ref={notificationDropdownRef}>
                   <div className="flex justify-between items-center border-b border-gray-200 p-5 bg-gray-50">
                     <span className="font-semibold text-xl">Notifications</span>
                     <button onClick={() => {

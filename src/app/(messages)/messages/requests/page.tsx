@@ -31,8 +31,8 @@ const ConnectionRequestsPage: FC = async () => {
     const finalCount = unseenConnectionsCount ?? 0;
 
     return (
-        <div className=" pt-14 py-2 rounded-3xl fixed right-0 w-2/3 h-screen bg-midnight">
-            <div className="container px-2 top-2 bg-white rounded-tr-xl h-full border-l-2 drop-shadow-lg">
+        <div className=" pt-14 py-2 rounded-3xl fixed right-0 lg:w-2/3 w-screen h-screen bg-midnight">
+            <div className="container px-2 top-2 bg-white rounded-xl lg:rounded-tl-none h-full border-l-2 drop-shadow-lg">
                 <ConnectionRequests 
                     unseenConnections={unseenConnections} 
                     unseenConnectionsCount={finalCount} 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useState, FC } from "react";
+import React, { useState, FC, useEffect } from "react";
 import {Spinner} from 'flowbite-react'
 
 type ImageComponentProps = {
@@ -17,11 +17,12 @@ const ImageComponent: FC<ImageComponentProps> = ({ imageUrl }) => {
   return (
     <div>
       {isLoading && (
-        <div className="flex justify-center items-center border-2 w-72 h-96 transition-all duration-500 bg-gradient-to-br to-white via-softGreen from-white animate-pulse">
+        <div className="flex justify-center w-48 h-48 sm:w-60 sm:h-60 md:w-75 md:h-75 items-center border-2 transition-all duration-500 bg-gradient-to-br to-white via-softGreen from-white animate-pulse">
           <Spinner color='info' size='lg'/>
         </div>
       )}
-       <div onClick={handleImageClick} style={{ cursor: 'pointer' }} className="w-72 h-96">
+       <div onClick={handleImageClick} style={{ cursor: 'pointer'}} className="w-48 h-48 sm:w-60 sm:h-60 md:w-75 md:h-75
+">
               <img 
                 src={imageUrl} 
                 alt="Uploaded Image"

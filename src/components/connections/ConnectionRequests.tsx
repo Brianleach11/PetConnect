@@ -14,6 +14,8 @@ import { ScrollArea } from "../ui/scroll-area";
 // Third-party imports
 import { FC } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 
 interface Connection {
     created_at: string;
@@ -33,10 +35,14 @@ interface ConnectionRequestsProps {
 const ConnectionRequests: FC<ConnectionRequestsProps> = ({ unseenConnections, unseenConnectionsCount, session }) => {
     const requestsSent = unseenConnections?.filter(item => item.sending_user === session.user.id).length || 0;
     const requestsReceived = unseenConnectionsCount - requestsSent;
+    const router = useRouter()
 
     return (
         <Card className="h-full flex flex-col border-none">
             <CardHeader className="text-2xl font-semibold my-4 border-b-4 w-full items-center">
+                <button onClick={() => router.push('/messages')} className='absolute top-2 left-6 lg:hidden rounded-sm hover:bg-softGreen'>
+                    <ChevronLeft />
+                </button>
                 Connection Requests
             </CardHeader>
             

@@ -62,12 +62,10 @@ const ConnectionPreview: FC<ConnectionPreviewProps> = ({ item, session }) => {
 
     // Handle chat redirection
     const redirectUser = async () => {
-        console.log("REDIRECT TRIGGERED");
-
         if (!item.sending_user || !item.receiving_user) return;
 
         let chatId;
-        const { data: query, error: chatIdError } = await supabas
+        const { data: query, error: chatIdError } = await supabase
             .from('chats')
             .select('chat_id, sender_id, recipient_id');
 

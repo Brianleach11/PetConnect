@@ -3,6 +3,7 @@ import React, { FC, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
+import { ChevronLeft } from 'lucide-react'
 
 interface ClickUsernameProps {
     chatPartnerUsername: string,
@@ -56,6 +57,9 @@ const ClickUsername: FC<ClickUsernameProps> =({chatPartnerUsername, chatPartner}
     
     return (
         <div className="flex space-x-3 items-center">
+            <button onClick={() => router.push('/messages')} className='absolute top-2 left-0 rounded-sm hover:bg-softGreen'>
+                <ChevronLeft />
+            </button>
             <img
                 src={avatar}
                 alt="Avatar"
