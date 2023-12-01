@@ -268,20 +268,19 @@ export default function NavBar({ session, authToken }: { session: Session | null
 
   return (
     <>
-      <div className='fixed top-0 inset-x-0 h-24 bg-whiteGreen z-[10] py-2'>
-        <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2 flex-wrap'>
-          <Link href='/' className='flex gap-2 items-center'>
-            <Image src="/assets/logo.png" priority width={50} height={50} alt="Logo" />
+      <div className='fixed top-0 inset-x-0 h-20 bg-whiteGreen z-[10] py-2'>
+        <div className='container max-w-7xl h-full mx-auto flex items-center justify-between'>
+          <Link href='/' className='flex left-1 items-center'>
+            <Image src="/assets/logo.png" priority width={40} height={40} alt="Logo" className="md:h-20 md:w-20 lg:h-20 lg:w-20"/>
             <p className='hidden sm:hidden md:block text-zinc-700 text-xl font-large font-bold'>Pet Connect</p>
           </Link>
           <Link href={session ? "/maps" : {}} className={buttonVariants({ variant: "ghost" })}>
             <Map size={24} className="text-zinc-700" /> {/* Adjust size and color as needed */}
           </Link>
-          <div className="relative">
+          <div className="">
             <button
               onClick={handleButtonClick}
               className={buttonVariants({ variant: "ghost" })}
-              style={{ position: 'relative' }}
             >
               <MessagesSquare className="w-full h-6 text-gray-600" />
               {unreadMessagesCount > 0 && (
