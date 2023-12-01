@@ -101,7 +101,7 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId, session }) => {
     }
 
     return (
-        <div className='border-t border-gray-300 px-2 sm:px-4 pt-4 mb-2 sm:mb-4'>
+        <div className='border-t border-gray-300 px-2 sm:px-4 pt-4 md:mb-2 mb-16 lg:mb-2'>
             <div className='relative flex-1 overflow-hidden rounded-lg shadow-lg ring-1 ring-lightblue-400 focus-within:ring-2'>
                 <TextAreaAutosize
                     ref={textareaRef}
@@ -126,7 +126,7 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId, session }) => {
                     </div>
                 </div>
 
-                <div className='absolute right-0 bottom-0 flex justify-end py-1 sm:py-2 pl-3 pr-2 space-x-2'>
+                <div className='absolute right-0 bottom-0 flex justify-end py-1 pl-3 pr-2 space-x-2'>
                     <Button isLoading={isLoading} onClick={sendMessage} className='text-sm sm:text-base'>
                         Send
                     </Button>

@@ -299,7 +299,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
 
           {session && (
             <div className="relative" ref={notificationBtnRef}>
-              <button onClick={() => setShowDropdown(!showDropdown)} className="relative p-2 rounded-md hover:bg-white transition-all ">
+              <button onClick={() => setShowDropdown(!showDropdown)} className={buttonVariants({variant: 'ghost'})}>
                 <Bell className="w-6 h-6 text-gray-600" />
                 {notifications.length > 0 && (
                   <span className="absolute top-[-10px] right-[-10px] inline-block w-5 h-5 text-xs font-bold text-center leading-5 rounded-full bg-red text-white shadow-lg">

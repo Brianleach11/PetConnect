@@ -1,10 +1,11 @@
 'use client'
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
     LogOut,
     Settings,
     User,
-    PawPrint
+    PawPrint,
+    Menu
   } from "lucide-react"
 import {
   DropdownMenu,
@@ -44,7 +45,12 @@ export default function ProfileDropdown(){
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button>Menu</Button>
+          <div>
+            <button className={buttonVariants({ variant: "ghost" })}>
+              <Menu/>
+            </button>
+            {/*<Button className="hidden lg:block">Menu</Button>*/}
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
