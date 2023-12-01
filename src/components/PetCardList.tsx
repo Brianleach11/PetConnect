@@ -137,7 +137,7 @@ const PetCardsList: React.FC<{ currentUserId: string }> = ({currentUserId}) => {
       setIsFetching(true)
       fetchPets();
     }
-  }, [currentUserId, fetchPets, isFetching]);
+  }, []);
 
   const errorMessage = error ? <p>Error loading pets. Please try again later.</p> : null;
 
@@ -186,15 +186,13 @@ const PetCardsList: React.FC<{ currentUserId: string }> = ({currentUserId}) => {
       
       {loading && (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-8">
-        {Array.from({ length: pets.map.length }, (_, index) => (
-          <div key={index} className="text-center mt-10">
+          <div className="text-center mt-10">
             <div className="flex justify-center items-center border-2 w-72 h-96 transition-all duration-500 bg-gradient-to-br to-white via-softGreen from-white animate-pulse">
               <Spinner color='info' size='lg'/>
             </div>
           </div>
-        ))}
       </div>
-    )}
+        )}
       
       {pets.length === 0 && !loading && (
       <div className="text-center mt-10">

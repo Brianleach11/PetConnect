@@ -268,7 +268,7 @@ export default function NavBar({ session, authToken }: { session: Session | null
 
   return (
     <>
-      <div className='fixed top-0 inset-x-0 h-fit bg-whiteGreen z-[10] py-2'>
+      <div className='fixed top-0 inset-x-0 h-24 bg-whiteGreen z-[10] py-2'>
         <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2 flex-wrap'>
           <Link href='/' className='flex gap-2 items-center'>
             <Image src="/assets/logo.png" priority width={50} height={50} alt="Logo" />
