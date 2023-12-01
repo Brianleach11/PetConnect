@@ -167,13 +167,13 @@ const MapboxMap: FC<MapboxMapProps> = ({ coords }) => {
     setMap(map);
 
     return () => map.remove();
-  }, [coords, tilesets]);
+  }, []);
 
   useEffect(() => {
     mapboxMap?.on('render', () => {
       getDetails();
     })
-  }, [mapboxMap, getDetails]);
+  }, [mapboxMap]);
 
   function getDetails() {
     const features = mapboxMap?.queryRenderedFeatures(undefined, { layers: ['veterinarians', 'groomers', 'dog_park'] });
